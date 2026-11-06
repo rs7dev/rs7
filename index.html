@@ -96,6 +96,73 @@
             color: #94a3b8 !important;
         }
 
+/* Мягкая фосфорно-зеленая тема Матрицы (Комфортная для глаз) */
+/* Новая стильная Хвойная тема по вашему скриншоту */
+/* Совершенная Хвойная тема (Сбалансированная и контрастная) */
+[data-theme="matrix"], [data-theme="matrix"] body {
+    --bg-body: #1c3119;              /* Верхний глубокий хвойный фон со скриншота */
+    --bg-container: #0f1811;         /* Нижний благородный матово-графитовый фон */
+    --text-main: #f1f5f9;            /* Мягкий молочно-белый текст для защиты глаз */
+    --text-title: #ffffff;           /* Чистый белый для главных заголовков */
+    --text-muted: #a7bdae;           /* Четкий, читаемый оливково-серый текст подписей */
+    --border-color: #1e3324;         /* Тонкие хвойные разделительные линии */
+    --bg-filebox: #1c3119;           /* Плашка загрузки в цвет верхнего фона */
+    --border-filebox: #3d5945;       /* Сдержанные зеленые границы элементов */
+    --bg-th: #142118;                /* Плотная глубокая шапка таблицы */
+    --bg-hover-tr: #18291c;          /* Подсветка строки при наведении мыши */
+    --bg-copy-btn: #142118;          /* Приглушенные подложки кнопок */
+    --input-bg: #0f1811;             /* Графитовые поля ввода */
+    --input-disabled: #142118;
+    --accent-color: #86efac;         /* Благородный мятно-пастельный цвет для жирного текста поиска */
+}
+
+/* Красивая изумрудная подсветка активных полей */
+[data-theme="matrix"] .global-search:focus {
+    border-color: #527a5f !important;
+    box-shadow: 0 0 0 3px rgba(134, 239, 172, 0.1) !important;
+}
+[data-theme="matrix"] .pagination-btn.active {
+    background-color: #2d4a37 !important;
+    border-color: #527a5f !important;
+    color: #ffffff !important;
+}
+
+/* Специальное благородное наведение для кнопки очистки в хвойной теме */
+[data-theme="matrix"] .clear-btn:hover:not(:disabled) { 
+    background-color: #451a1a !important; /* Глубокий винно-бордовый цвет вместо ядовито-красного */
+    border-color: #991b1b !important; 
+    color: #fca5a5 !important; 
+}
+
+
+/* Воздушная тема Аэро по вашему новому скриншоту */
+[data-theme="aero"], [data-theme="aero"] body {
+    --bg-body: #d2eaee;              /* Верхний нежный аквамариновый фон со скриншота */
+    --bg-container: #e6f4f6;         /* Нижний светлый мятно-голубой фон */
+    --text-main: #1e293b;            /* Глубокий темно-серый текст таблицы для четкости */
+    --text-title: #0f172a;           /* Темные контрастные заголовки */
+    --text-muted: #577c82;           /* Приглушенный серо-бирюзовый цвет подписей */
+    --border-color: #badbe0;         /* Тонкие нежные мятные разделительные линии */
+    --bg-filebox: #d2eaee;           /* Фон кнопок загрузки в цвет верхнего фона */
+    --border-filebox: #8ec3cb;       /* Красивые бирюзовые границы элементов */
+    --bg-th: #daf0f2;                /* Светлая аккуратная шапка таблицы */
+    --bg-hover-tr: #dcf2f5;          /* Мягкая подсветка строки при наведении */
+    --bg-copy-btn: #daf0f2;          /* Подложки кнопок */
+    --input-bg: #e6f4f6;             /* Светлые мятные поля ввода */
+    --input-disabled: #daf0f2;
+    --accent-color: #0891b2;         /* Контрастный насыщенный бирюзовый для жирного текста поиска */
+}
+
+/* Красивая подсветка элементов для темы Аэро */
+[data-theme="aero"] .global-search:focus {
+    border-color: var(--accent-color) !important;
+}
+[data-theme="aero"] .pagination-btn.active {
+    background-color: var(--accent-color) !important;
+    border-color: var(--accent-color) !important;
+}
+
+
         body {  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 15px; background-color: var(--bg-body); color: var(--text-main); transition: background-color 0.2s ease, color 0.2s ease; -webkit-font-smoothing: antialiased; }
         .container { max-width: 100% !important; margin: 0; background: var(--bg-container); padding: 25px; border-radius: 12px; position: relative; box-sizing: border-box; border: 1px solid var(--border-color); } [data-theme="dark"] .container { border-color: var(--border-color); }
         
@@ -112,9 +179,44 @@
         .global-search:focus { box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
         .global-search:disabled { background-color: var(--input-disabled); border-color: var(--border-filebox); cursor: not-allowed; }
         
-        .clear-btn { padding: 0 20px; font-size: 15px; font-weight: 600; background-color: #ef4444; color: white; border: none; border-radius: 8px; cursor: pointer; transition: background-color 0.2s; white-space: nowrap; }
-        .clear-btn:hover { background-color: #dc2626; }
-        .clear-btn:disabled { background-color: var(--border-filebox); cursor: not-allowed; color: var(--text-muted); }
+        .clear-btn { 
+    padding: 0 22px; 
+    font-size: 14px; 
+    font-weight: 600; 
+    /* Базовый цвет кнопки: мягкий серый/темный в зависимости от темы */
+    background-color: var(--bg-filebox); 
+    color: var(--text-main); 
+    border: 1px solid var(--border-filebox); 
+    border-radius: 8px; 
+    cursor: pointer; 
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease; 
+    white-space: nowrap; 
+}
+
+/* Эффект при наведении: кнопка аккуратно загорается красным, предупреждая об очистке */
+.clear-btn:hover:not(:disabled) { 
+    background-color: #fee2e2; /* Блеклый нежно-красный фон */
+    border-color: #f87171;     /* Пастельный красный контур */
+    color: #ef4444;            /* Красный текст */
+}
+
+/* Адаптация эффекта наведения под темные темы (Ночная и Хвойная) */
+[data-theme="dark"] .clear-btn:hover:not(:disabled),
+[data-theme="matrix"] .clear-btn:hover:not(:disabled) { 
+    background-color: #7f1d1d; /* Глубокий темно-красный фон */
+    border-color: #b91c1c; 
+    color: #fca5a5;            /* Мягкий розово-белый текст */
+}
+
+/* Стиль, когда кнопка заблокирована (в полях поиска ничего не введено) */
+.clear-btn:disabled { 
+    background-color: var(--input-disabled); 
+    cursor: not-allowed; 
+    color: var(--text-muted); 
+    border: 1px solid var(--border-color); 
+    opacity: 0.6;
+}
+
 
         .search-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px; padding: 15px; background: var(--bg-filebox); border: 1px solid var(--border-color); border-radius: 8px; }
         .search-field { display: flex; flex-direction: column; }
@@ -310,12 +412,39 @@ td:hover .copy-btn {
 
 <script>
 var globalRows = [], currentFilteredRows = [], tableHeaders = [], currentPage = 1, pageSize = 50;
+
+// 1. Извлекаем сохраненную тему из памяти браузера при старте страницы
+var savedTheme = localStorage.getItem('saved_table_theme') || 'light';
 var themeToggleBtn = document.getElementById('themeToggleBtn');
+
+function applyTheme(t) {
+    if (t === 'light') { 
+        document.documentElement.removeAttribute('data-theme'); 
+        themeToggleBtn.textContent = '☀️'; 
+    } else { 
+        document.documentElement.setAttribute('data-theme', t); 
+        if (t === 'dark') themeToggleBtn.textContent = '🌙'; 
+        if (t === 'matrix') themeToggleBtn.textContent = '🌲'; 
+        if (t === 'aero') themeToggleBtn.textContent = '🧊'; 
+    }
+}
+applyTheme(savedTheme);
+
+// 2. Циклически переключаем и записываем выбранную тему в localStorage по кругу
 themeToggleBtn.addEventListener('click', function() {
     var cur = document.documentElement.getAttribute('data-theme');
-    if (cur === 'dark') { document.documentElement.removeAttribute('data-theme'); themeToggleBtn.textContent = '🌙'; }
-    else { document.documentElement.setAttribute('data-theme', 'dark'); themeToggleBtn.textContent = '☀️'; }
+    var next = 'light'; 
+    if (!cur) next = 'dark'; 
+    else if (cur === 'dark') next = 'matrix'; 
+    else if (cur === 'matrix') next = 'aero'; 
+    
+    applyTheme(next); 
+    localStorage.setItem('saved_table_theme', next);
 });
+
+
+
+
 document.getElementById('csvFile').addEventListener('change', function(e) {
     var file = e.target.files[0]; if (!file) return;
     document.getElementById('fileStatus').innerHTML = "Выбран файл: <strong>" + file.name + "</strong>";
@@ -392,19 +521,54 @@ function renderTableStructure() {
     th.appendChild(row);
 }
 function renderTableData() {
-    var tb = document.getElementById('tableBody'); tb.innerHTML = '';
+    var tb = document.getElementById('tableBody'); 
+    tb.innerHTML = '';
+    
+    var gQ = document.getElementById('globalSearchInput').value.trim();
+    var columnInputs = document.querySelectorAll('#searchContainer input');
+    
     document.getElementById('counter').textContent = "Найдено строк: " + currentFilteredRows.length;
     var pRows = currentFilteredRows.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+    
+    // Встроенная функция-маркер (подсвечивает совпадения желтым цветом)
+    function highlightText(text, searchStr) {
+        if (!searchStr) return text;
+        var safeStr = searchStr.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        var regex = new RegExp("(" + safeStr + ")", "gi");
+
+        // return text.replace(regex, "<mark style='background-color: #fef08a; color: #000000; padding: 2px; border-radius: 4px;'>$1</mark>");
+        return text.replace(regex, "<span style='font-weight: 700; color: var(--accent-color);'>$1</span>");
+ 
+    }
+
     pRows.forEach(function(cells) {
         var tr = document.createElement('tr');
         tableHeaders.forEach(function(_, idx) {
             var td = document.createElement('td'), txt = '';
-            cells.forEach(function(c, i) { if (i === idx) txt = String(c); }); td.textContent = txt;
+            cells.forEach(function(c, i) { if (i === idx) txt = String(c); });
+            
+            // Определяем, какой фильтр сейчас активен для этой колонки
+            var activeQuery = gQ;
+            columnInputs.forEach(function(input) {
+                if (parseInt(input.getAttribute('data-index')) === idx && input.value.trim()) {
+                    activeQuery = input.value.trim();
+                }
+            });
+
+            // Записываем текст с подсветкой маркера
+            td.innerHTML = highlightText(txt, activeQuery);
+            
             if (txt.trim() !== "") {
                 var btn = document.createElement('button'); btn.className = 'copy-btn'; btn.textContent = '📋';
                 btn.addEventListener('click', function(e) {
-                    e.stopPropagation(); var ta = document.createElement('textarea'); ta.value = txt; ta.style.position = 'fixed';
-                    document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); btn.textContent = "✓"; btn.classList.add('copied'); setTimeout(function() { btn.textContent = "📋"; btn.classList.remove('copied'); }, 1000); } catch(err){} document.body.removeChild(ta);
+                    e.stopPropagation(); 
+                    var ta = document.createElement('textarea'); ta.value = txt; ta.style.position = 'fixed';
+                    document.body.appendChild(ta); ta.select(); 
+                    try { 
+                        document.execCommand('copy'); btn.textContent = "✓"; btn.classList.add('copied'); 
+                        setTimeout(function() { btn.textContent = "📋"; btn.classList.remove('copied'); }, 1000); 
+                    } catch(err){} 
+                    document.body.removeChild(ta);
                 });
                 td.appendChild(btn);
             }
@@ -414,6 +578,7 @@ function renderTableData() {
     });
     setupPagination();
 }
+
 function setupPagination() {
     var pc = document.getElementById('pagination'); pc.innerHTML = '';
     var totalPages = Math.ceil(currentFilteredRows.length / pageSize); if (totalPages <= 1) return;
