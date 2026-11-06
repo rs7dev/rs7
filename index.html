@@ -416,6 +416,34 @@ tr.ctrl-highlight td:last-child {
 [data-theme="matrix"] { --ctrl-border: #4ade80; --ctrl-bg: #18291c; } /* Хвойная: светлый салатовый контур */
 [data-theme="aero"] { --ctrl-border: #0891b2; --ctrl-bg: #daf0f2; }   /* Аэро: насыщенный бирюзовый контур */
 
+/* Стили для аккуратного всплывающего уведомления */
+.toast-notification {
+    position: fixed;
+    bottom: 25px;
+    left: 25px;
+    background-color: var(--bg-container);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+/* Класс, который делает уведомление видимым */
+.toast-notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
 
     </style>
 </head>
@@ -778,7 +806,7 @@ document.getElementById('dataTable').addEventListener('click', function(e) {
             var originalBg = tr.style.backgroundColor;
             tr.style.transition = 'background-color 0.15s ease';
             tr.style.backgroundColor = 'var(--bg-filebox)';
-            
+            showToast("Строка успешно скопирована");
             setTimeout(function() {
                 tr.style.backgroundColor = originalBg;
             }, 300);
@@ -790,6 +818,28 @@ document.getElementById('dataTable').addEventListener('click', function(e) {
         document.body.removeChild(textarea);
     }
 });
+
+
+// Функция вызова мягкого точечного уведомления
+function showToast(message) {
+    // Удаляем старое уведомление, если оно еще не исчезло
+    var oldToast = document.querySelector('.toast-notification');
+    if (oldToast) oldToast.remove();
+
+    var toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.innerHTML = '<span style="color:var(--accent-color);">✓</span> ' + message;
+    document.body.appendChild(toast);
+
+    // Микро-таймаут для запуска плавной CSS-анимации появления
+    setTimeout(function() { toast.classList.add('show'); }, 10);
+
+    // Плавное скрытие и удаление через 2 секунды
+    setTimeout(function() {
+        toast.classList.remove('show');
+        setTimeout(function() { toast.remove(); }, 200);
+    }, 2000);
+}
 
 
 
