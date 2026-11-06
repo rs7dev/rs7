@@ -12,10 +12,10 @@
     --text-main: #334155;
     --text-title: #0f172a;
     --text-muted: #64748b;
-    --border-color: #e2e8f0;
+    --border-color: #cbd5e1;
     --bg-filebox: #f1f5f9;
     --border-filebox: #cbd5e1;
-    --bg-th: #f8fafc;
+    --bg-th: #e2e8f0;
     --bg-hover-tr: #f8fafc;
     --bg-copy-btn: #ffffff;
     --input-bg: #ffffff;
@@ -108,7 +108,7 @@
     --border-color: #1e3324;         /* Тонкие хвойные разделительные линии */
     --bg-filebox: #1c3119;           /* Плашка загрузки в цвет верхнего фона */
     --border-filebox: #3d5945;       /* Сдержанные зеленые границы элементов */
-    --bg-th: #142118;                /* Плотная глубокая шапка таблицы */
+    --bg-th: #1f3624;                /* Плотная глубокая шапка таблицы */
     --bg-hover-tr: #18291c;          /* Подсветка строки при наведении мыши */
     --bg-copy-btn: #142118;          /* Приглушенные подложки кнопок */
     --input-bg: #0f1811;             /* Графитовые поля ввода */
@@ -142,10 +142,10 @@
     --text-main: #1e293b;            /* Глубокий темно-серый текст таблицы для четкости */
     --text-title: #0f172a;           /* Темные контрастные заголовки */
     --text-muted: #577c82;           /* Приглушенный серо-бирюзовый цвет подписей */
-    --border-color: #badbe0;         /* Тонкие нежные мятные разделительные линии */
+    --border-color: #a4cbd1;         /* Тонкие нежные мятные разделительные линии */
     --bg-filebox: #d2eaee;           /* Фон кнопок загрузки в цвет верхнего фона */
-    --border-filebox: #8ec3cb;       /* Красивые бирюзовые границы элементов */
-    --bg-th: #daf0f2;                /* Светлая аккуратная шапка таблицы */
+    --border-filebox: #a4cbd1;       /* Красивые бирюзовые границы элементов */
+    --bg-th: #bfe3e7;                /* Светлая аккуратная шапка таблицы */
     --bg-hover-tr: #dcf2f5;          /* Мягкая подсветка строки при наведении */
     --bg-copy-btn: #daf0f2;          /* Подложки кнопок */
     --input-bg: #e6f4f6;             /* Светлые мятные поля ввода */
@@ -234,10 +234,12 @@
 
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 15px; }
         th { 
-    background-color: var(--bg-container) !important; /* Берет плотный фоновый цвет самого контейнера */
+    background-color: var(--bg-th) !important; 
     padding: 14px 16px; 
     font-weight: 600; 
     color: var(--text-muted); 
+    /* Добавляем круговую рамку для заголовков */
+    border: 1px solid var(--border-color); 
     border-bottom: 2px solid var(--border-color); 
     position: sticky; 
     top: 0; 
@@ -246,9 +248,15 @@
     text-transform: uppercase; 
     letter-spacing: 0.5px; 
 }
- 
-        td { padding: 12px 16px; border-bottom: 1px solid var(--border-color); position: relative; padding-right: 45px; line-height: 1.4; } tr:last-child td { border-bottom: none; }
-        tr:hover td { background-color: var(--bg-hover-tr); }
+td { 
+    padding: 12px 16px; 
+    /* Включаем круговую рамку для каждой ячейки данных */
+    border: 1px solid var(--border-color); 
+    position: relative; 
+    padding-right: 45px; 
+    line-height: 1.4; 
+}
+
         
         .copy-btn { 
     position: absolute; 
@@ -387,6 +395,26 @@ td:hover .copy-btn {
     border: 1px solid var(--border-color);
     opacity: 0.6;
 }
+
+
+/* Специальный класс для контрастного выделения периметра строки */
+tr.ctrl-highlight td {
+    border-top: 2px solid var(--ctrl-border) !important;
+    border-bottom: 2px solid var(--ctrl-border) !important;
+    background-color: var(--ctrl-bg) !important;
+}
+tr.ctrl-highlight td:first-child {
+    border-left: 2px solid var(--ctrl-border) !important;
+}
+tr.ctrl-highlight td:last-child {
+    border-right: 2px solid var(--ctrl-border) !important;
+}
+
+/* Настройка контрастных цветов для каждой из 4 тем оформления */
+:root { --ctrl-border: #0f172a; --ctrl-bg: #f1f5f9; }               /* Светлая: темный контур */
+[data-theme="dark"] { --ctrl-border: #38bdf8; --ctrl-bg: #1e293b; }   /* Ночная: светлый неоново-голубой контур */
+[data-theme="matrix"] { --ctrl-border: #4ade80; --ctrl-bg: #18291c; } /* Хвойная: светлый салатовый контур */
+[data-theme="aero"] { --ctrl-border: #0891b2; --ctrl-bg: #daf0f2; }   /* Аэро: насыщенный бирюзовый контур */
 
 
     </style>
@@ -676,6 +704,90 @@ document.getElementById('toggleFiltersBtn').addEventListener('click', function()
     } else {
         container.style.display = 'none'; // Скрываем сетку фильтров
         this.textContent = 'Подробнее 🔽';
+    }
+});
+
+// Переменная, которая следит, зажат ли Ctrl прямо сейчас
+var isCtrlPressed = false;
+
+window.addEventListener('keydown', function(e) { if (e.key === 'Control') isCtrlPressed = true; });
+window.addEventListener('keyup', function(e) { if (e.key === 'Control') { isCtrlPressed = false; removeAllCtrlHighlights(); } });
+
+// Навешиваем событие подсветки на всю таблицу
+// Навешиваем непрерывное живое отслеживание мыши без блокировки повторов
+document.getElementById('dataTable').addEventListener('mousemove', function(e) {
+    if (!isCtrlPressed) return;
+    var tr = e.target.closest('tr');
+    if (tr && tr.parentElement.tagName === 'TBODY') {
+        // Мгновенно убираем подсветку с других строк и принудительно обновляем текущую при каждом движении
+        removeAllCtrlHighlights();
+        tr.classList.add('ctrl-highlight');
+    }
+});
+
+
+document.getElementById('dataTable').addEventListener('mouseout', function(e) {
+    var tr = e.target.closest('tr');
+    if (tr) tr.classList.remove('ctrl-highlight');
+});
+
+function removeAllCtrlHighlights() {
+    document.querySelectorAll('#dataTable tbody tr').forEach(function(row) {
+        row.classList.remove('ctrl-highlight');
+    });
+}
+
+
+// Живое копирование всей строки по клику с зажатым Ctrl
+document.getElementById('dataTable').addEventListener('click', function(e) {
+    // Если Ctrl не зажат, обычный клик работает как обычно
+    if (!isCtrlPressed) return;
+    
+    var tr = e.target.closest('tr');
+    // Проверяем, что кликнули именно по строке с данными внутри тела таблицы
+    if (tr && tr.parentElement.tagName === 'TBODY') {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        var rowData = [];
+        // Собираем чистый текст из всех ячеек этой строки (пропуская кнопку копирования 📋)
+        var cells = tr.querySelectorAll('td');
+        cells.forEach(function(td) {
+            // Клонируем ячейку, чтобы удалить из текста кнопку копирования перед сборкой
+            var clone = td.cloneNode(true);
+            var btn = clone.querySelector('.copy-btn');
+            if (btn) clone.removeChild(btn);
+            
+            rowData.push(clone.textContent.trim());
+        });
+        
+        // Объединяем ячейки, разделяя их переносом строки (кареткой \n)
+        var textToCopy = rowData.join('\n');
+        
+        // Временное поле для заброса текста в буфер обмена
+        var textarea = document.createElement('textarea');
+        textarea.value = textToCopy;
+        textarea.style.position = 'fixed';
+        document.body.appendChild(textarea);
+        textarea.select();
+        
+        try {
+            document.execCommand('copy');
+            
+            // Красивый визуальный отклик: строка на секунду вспыхивает зеленым цветом
+            var originalBg = tr.style.backgroundColor;
+            tr.style.transition = 'background-color 0.15s ease';
+            tr.style.backgroundColor = 'var(--bg-filebox)';
+            
+            setTimeout(function() {
+                tr.style.backgroundColor = originalBg;
+            }, 300);
+            
+        } catch (err) {
+            console.error('Не удалось скопировать строку:', err);
+        }
+        
+        document.body.removeChild(textarea);
     }
 });
 
