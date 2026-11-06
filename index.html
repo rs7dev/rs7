@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск по полям CSV</title>
+    <style>
+        /* Базовые переменные для удобного переключения тем */
+        :root {
+    --bg-body: #f8fafc;
+    --bg-container: #ffffff;
+    --text-main: #334155;
+    --text-title: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --bg-filebox: #f1f5f9;
+    --border-filebox: #cbd5e1;
+    --bg-th: #f8fafc;
+    --bg-hover-tr: #f8fafc;
+    --bg-copy-btn: #ffffff;
+    --input-bg: #ffffff;
+    --input-disabled: #f8fafc;
+    --accent-color: #3b82f6;
+    --radius-main: 10px;
+}
+
+
+
+        /* Цвета для Ночного режима */
+        [data-theme="dark"], [data-theme="dark"] body {
+            --bg-body: #0b0f19;
+    --bg-container: #111827;
+    --text-main: #cbd5e1;
+    --text-title: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #1f2937;
+    --bg-filebox: #1f2937;
+    --border-filebox: #374151;
+    --bg-th: #1f2937;
+    --bg-hover-tr: #1f2937;
+    --bg-copy-btn: #1f2937;
+    --input-bg: #111827;
+    --input-disabled: #0b0f19;
+    --accent-color: #60a5fa;
+        }
+
+        [data-theme="dark"] .container {
+            background: #1e293b !important;
+            color: #f1f5f9 !important;
+        }
+        [data-theme="dark"] h2 {
+            color: #f8fafc !important;
+        }
+        [data-theme="dark"] input, [data-theme="dark"] select {
+            background-color: #0f172a !important;
+            color: #ffffff !important;
+            border-color: #475569 !important;
+        }
+        [data-theme="dark"] input::placeholder {
+            color: #94a3b8 !important;
+        }
+        [data-theme="dark"] th {
+            background-color: #334155 !important;
+            color: #f8fafc !important;
+            border: 1px solid #475569 !important;
+        }
+        [data-theme="dark"] td {
+            color: #e2e8f0 !important;
+            border: 1px solid #334155 !important;
+        }
+        [data-theme="dark"] tr:hover td {
+            background-color: #334155 !important;
+        }
+        [data-theme="dark"] .search-grid {
+            background-color: #0f172a !important;
+            border-color: #334155 !important;
+        }
+        [data-theme="dark"] .search-field label {
+            color: #cbd5e1 !important;
+        }
+        [data-theme="dark"] .file-box {
+            background-color: #0f172a !important;
+            border-color: #475569 !important;
+            color: #cbd5e1 !important;
+        }
+        [data-theme="dark"] .copy-btn, [data-theme="dark"] .pagination-btn {
+            background: #1e293b !important;
+            border-color: #475569 !important;
+            color: #ffffff !important;
+        }
+        [data-theme="dark"] .pagination-btn.active {
+            background: #3b82f6 !important;
+            border-color: #3b82f6 !important;
+        }
+        [data-theme="dark"] .counter {
+            color: #94a3b8 !important;
+        }
+
+        body {  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 15px; background-color: var(--bg-body); color: var(--text-main); transition: background-color 0.2s ease, color 0.2s ease; -webkit-font-smoothing: antialiased; }
+        .container { max-width: 100% !important; margin: 0; background: var(--bg-container); padding: 25px; border-radius: 12px; position: relative; box-sizing: border-box; border: 1px solid var(--border-color); } [data-theme="dark"] .container { border-color: var(--border-color); }
+        
+        .header-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 25px; flex-wrap: wrap; }
+        .theme-toggle-btn { position: static !important; padding: 10px 14px; font-size: 18px; background: var(--bg-copy-btn); border: 1px solid var(--border-filebox); border-radius: 8px; cursor: pointer; }
+        
+        h2 { margin: 0 !important; padding: 0 !important; white-space: nowrap; color: var(--text-title); }
+        
+        .file-box { border: 2px dashed var(--border-filebox); padding: 10px 20px !important; text-align: center; border-radius: 8px; background-color: var(--bg-filebox); margin-bottom: 0 !important; cursor: pointer; position: relative; flex: 1; max-width: 500px; }
+        .file-box input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+        
+        .search-bar-wrapper { display: flex; gap: 10px; margin-bottom: 20px; }
+        .global-search { flex: 1; padding: 12px 18px; border: 1px solid var(--border-filebox); border-radius: 8px; box-sizing: border-box; font-size: 15px; outline: none; background-color: var(--input-bg); color: var(--text-main); transition: border-color 0.15s ease; } .global-search:focus { border-color: var(--accent-color); }
+        .global-search:focus { box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
+        .global-search:disabled { background-color: var(--input-disabled); border-color: var(--border-filebox); cursor: not-allowed; }
+        
+        .clear-btn { padding: 0 20px; font-size: 15px; font-weight: 600; background-color: #ef4444; color: white; border: none; border-radius: 8px; cursor: pointer; transition: background-color 0.2s; white-space: nowrap; }
+        .clear-btn:hover { background-color: #dc2626; }
+        .clear-btn:disabled { background-color: var(--border-filebox); cursor: not-allowed; color: var(--text-muted); }
+
+        .search-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px; padding: 15px; background: var(--bg-filebox); border: 1px solid var(--border-color); border-radius: 8px; }
+        .search-field { display: flex; flex-direction: column; }
+        .search-field label { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .search-field input { padding: 10px; border: 1px solid var(--border-filebox); border-radius: 6px; font-size: 14px; outline: none; background-color: var(--input-bg); color: var(--text-main); }
+        
+        .table-wrapper { 
+    overflow-x: auto; 
+    border: 1px solid var(--border-color); 
+    border-radius: 8px; 
+    /* Автоматический расчет: 100% высоты экрана минус ~280px на шапку и пагинатор */
+    max-height: calc(100vh - 440px) !important; 
+    min-height: 200px; /* Чтобы таблица не сжималась в ноль, если строк мало */
+}
+
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 15px; }
+        th { 
+    background-color: var(--bg-container) !important; /* Берет плотный фоновый цвет самого контейнера */
+    padding: 14px 16px; 
+    font-weight: 600; 
+    color: var(--text-muted); 
+    border-bottom: 2px solid var(--border-color); 
+    position: sticky; 
+    top: 0; 
+    z-index: 5; 
+    font-size: 13px; 
+    text-transform: uppercase; 
+    letter-spacing: 0.5px; 
+}
+ 
+        td { padding: 12px 16px; border-bottom: 1px solid var(--border-color); position: relative; padding-right: 45px; line-height: 1.4; } tr:last-child td { border-bottom: none; }
+        tr:hover td { background-color: var(--bg-hover-tr); }
+        
+        .copy-btn { 
+    position: absolute; 
+    right: 8px; 
+    top: 50%; 
+    transform: translateY(-50%); 
+    opacity: 0; 
+    background: var(--bg-copy-btn); 
+    border: 1px solid var(--border-filebox); 
+    border-radius: 6px; 
+    cursor: pointer; 
+    padding: 6px 8px; 
+    font-size: 12px; 
+    color: var(--text-main); 
+    transition: opacity 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+/* Показываем кнопку только при наведении на ячейку */
+td:hover .copy-btn { 
+    opacity: 1; 
+}
+
+/* Стиль при наведении на саму иконку */
+.copy-btn:hover { 
+    border-color: var(--accent-color); 
+    background-color: var(--bg-filebox); 
+}
+
+/* Цвет кнопки при успешном копировании (зеленая галочка) */
+.copy-btn.copied { 
+    background-color: #dcfce7 !important; 
+    border-color: #22c55e !important; 
+    color: #16a34a !important; 
+}
+
+        
+        /* Блок управления данными (счётчик и выбор строк) */
+        .controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .counter { font-size: 14px; color: var(--text-muted); font-weight: bold; }
+        .page-size-selector { font-size: 14px; color: var(--text-muted); }
+        .page-size-selector select { padding: 5px; border-radius: 6px; border: 1px solid var(--border-filebox); outline: none; background: var(--input-bg); color: var(--text-main); margin-left: 5px; cursor: pointer; }
+
+        /* Элементы пагинатора */
+        .pagination-container { 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    gap: 6px; 
+    margin-top: auto; /* Выталкивает пагинатор в самый низ контейнера */
+    padding-top: 20px;
+    flex-wrap: wrap; 
+}
+
+
+        .pagination-btn { 
+    padding: 8px 14px; 
+    font-size: 13px; 
+    font-weight: 600; 
+    background: var(--bg-copy-btn); 
+    border: 1px solid var(--border-filebox); 
+    border-radius: 6px; 
+    cursor: pointer; 
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease; 
+    color: var(--text-main); 
+}
+
+/* Эффект при наведении на доступную кнопку */
+.pagination-btn:hover:not(:disabled) { 
+    border-color: var(--accent-color); 
+    color: var(--accent-color); 
+    background-color: var(--bg-filebox); 
+}
+
+/* Стиль для кнопки текущей (активной) страницы */
+.pagination-btn.active { 
+    background-color: var(--accent-color) !important; 
+    border-color: var(--accent-color) !important; 
+    color: white !important; 
+}
+
+/* Стиль для заблокированных кнопок (например, "Назад" на первой странице) */
+.pagination-btn:disabled { 
+    opacity: 0.4; 
+    cursor: not-allowed; 
+    border-color: var(--border-color); 
+}
+
+        .pagination-dots { padding: 0 5px; color: var(--text-muted); font-weight: bold; }
+
+.vk-cloud-btn {
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    background-color: #0077ff; /* Фирменный синий цвет VK */
+    color: white !important;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+    white-space: nowrap;
+}
+.vk-cloud-btn:hover {
+    background-color: #0066dd;
+}
+.vk-cloud-btn:active {
+    transform: scale(0.98);
+}
+[data-theme="dark"] .vk-cloud-btn {
+    background-color: #2563eb;
+}
+[data-theme="dark"] .vk-cloud-btn:hover {
+    background-color: #1d4ed8;
+}
+
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-row">
+        <h2>поиск по данным (CSV)</h2>
+        <div class="file-box">
+            <span id="fileStatus">Нажмите сюда, чтобы <strong>выбрать файл .csv</strong></span>
+            <input type="file" id="csvFile" accept=".csv" />
+        </div>
+         <!-- Новая кнопка Облака VK встанет справа от старой -->
+         <button id="vkCloudBtn" class="vk-cloud-btn" title="VK">☁️ VK</button>
+
+        <button id="themeToggleBtn" class="theme-toggle-btn" title="Переключить тему">🌙</button>
+    </div>
+
+    <div class="search-bar-wrapper">
+        <input type="text" id="globalSearchInput" class="global-search" placeholder="Общий поиск..." disabled />
+        <button id="clearFiltersBtn" class="clear-btn" disabled>Очистить всё</button>
+    </div>
+
+    <div id="searchContainer" class="search-grid" style="display: none;"></div>
+    
+    <!-- Строка управления (счетчик + выбор кол-ва строк) -->
+    <div class="controls-row">
+        <div id="counter" class="counter"></div>
+        <div id="pageSizeWrapper" class="page-size-selector" style="display: none;">
+            Показывать строк:
+            <select id="pageSizeSelect">
+                <option value="20">20</option>
+                <option value="50" selected>50</option>
+                <option value="100">100</option>
+                <option value="500">500</option>
+                <option value="all">Все</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table id="dataTable"> <thead id="tableHead"></thead> <tbody id="tableBody"></tbody> </table> </div>
+
+    <!-- Контейнер для кнопок страниц переключения -->
+    <div id="pagination" class="pagination-container"></div>
+    </div>
+
+<script>
+var globalRows = [], currentFilteredRows = [], tableHeaders = [], currentPage = 1, pageSize = 50;
+var themeToggleBtn = document.getElementById('themeToggleBtn');
+themeToggleBtn.addEventListener('click', function() {
+    var cur = document.documentElement.getAttribute('data-theme');
+    if (cur === 'dark') { document.documentElement.removeAttribute('data-theme'); themeToggleBtn.textContent = '🌙'; }
+    else { document.documentElement.setAttribute('data-theme', 'dark'); themeToggleBtn.textContent = '☀️'; }
+});
+document.getElementById('csvFile').addEventListener('change', function(e) {
+    var file = e.target.files[0]; if (!file) return;
+    document.getElementById('fileStatus').innerHTML = "Выбран файл: <strong>" + file.name + "</strong>";
+    var reader = new FileReader();
+    reader.onload = function(evt) {
+        var text = evt.target.result;
+        if (text.includes('')) {
+            var ur = new FileReader(); ur.onload = function(eUtf) { processCSVData(eUtf.target.result); }; ur.readAsText(file, 'utf-8');
+        } else { processCSVData(text); }
+    };
+    reader.readAsText(file, 'windows-1251');
+});
+function processCSVData(text) {
+    var lines = text.split(/\r?\n/).filter(function(l) { return l.trim() !== ""; }); if (lines.length === 0) return;
+    var firstLine = lines.shift(), delimiter = ';';
+    if (firstLine.includes('\t')) { delimiter = '\t'; } else if (!firstLine.includes(';') && firstLine.includes(',')) { delimiter = ','; }
+    function parseCSVLine(line, delim) {
+        var res = [], cur = '', q = false;
+        for (var i = 0; i < line.length; i++) {
+            var c = line.charAt(i);
+            if (c === '"') { q = !q; } else if (c === delim && !q) { res.push(cur.trim().replace(/^"|"$/g, '')); cur = ''; } else { cur += c; }
+        }
+        res.push(cur.trim().replace(/^"|"$/g, '')); return res;
+    }
+    tableHeaders = parseCSVLine(firstLine, delimiter); globalRows = [];
+    lines.forEach(function(l) {
+        var cells = parseCSVLine(l, delimiter); if (cells.length > 0 && cells.some(function(c) { return c !== ""; })) { globalRows.push(cells); }
+    });
+    document.getElementById('globalSearchInput').disabled = false;
+    document.getElementById('clearFiltersBtn').disabled = false;
+    document.getElementById('globalSearchInput').value = "";
+    document.getElementById('pageSizeWrapper').style.display = 'block';
+    currentPage = 1; currentFilteredRows = globalRows.concat();
+    generateSearchFields(); renderTableStructure(); renderTableData();
+}
+function generateSearchFields() {
+    var container = document.getElementById('searchContainer'); container.innerHTML = ''; container.style.display = 'grid';
+    tableHeaders.forEach(function(h, idx) {
+        var d = document.createElement('div'); d.className = 'search-field';
+        var l = document.createElement('label'); l.textContent = h || ("Колонка " + (idx + 1));
+        var input = document.createElement('input'); input.type = 'text'; input.placeholder = 'Фильтр...'; input.setAttribute('data-index', idx);
+        input.addEventListener('input', runCombinedSearch);
+        d.appendChild(l); d.appendChild(input); container.appendChild(d);
+    });
+}
+document.getElementById('globalSearchInput').addEventListener('input', runCombinedSearch);
+document.getElementById('clearFiltersBtn').addEventListener('click', function() {
+    document.getElementById('globalSearchInput').value = "";
+    document.querySelectorAll('#searchContainer input').forEach(function(i) { i.value = ""; });
+    currentPage = 1; currentFilteredRows = globalRows.concat(); renderTableData();
+});
+document.getElementById('pageSizeSelect').addEventListener('change', function() {
+    pageSize = this.value === 'all' ? globalRows.length : parseInt(this.value); currentPage = 1; renderTableData();
+});
+function runCombinedSearch() {
+    var gQ = document.getElementById('globalSearchInput').value.toLowerCase().trim();
+    var activeFilters = [];
+    document.querySelectorAll('#searchContainer input').forEach(function(i) {
+        var val = i.value.toLowerCase().trim(); if (val) activeFilters.push({ idx: parseInt(i.getAttribute('data-index')), q: val });
+    });
+    currentFilteredRows = globalRows.filter(function(cells) {
+        var mG = !gQ ? true : cells.some(function(c) { return String(c || '').toLowerCase().includes(gQ); });
+        var mC = activeFilters.every(function(f) {
+            var cV = ''; cells.forEach(function(c, i) { if (i === f.idx) cV = String(c).toLowerCase(); }); return cV.includes(f.q);
+        });
+        return mG && mC;
+    });
+    currentPage = 1; renderTableData();
+}
+function renderTableStructure() {
+    var th = document.getElementById('tableHead'); th.innerHTML = ''; if (tableHeaders.length === 0) return;
+    var row = document.createElement('tr');
+    tableHeaders.forEach(function(h) { var t = document.createElement('th'); t.textContent = h || "Колонка"; row.appendChild(t); });
+    th.appendChild(row);
+}
+function renderTableData() {
+    var tb = document.getElementById('tableBody'); tb.innerHTML = '';
+    document.getElementById('counter').textContent = "Найдено строк: " + currentFilteredRows.length;
+    var pRows = currentFilteredRows.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+    pRows.forEach(function(cells) {
+        var tr = document.createElement('tr');
+        tableHeaders.forEach(function(_, idx) {
+            var td = document.createElement('td'), txt = '';
+            cells.forEach(function(c, i) { if (i === idx) txt = String(c); }); td.textContent = txt;
+            if (txt.trim() !== "") {
+                var btn = document.createElement('button'); btn.className = 'copy-btn'; btn.textContent = '📋';
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation(); var ta = document.createElement('textarea'); ta.value = txt; ta.style.position = 'fixed';
+                    document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); btn.textContent = "✓"; btn.classList.add('copied'); setTimeout(function() { btn.textContent = "📋"; btn.classList.remove('copied'); }, 1000); } catch(err){} document.body.removeChild(ta);
+                });
+                td.appendChild(btn);
+            }
+            tr.appendChild(td);
+        });
+        tb.appendChild(tr);
+    });
+    setupPagination();
+}
+function setupPagination() {
+    var pc = document.getElementById('pagination'); pc.innerHTML = '';
+    var totalPages = Math.ceil(currentFilteredRows.length / pageSize); if (totalPages <= 1) return;
+    var prev = document.createElement('button'); prev.className = 'pagination-btn'; prev.textContent = '« Назад'; prev.disabled = currentPage === 1;
+    prev.addEventListener('click', function() { currentPage--; renderTableData(); }); pc.appendChild(prev);
+    var start = Math.max(1, currentPage - 2), end = Math.min(totalPages, start + 4);
+    if (end - start < 4) start = Math.max(1, end - 4);
+    if (start > 1) {
+        createPageBtn(1, pc); if (start > 2) { var d = document.createElement('span'); d.className = 'pagination-dots'; d.textContent = '...'; pc.appendChild(d); }
+    }
+    for (var p = start; p <= end; p++) createPageBtn(p, pc);
+    if (end < totalPages) {
+        if (end < totalPages - 1) { var d = document.createElement('span'); d.className = 'pagination-dots'; d.textContent = '...'; pc.appendChild(d); }
+        createPageBtn(totalPages, pc);
+    }
+    var next = document.createElement('button'); next.className = 'pagination-btn'; next.textContent = 'Вперед »'; next.disabled = currentPage === totalPages;
+    next.addEventListener('click', function() { currentPage++; renderTableData(); }); pc.appendChild(next);
+}
+function createPageBtn(p, container) {
+    var b = document.createElement('button'); b.className = 'pagination-btn'; b.textContent = p; if (p === currentPage) b.classList.add('active');
+    b.addEventListener('click', function() { currentPage = p; renderTableData(); document.querySelector('.table-wrapper').scrollTop = 0; }); container.appendChild(b);
+}
+
+document.getElementById('vkCloudBtn').addEventListener('click', function() {
+    var vkFileUrl = "https://mail.ru"; 
+
+    if (vkFileUrl.includes('...')) {
+        var userLink = prompt("Пожалуйста, введите прямую ссылку на ваш CSV-файл из Облака VK:");
+        if (!userLink) return;
+        vkFileUrl = userLink;
+    }
+
+    document.getElementById('fileStatus').innerHTML = "Загрузка из Облака VK...";
+
+    fetch(vkFileUrl)
+        .then(function(response) {
+            if (!response.ok) throw new Error("Не удалось загрузить файл из облака");
+            return response.arrayBuffer();
+        })
+        .then(function(buffer) {
+            var decoder = new TextDecoder('windows-1251');
+            var text = decoder.decode(buffer);
+            if (text.includes('')) {
+                var utfDecoder = new TextDecoder('utf-8');
+                text = utfDecoder.decode(buffer);
+            }
+            processCSVData(text);
+            document.getElementById('fileStatus').innerHTML = "Файл успешно загружен из <strong>Облака VK</strong>";
+        })
+        .catch(function(error) {
+            console.error(error);
+            alert("Ошибка загрузки: " + error.message + "\n\nОбратите внимание: если вы запускаете HTML-файл просто с рабочего стола, браузер заблокирует загрузку из интернета из-за политики безопасности CORS. Страницу нужно разместить на хостинге (например, GitHub Pages).");
+            document.getElementById('fileStatus').innerHTML = "<span style='color:#ef4444;'>Ошибка загрузки из облака</span>";
+        });
+});
+
+
+</script>
+
+</body>
+</html>
