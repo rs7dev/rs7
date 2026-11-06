@@ -364,6 +364,31 @@ td:hover .copy-btn {
 }
 
 
+.toggle-filters-btn {
+    padding: 0 18px;
+    font-size: 14px;
+    font-weight: 600;
+    background-color: var(--bg-filebox);
+    color: var(--text-main);
+    border: 1px solid var(--border-filebox);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+.toggle-filters-btn:hover:not(:disabled) {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+.toggle-filters-btn:disabled {
+    background-color: var(--input-disabled);
+    cursor: not-allowed;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    opacity: 0.6;
+}
+
+
     </style>
 </head>
 <body>
@@ -382,9 +407,12 @@ td:hover .copy-btn {
     </div>
 
     <div class="search-bar-wrapper">
-        <input type="text" id="globalSearchInput" class="global-search" placeholder="Общий поиск..." disabled />
-        <button id="clearFiltersBtn" class="clear-btn" disabled>Очистить всё</button>
-    </div>
+    <input type="text" id="globalSearchInput" class="global-search" placeholder="Общий поиск..." disabled />
+        <!-- Новая кнопка раскрытия подробных фильтров -->
+    <button id="toggleFiltersBtn" class="toggle-filters-btn" title="расширенные фильтры" disabled>Подробнее 🔽</button>
+    <button id="clearFiltersBtn" class="clear-btn" disabled>очистить</button>
+</div>
+
 
     <div id="searchContainer" class="search-grid" style="display: none;"></div>
     
@@ -394,8 +422,8 @@ td:hover .copy-btn {
         <div id="pageSizeWrapper" class="page-size-selector" style="display: none;">
             Показывать строк:
             <select id="pageSizeSelect">
-                <option value="20">20</option>
-                <option value="50" selected>50</option>
+                <option value="20" selected>20</option>
+                <option value="50" >50</option>
                 <option value="100">100</option>
                 <option value="500">500</option>
                 <option value="all">Все</option>
@@ -473,15 +501,18 @@ function processCSVData(text) {
     lines.forEach(function(l) {
         var cells = parseCSVLine(l, delimiter); if (cells.length > 0 && cells.some(function(c) { return c !== ""; })) { globalRows.push(cells); }
     });
+
     document.getElementById('globalSearchInput').disabled = false;
     document.getElementById('clearFiltersBtn').disabled = false;
+    document.getElementById('toggleFiltersBtn').disabled = false; // Активируем кнопку "Подробнее"
+
     document.getElementById('globalSearchInput').value = "";
     document.getElementById('pageSizeWrapper').style.display = 'block';
     currentPage = 1; currentFilteredRows = globalRows.concat();
     generateSearchFields(); renderTableStructure(); renderTableData();
 }
 function generateSearchFields() {
-    var container = document.getElementById('searchContainer'); container.innerHTML = ''; container.style.display = 'grid';
+    var container = document.getElementById('searchContainer'); container.innerHTML = ''; container.style.display = 'none';
     tableHeaders.forEach(function(h, idx) {
         var d = document.createElement('div'); d.className = 'search-field';
         var l = document.createElement('label'); l.textContent = h || ("Колонка " + (idx + 1));
@@ -634,6 +665,20 @@ document.getElementById('vkCloudBtn').addEventListener('click', function() {
             document.getElementById('fileStatus').innerHTML = "<span style='color:#ef4444;'>Ошибка загрузки из облака</span>";
         });
 });
+
+// Логика кнопки "Подробнее" для скрытия и показа фильтров по колонкам
+document.getElementById('toggleFiltersBtn').addEventListener('click', function() {
+    var container = document.getElementById('searchContainer');
+    
+    if (container.style.display === 'none' || !container.style.display) {
+        container.style.display = 'grid'; // Показываем сетку фильтров
+        this.textContent = 'Подробнее 🔼';
+    } else {
+        container.style.display = 'none'; // Скрываем сетку фильтров
+        this.textContent = 'Подробнее 🔽';
+    }
+});
+
 
 
 </script>
