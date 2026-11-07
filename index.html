@@ -647,6 +647,71 @@
 [data-theme="ocean"] table tr:nth-child(even) td {
     background-color: #EBF1F5 !important; 
 }
+/* ==========================================================================
+   ЗЕБРА-ПОДСВЕТКА СТРОК ДЛЯ ОРИГИНАЛЬНЫХ СТАРЫХ ТЕМ
+   ========================================================================== */
+
+/* ☀️ Дефолтная светлая тема (когда у тега html нет атрибута data-theme) */
+html:not([data-theme]) table tr:nth-child(even) td,
+:root:not([data-theme]) table tr:nth-child(even) td {
+    background-color: #f1f5f9 !important; /* Мягкий пастельно-серый оттенок */
+}
+
+/* 🌙 Старая Ночная тема — чередуем тёмный фон со слегка осветлённым графитовым */
+[data-theme="dark"] table tr:nth-child(even) td {
+    background-color: #162235 !important; 
+}
+
+/* 🌲 Старая Хвойная тема (Матрица) — добавляем блёклую лесную полоску */
+[data-theme="matrix"] table tr:nth-child(even) td {
+    background-color: #132016 !important; 
+}
+
+/* 🧊 Старая тема Аэро — чередуем с нежнейшим мятно-воздушным тоном */
+[data-theme="aero"] table tr:nth-child(even) td {
+    background-color: #daf0f2 !important; 
+}
+
+/* ==========================================================================
+   ОБНОВЛЕННОЕ ЯРКОЕ CTRL-ВЫДЕЛЕНИЕ ДЛЯ ЧАЯ, САВАННЫ И ХВОИ (+ ОСТАЛЬНЫЕ)
+   ========================================================================== */
+
+/* 🏠 Тема: Уютный дом (Тёмная) — золотое неоновое свечение рамки */
+[data-theme="cozy-home"] { 
+    --ctrl-border: #C49C4C; 
+    --ctrl-bg: #1C3647; 
+}
+
+/* ☕ Тема: Чай с лимоном — сочный медово-янтарный контур и мягкий фон */
+[data-theme="lemon-tea"] { 
+    --ctrl-border: #B8860B !important; 
+    --ctrl-bg: #FDF1CE !important; 
+}
+
+/* ⛰️ Тема: Горная саванна — выразительный кирпично-глиняный контур и теплый фон */
+[data-theme="savanna"] { 
+    --ctrl-border: #C16A3D !important; 
+    --ctrl-bg: #FDF0E3 !important; 
+}
+
+/* 🌿 Тема: Шалфей и хвоя — насыщенный травянисто-зеленый контур и свежий фон */
+[data-theme="sage"] { 
+    --ctrl-border: #557833 !important; 
+    --ctrl-bg: #EDF3E6 !important; 
+}
+
+/* ❄️ Тема: Заснеженный лес — чистый льдисто-бирюзовый контур */
+[data-theme="snow-forest"] { 
+    --ctrl-border: #227B91; 
+    --ctrl-bg: #DEE6EB; 
+}
+
+/* 🌊 Тема: Глубокий океан — яркий синий контур волны */
+[data-theme="ocean"] { 
+    --ctrl-border: #04709E; 
+    --ctrl-bg: #D6E2EB; 
+}
+
 
 
 </style>
