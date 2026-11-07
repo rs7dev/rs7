@@ -539,80 +539,49 @@
         .column-checkbox-label input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent-color); }
 
 /* ==========================================================================
-   КОЛОР ИСПРАВЛЕНИЕ: ЯРКИЕ И ВЫРАЗИТЕЛЬНЫЕ ЦВЕТА ТЕМ ДЛЯ НАДПИСЕЙ
+   ОБНОВЛЕННОЕ КОЛОР ИСПРАВЛЕНИЕ ДЛЯ КНОПКИ СТОЛБЦОВ И СЧЕТЧИКОВ
    ========================================================================== */
 
-/* ☕ Тема: Чай с лимоном — сочный медово-янтарный цвет */
+/* ☕ Тема: Чай с лимоном */
 [data-theme="lemon-tea"] .counter,
-[data-theme="lemon-tea"] .page-size-selector {
-    color: #B8860B !important; 
-    font-weight: 700;
-}
-[data-theme="lemon-tea"] .page-size-selector select {
-    border-color: #B8860B !important;
-    background-color: #FFFFFF !important;
-    color: #B8860B !important;
+[data-theme="lemon-tea"] .page-size-selector,
+[data-theme="lemon-tea"] #toggleColumnsBtn {
+    color: #5A333D !important;
+    border-color: #837306 !important;
 }
 
-/* ⛰️ Тема: Горная саванна — выразительный кирпично-глиняный цвет */
+/* ⛰️ Тема: Горная саванна */
 [data-theme="savanna"] .counter,
-[data-theme="savanna"] .page-size-selector {
-    color: #C16A3D !important; 
-    font-weight: 700;
-}
-[data-theme="savanna"] .page-size-selector select {
-    border-color: #C16A3D !important;
-    background-color: #FFFFFF !important;
-    color: #C16A3D !important;
+[data-theme="savanna"] .page-size-selector,
+[data-theme="savanna"] #toggleColumnsBtn {
+    color: #4B4230 !important;
+    border-color: #A47A58 !important;
 }
 
-/* 🌿 Тема: Шалфей и хвоя — насыщенный травянисто-зеленый цвет */
+/* 🌿 Тема: Шалфей и хвоя */
 [data-theme="sage"] .counter,
-[data-theme="sage"] .page-size-selector {
-    color: #557833 !important; 
-    font-weight: 700;
-}
-[data-theme="sage"] .page-size-selector select {
-    border-color: #557833 !important;
-    background-color: #FFFFFF !important;
-    color: #557833 !important;
-}
-[data-theme="sage"] td span,
-[data-theme="sage"] td span[style] {
-    color: #557833 !important; 
+[data-theme="sage"] .page-size-selector,
+[data-theme="sage"] #toggleColumnsBtn {
+    color: #2D3C1C !important;
+    border-color: #848274 !important;
 }
 
-/* ❄️ Тема: Заснеженный лес — чистый льдисто-бирюзовый цвет */
+/* ❄️ Тема: Заснеженный лес */
 [data-theme="snow-forest"] .counter,
-[data-theme="snow-forest"] .page-size-selector {
-    color: #227B91 !important; 
-    font-weight: 700;
-}
-[data-theme="snow-forest"] .page-size-selector select {
-    border-color: #227B91 !important;
-    background-color: #FFFFFF !important;
+[data-theme="snow-forest"] .page-size-selector,
+[data-theme="snow-forest"] #toggleColumnsBtn {
     color: #227B91 !important;
-}
-[data-theme="snow-forest"] td span,
-[data-theme="snow-forest"] td span[style] {
-    color: #358EA1 !important; 
+    border-color: #227B91 !important;
 }
 
-/* 🌊 Тема: Глубокий океан — яркий насыщенный синий цвет волны */
+/* 🌊 Тема: Глубокий океан */
 [data-theme="ocean"] .counter,
-[data-theme="ocean"] .page-size-selector {
-    color: #04709E !important; 
-    font-weight: 700;
-}
-[data-theme="ocean"] .page-size-selector select {
-    border-color: #04709E !important;
-    background-color: #FFFFFF !important;
+[data-theme="ocean"] .page-size-selector,
+[data-theme="ocean"] #toggleColumnsBtn {
     color: #04709E !important;
+    border-color: #04709E !important;
 }
-[data-theme="ocean"] td span,
-[data-theme="ocean"] td span[style] {
-    color: #04709E !important; 
-}
+
 
 /* ==========================================================================
    СТИЛЬНАЯ ЗЕБРА-ПОДСВЕТКА СТРОК ДЛЯ ПОВЫШЕННОЙ ЧИТАЕМОСТИ
@@ -714,6 +683,57 @@ html:not([data-theme]) table tr:nth-child(even) td,
 
 
 
+/* Красивая адаптивная тень для темных режимов, чтобы оверлей не сливался */
+[data-theme="dark"] #columnChooserPanel,
+[data-theme="cozy-home"] #columnChooserPanel,
+[data-theme="matrix"] #columnChooserPanel {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ==========================================================================
+   ЖЕСТКАЯ ФИКСАЦИЯ ОЧЕРЕДНОСТИ: ШЕСТЕРЕНКА ВСЕГДА ВЫШЕ ПАНЕЛИ И ТАБЛИЦЫ
+   ========================================================================== */
+/* ==========================================================================
+   ПРАВИЛЬНОЕ ПОВЕДЕНИЕ И ФИКСАЦИЯ ПАНЕЛИ ЧЕКБОКСОВ СТРОГО ПОД ШЕСТЕРЕНКОЙ
+   ========================================================================== */
+
+/* Наводим порядок в главном контейнере страницы, фиксируя очередность */
+/* ==========================================================================
+   ИСПРАВЛЕННАЯ ФИКСАЦИЯ ОЧЕРЕДНОСТИ БЕЗ СЛОМА ПАГИНАТОРА
+   ========================================================================== */
+
+/* ==========================================================================
+   ПРАВИЛЬНОЕ ПОВЕДЕНИЕ И ФИКСАЦИЯ ПАНЕЛИ ЧЕКБОКСОВ СТРОГО ПОД ШЕСТЕРЕНКОЙ
+   ========================================================================== */
+
+/* Наводим порядок в главном контейнере страницы, фиксируя очередность */
+body > .container {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* 1. Блок шестеренки и счетчика ВСЕГДА сверху */
+.controls-row {
+    order: 1 !important;
+    width: 100% !important;
+    margin-bottom: 15px !important;
+}
+
+/* 2. Панель чекбоксов ВСЕГДА строго под шестеренкой, но слушается JS (display: none) */
+#columnChooserPanel {
+    order: 2 !important;
+    width: 100% !important;
+    margin-top: 0 !important;
+    margin-bottom: 15px !important;
+    /* Убираем жесткий display: flex, чтобы панель могла скрываться */
+}
+
+/* 3. Сама таблица данных ВСЕГДА в самом низу */
+.table-wrapper {
+    order: 3 !important;
+    width: 100% !important;
+}
+
 </style>
 
 
@@ -726,14 +746,15 @@ html:not([data-theme]) table tr:nth-child(even) td,
     
     <div style="display: flex; align-items: center; gap: 10px;">
     <h2></h2>
-    <!-- Поле ввода лимита столбцов -->
-    <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-muted); background: var(--bg-filebox); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-filebox);">
-        Лимит: <input type="number" id="columnLimitInput" value="5" min="1" style="width: 45px; padding: 2px 4px; border: 1px solid var(--border-filebox); border-radius: 4px; background: var(--input-bg); color: var(--text-main); font-weight: bold; text-align: center;" />
-    </div>
+    <!-- Поле ввода лимита столбцов (с поддержкой динамической смены цвета) -->
+<div id="limitBox" style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-muted); background: var(--bg-filebox); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-filebox); transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;">
+    Лимит: <input type="number" id="columnLimitInput" value="5" min="1" style="width: 45px; padding: 2px 4px; border: 1px solid var(--border-filebox); border-radius: 4px; background: var(--input-bg); color: var(--text-main); font-weight: bold; text-align: center;" />
+</div>
+
     </div>
 
     <div class="file-box">
-        <span id="fileStatus">Нажмите сюда, чтобы <strong>выбрать файл .csv</strong></span>
+        <span id="fileStatus"> <strong>открыть файл .csv</strong></span>
         <input type="file" id="csvFile" accept=".csv" />
     </div>
     
@@ -764,52 +785,96 @@ html:not([data-theme]) table tr:nth-child(even) td,
 </div>
 
 
-    <div class="search-bar-wrapper">
-    <input type="text" id="globalSearchInput" class="global-search" placeholder="Общий поиск... % - разделитель" disabled />
-        <!-- Новая кнопка раскрытия подробных фильтров -->
-    <button id="toggleFiltersBtn" class="toggle-filters-btn" title="расширенные фильтры" enabled>Фильтры 🔽</button>
-    <button id="clearFiltersBtn" class="clear-btn" enabled>Очистить</button>
+    <!-- Поисковый узел: Кнопки фильтрации и сброса теперь слева от ввода -->
+<div class="search-bar-wrapper">
+    <button id="toggleFiltersBtn" class="toggle-filters-btn" disabled title="Показать/скрыть фильтры колонок">🔍</button>
+    <input type="text" id="globalSearchInput" class="global-search" placeholder="Глобальный поиск (знак % для нескольких слов)..." disabled>
+    <button id="clearFiltersBtn" class="toggle-filters-btn" disabled title="Очистить все фильтры и поиск">❌</button>
 </div>
+
 
 
     <div id="searchContainer" class="search-grid" style="display: none;"></div>
     
 <!-- Скрытая панель выбора столбцов (появляется если превышен лимит) -->
-<div id="columnChooserPanel" style="display: none; padding: 20px; background: var(--bg-filebox); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 15px;">
-    <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 15px; color: var(--text-title);">Файл содержит много столбцов. Отметьте необходимые для отображения:</h3>
+<div id="columnChooserPanel" style="display: none; padding: 10px; background: var(--bg-filebox); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 15px;">
+    <!-- Лишний текст заголовка h3 удален -->
     <div id="checkboxesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 15px;"></div>
     <button id="applyColumnsBtn" class="vk-cloud-btn" style="padding: 8px 20px;">Применить выбор и загрузить таблицу</button>
 </div>
 
 
-    <!-- Строка управления (счетчик + выбор кол-ва строк) -->
-    <div class="controls-row">
-        <div id="counter" class="counter"></div>
-        <div id="pageSizeWrapper" class="page-size-selector" style="display: none;">
-            Показывать строк:
-            <select id="pageSizeSelect">
-                <option value="20" selected>20</option>
-                <option value="50" >50</option>
-                <option value="100">100</option>
-                <option value="500">500</option>
-                <option value="all">Все</option>
-            </select>
-        </div>
+
+    <!-- Блок управления таблицей: Шестерёнка теперь логично стоит перед счётчиком строк -->
+<!-- Блок управления таблицей: Шестерёнка зафиксирована сверху -->
+<!-- 1. Строка управления данными (Кнопка шестерёнки зафиксирована в самом верху этого блока) -->
+<!-- Блок управления таблицей: Шестерёнка, счётчик и пагинатор в ОДНУ линию -->
+<!-- Блок управления таблицей: Пагинатор зафиксирован строго по центру строки -->
+<div class="controls-row" style="display: flex; justify-content: space-between; align-items: center; position: relative; min-height: 36px; gap: 15px;">
+    
+    <!-- Левая сторона: Шестерёнка + Счетчик строк -->
+    <div style="display: flex; align-items: center; gap: 15px; z-index: 2;">
+        <button id="toggleColumnsBtn" class="toggle-filters-btn" disabled title="Выбор столбцов и колонок" style="padding: 6px 10px; font-size: 14px;">⚙️</button>
+        <div id="counter" class="counter" style="white-space: nowrap;"></div>
     </div>
+    
+    <!-- Центр строки: Пагинатор идеально отцентрирован относительно всего экрана -->
+    <div id="pagination" class="pagination-container" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: 6px; padding-top: 0; margin-top: 0; align-items: center; z-index: 1;"></div>
+    
+    <!-- Правая сторона: Выбор количества строк -->
+    <div id="pageSizeWrapper" class="page-size-selector" style="display: none; white-space: nowrap; z-index: 2;">
+        Показывать строк:
+        <select id="pageSizeSelect">
+            <option value="20" selected>20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="500">500</option>
+            <option value="all">Все</option>
+        </select>
+    </div>
+</div>
+
+
+
+<!-- 2. Панель чекбоксов (Теперь она встает строго НИЖЕ шестерёнки, но ВЫШЕ самой таблицы) -->
+<div id="columnChooserPanel" class="container" style="display: none; margin-top: 15px; margin-bottom: 15px;">
+    <div id="checkboxesGrid" class="search-grid" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));"></div>
+    <div style="text-align: right; margin-top: 15px;">
+        <button id="applyColumnsBtn" class="vk-cloud-btn" style="background-color: var(--accent-color);">Применить выбор и загрузить таблицу</button>
+    </div>
+</div>
+
+<!-- 3. Сама таблица с данными -->
+<div class="table-wrapper" style="display: none;">
+    <table id="dataTable">
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+</div>
+
+
+
 
     <div class="table-wrapper">
         <table id="dataTable"> <thead id="tableHead"></thead> <tbody id="tableBody"></tbody> </table> </div>
 
-    <!-- Контейнер для кнопок страниц переключения -->
-    <div id="pagination" class="pagination-container"></div>
-    </div>
+   
 
 <script>
+
 var globalRows = [], currentFilteredRows = [], tableHeaders = [], currentPage = 1, pageSize = 50;
 
 // 1. Извлекаем сохраненную тему из памяти браузера при старте страницы
 var savedTheme = localStorage.getItem('saved_table_theme') || 'light';
 var themeToggleBtn = document.getElementById('themeToggleBtn');
+
+// --- НАЧАЛО ПРАВКИ: Восстанавливаем лимит столбцов из памяти ПК ---
+var savedLimit = localStorage.getItem('saved_column_limit') || '4'; // 4 по умолчанию
+var limitInput = document.getElementById('columnLimitInput');
+if (limitInput) {
+    limitInput.value = savedLimit;
+}
+// --- КОНЕЦ ПРАВКИ ---
 
 function applyTheme(t) {
     if (t === 'light') { 
@@ -840,7 +905,7 @@ var menuPanel = document.getElementById('themeMenuPanel');
 
 // Отслеживаем нажатие ЛКМ (нажали кнопку и держим)
 themeToggleBtn.addEventListener('mousedown', function(e) {
-    if (e.button !== 0) return; // Работает только для левой кнопки мыши
+    if (e.button !== 0) return; 
     isLongClick = false;
     
     // Если удерживаем кнопку дольше 400 миллисекунд — открываем горизонтальную панель
@@ -851,30 +916,26 @@ themeToggleBtn.addEventListener('mousedown', function(e) {
 });
 
 // Отслеживаем отпускание ЛКМ
-// Отслеживаем отпускание ЛКМ
 themeToggleBtn.addEventListener('mouseup', function(e) {
     if (e.button !== 0) return;
-    clearTimeout(themeTimer); // Сбрасываем таймер зажатия
+    clearTimeout(themeTimer); 
     
-    // Если это был просто быстрый клик (не долгое удержание) — переключаем по кругу, как раньше
     if (!isLongClick) {
-        // Если панель была открыта, быстрый клик её закроет
         if (menuPanel.classList.contains('open')) {
             menuPanel.classList.remove('open');
         } else {
             var cur = document.documentElement.getAttribute('data-theme');
             var next = 'light'; 
             
-            // Логика последовательного переключения всех тем по кругу
             if (!cur) next = 'dark'; 
             else if (cur === 'dark') next = 'matrix'; 
             else if (cur === 'matrix') next = 'aero'; 
-            else if (cur === 'aero') next = 'cozy-home';     // Плавный переход к новым палитрам
+            else if (cur === 'aero') next = 'cozy-home';     
             else if (cur === 'cozy-home') next = 'lemon-tea';
             else if (cur === 'lemon-tea') next = 'savanna';
             else if (cur === 'savanna') next = 'sage';
             else if (cur === 'sage') next = 'snow-forest';
-            else if (cur === 'snow-forest') next = 'ocean';   // Последняя тема замыкает круг на 'light'
+            else if (cur === 'snow-forest') next = 'ocean';   
             
             applyTheme(next); 
             localStorage.setItem('saved_table_theme', next);
@@ -882,43 +943,34 @@ themeToggleBtn.addEventListener('mouseup', function(e) {
     }
 });
 
-
-// Предотвращаем сбои, если мышка ушла с кнопки с зажатой клавишей
 themeToggleBtn.addEventListener('mouseleave', function() {
     clearTimeout(themeTimer);
 });
 
-// Клик по любой иконке внутри выехавшей панели мгновенно включает выбранную тему
 document.querySelectorAll('.theme-menu-item').forEach(function(item) {
     item.addEventListener('click', function() {
         var selectedTheme = this.getAttribute('data-theme');
         applyTheme(selectedTheme);
         localStorage.setItem('saved_table_theme', selectedTheme);
-        menuPanel.classList.remove('open'); // Прячем панель после выбора
+        menuPanel.classList.remove('open'); 
     });
 });
 
-// Закрываем панель, если кликнуть в любое другое место экрана
 document.addEventListener('click', function(e) {
     if (!e.target.closest('.theme-switcher-wrapper')) {
         menuPanel.classList.remove('open');
     }
 });
 
-
-
-
-
 document.getElementById('csvFile').addEventListener('change', function(e) {
     var file = e.target.files; if (!file || file.length === 0) return;
     var name = file.item(0).name; 
-    document.getElementById('fileStatus').innerHTML = "Выбран файл: <strong>" + name + "</strong>";
+    document.getElementById('fileStatus').innerHTML = "в работе: <strong>" + name + "</strong>";
     var reader = new FileReader();
     reader.onload = function(evt) {
         var text = evt.target.result;
         if (text.indexOf(String.fromCharCode(65533)) !== -1) {
             var ur = new FileReader(); ur.onload = function(eUtf) { 
-                // Жёстко сохраняем исходный текст в localStorage, чтобы к нему имели доступ все функции
                 localStorage.setItem('saved_csv_text', eUtf.target.result);
                 processCSVData(eUtf.target.result); 
             }; ur.readAsText(file[0], 'utf-8');
@@ -930,13 +982,10 @@ document.getElementById('csvFile').addEventListener('change', function(e) {
     reader.readAsText(file[0], 'windows-1251');
 });
 
-
-// Глобальная переменная для хранения сырых строк файла во время выбора чекбоксов
 var rawCSVLines = []; 
 var rawDelimiter = ';';
 
 function processCSVData(text) {
-    // Принудительно скрываем старую таблицу перед проверкой лимитов
     var wrapper = document.querySelector('.table-wrapper');
     if (wrapper) wrapper.style.display = 'none';
     
@@ -955,51 +1004,92 @@ function processCSVData(text) {
         res.push(cur.trim().replace(/^"|"$/g, '')); return res;
     }
     
-    // Сохраняем сырые данные во временные переменные для кнопки применения выборки
     rawCSVLines = lines;
     rawDelimiter = delimiter;
     
     var allHeaders = parseCSVLine(firstLine, delimiter);
     var limit = parseInt(document.getElementById('columnLimitInput').value) || 4;
     
-    // Прячем прошлую панель выбора столбцов
     document.getElementById('columnChooserPanel').style.display = 'none';
     
-    if (allHeaders.length > limit) {
-        // Ситуация А: Столбцов слишком много, строим панель чекбоксов
-        var grid = document.getElementById('checkboxesGrid');
-        grid.innerHTML = '';
-        
-        allHeaders.forEach(function(headerName, idx) {
-            var label = document.createElement('label');
-            label.className = 'column-checkbox-label';
-            
-            var chk = document.createElement('input');
-            chk.type = 'checkbox';
-            chk.setAttribute('data-raw-index', idx);
-            
-            var cleanName = headerName || ("Колонка " + (idx + 1));
-            chk.setAttribute('data-header-name', cleanName);
-            
-            if (idx < limit) chk.checked = true; 
-            
-            var txt = document.createTextNode(cleanName);
-            label.appendChild(chk);
-            label.appendChild(txt);
-            grid.appendChild(label);
-        });
-        
-                document.getElementById('columnChooserPanel').style.display = 'block';
-        
-        // ИСПРАВЛЕНО: Мгновенно разблокируем кнопки верхнего ряда сразу при загрузке файла!
-        document.getElementById('toggleFiltersBtn').disabled = false;
-        document.getElementById('clearFiltersBtn').disabled = false;
-        
-        return; // Приостанавливаем загрузку таблицы!
-    }
+    // Находим сетку колонок внутри панели и полностью очищаем её
+    var grid = document.getElementById('checkboxesGrid');
+    grid.innerHTML = '';
     
-    // ЭТАП Б: Столбцов мало...
+    // Удаляем старый мастер-чекбокс перед пересборкой
+    var oldMaster = document.getElementById('masterCheckboxWrapper');
+    if (oldMaster) oldMaster.remove();
+    
+    // 1. Строим Мастер-чекбокс ОТДЕЛЬНО
+    var masterWrapper = document.createElement('div');
+    masterWrapper.id = 'masterCheckboxWrapper';
+    masterWrapper.style.cssText = 'border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;';
+    
+    var masterLabel = document.createElement('label');
+    masterLabel.className = 'column-checkbox-label';
+    masterLabel.style.cssText = 'display: flex; align-items: center; font-weight: 700; cursor: pointer;';
 
+    var masterChk = document.createElement('input');
+    masterChk.type = 'checkbox';
+    masterChk.id = 'masterColumnsSelector';
+    masterChk.style.marginRight = '8px';
+    masterChk.checked = (allHeaders.length <= limit); 
+
+    masterChk.addEventListener('change', function() {
+        var isChecked = this.checked;
+        document.querySelectorAll('#checkboxesGrid input[type="checkbox"]').forEach(function(chk) {
+            chk.checked = isChecked;
+        });
+    });
+
+    masterLabel.appendChild(masterChk);
+    masterLabel.appendChild(document.createTextNode(' Выбрать все колонки файла'));
+    masterWrapper.appendChild(masterLabel);
+    
+    // Вставляем мастер-чекбокс в панель управления
+    grid.parentNode.insertBefore(masterWrapper, grid);
+    
+    // 2. Строим чекбоксы для самих колонок файлов (они генерируются ВСЕГДА)
+    allHeaders.forEach(function(headerName, idx) {
+        var label = document.createElement('label');
+        label.className = 'column-checkbox-label';
+        
+        var chk = document.createElement('input');
+        chk.type = 'checkbox';
+        chk.setAttribute('data-raw-index', idx);
+        
+        var cleanName = headerName || ("Колонка " + (idx + 1));
+        chk.setAttribute('data-header-name', cleanName);
+        
+        if (idx < limit || allHeaders.length <= limit) chk.checked = true; 
+        
+        var txt = document.createTextNode(cleanName);
+        label.appendChild(chk);
+        label.appendChild(txt);
+        grid.appendChild(label);
+    });
+    
+    // Включаем весь верхний ряд кнопок-иконок
+    document.getElementById('toggleFiltersBtn').disabled = false;
+    document.getElementById('clearFiltersBtn').disabled = false;
+    document.getElementById('toggleColumnsBtn').disabled = false; 
+    document.getElementById('globalSearchInput').disabled = false;
+
+    // ПРОВЕРКА ЛИМИТА: Перенесена под блок генерации чекбоксов, чтобы они не пропадали!
+    if (allHeaders.length > limit) {
+        // --- НАЧАЛО ПРАВКИ: Заливаем фон всей плашки нежно-красным цветом ---
+        var limitBox = document.getElementById('limitBox');
+        if (limitBox) {
+            limitBox.style.backgroundColor = '#fee2e2'; /* Блеклый нежно-красный фон */
+            limitBox.style.borderColor = '#f87171';     /* Красивый пастельный красный контур */
+            limitBox.style.color = '#ef4444';           /* Меняем цвет самого слова Лимит на контрастный красный */
+        }
+        // --- КОНЕЦ ПРАВКИ ---
+
+        // Разворачиваем готовую панель чекбоксов на экране и останавливаемся
+        document.getElementById('columnChooserPanel').style.display = 'block';
+        return; 
+    }
     
     // Ситуация Б: Столбцов мало, строим обычную таблицу сразу
     tableHeaders = allHeaders; 
@@ -1009,10 +1099,6 @@ function processCSVData(text) {
         if (cells.length > 0 && cells.some(function(c) { return c !== ""; })) globalRows.push(cells); 
     });
     
-        // Оставляем только разблокировку строки общего ввода, остальное переносим
-    document.getElementById('globalSearchInput').disabled = false; 
-
-
     if (document.getElementById('pageSizeWrapper')) document.getElementById('pageSizeWrapper').style.display = 'block'; 
     if (wrapper) wrapper.style.display = 'block';
     
@@ -1020,10 +1106,70 @@ function processCSVData(text) {
     currentFilteredRows = globalRows.concat();
     generateSearchFields(); 
     renderTableStructure();
+    
+    // Гарантируем скрытие панели при автозагрузке коротких файлов
+    document.getElementById('columnChooserPanel').style.display = 'none'; 
+    
     renderTableData();
 }
 
 
+
+
+// Замер сборки таблицы процессором ПК
+document.getElementById('applyColumnsBtn').addEventListener('click', function() {
+    var startTime = performance.now(); // 🏁 Включаем секундомер
+
+    // --- НАЧАЛО ПРАВКИ: Возвращаем плашке лимита дефолтные цвета темы ---
+    var limitBox = document.getElementById('limitBox');
+    if (limitBox) {
+        limitBox.style.backgroundColor = '';
+        limitBox.style.borderColor = '';
+        limitBox.style.color = '';
+    }
+    // --- КОНЕЦ ПРАВКИ ---
+
+    var chosenIndices = [], chosenHeaders = [];
+    document.querySelectorAll('#checkboxesGrid input[type="checkbox"]').forEach(function(chk) {
+        if (chk.checked) { 
+            chosenIndices.push(parseInt(chk.getAttribute('data-raw-index'))); 
+            chosenHeaders.push(chk.getAttribute('data-header-name')); 
+        }
+    });
+    if (chosenIndices.length === 0) { alert("Выберите хотя бы один столбец!"); return; }
+    
+    tableHeaders = chosenHeaders; 
+    globalRows = [];
+    
+    rawCSVLines.forEach(function(line) {
+        var res = line.split(rawDelimiter);
+        var filtered = chosenIndices.map(function(idx) { return res[idx] !== undefined ? res[idx] : ""; });
+        if (filtered.length > 0 && filtered.some(function(c) { return c !== ""; })) globalRows.push(filtered);
+    });
+    
+    document.getElementById('columnChooserPanel').style.display = 'none';
+    document.getElementById('toggleFiltersBtn').disabled = false;
+    document.getElementById('clearFiltersBtn').disabled = false;
+    document.getElementById('globalSearchInput').disabled = false;
+    
+    var sizeWrapper = document.getElementById('pageSizeWrapper');
+    if (sizeWrapper) sizeWrapper.style.display = 'block';
+    
+    var tableWrapper = document.querySelector('.table-wrapper');
+    if (tableWrapper) tableWrapper.style.display = 'block';
+    
+    currentPage = 1; 
+    currentFilteredRows = globalRows.concat();
+    
+    generateSearchFields(); 
+    renderTableStructure();
+    renderTableData();
+
+    var duration = (performance.now() - startTime).toFixed(1); // ⏱️ СТОП СЕКУНДОМЕР
+    document.getElementById('counter').innerHTML = 
+    "Строк: <strong>" + currentFilteredRows.length + "</strong> | <strong>" + duration + " ms</strong>";
+
+});
 
 function generateSearchFields() {
     var container = document.getElementById('searchContainer'); container.innerHTML = ''; container.style.display = 'none';
@@ -1035,25 +1181,23 @@ function generateSearchFields() {
         d.appendChild(l); d.appendChild(input); container.appendChild(d);
     });
 }
+
 document.getElementById('globalSearchInput').addEventListener('input', runCombinedSearch);
+// Исправленная логика кнопки сброса: очищает поиск БЕЗ вызова панели столбцов
 document.getElementById('clearFiltersBtn').addEventListener('click', function() {
-    // Очищаем поля ввода на экране
+    // 1. Стираем текст из главного поиска и всех детальных фильтров колонок
     document.getElementById('globalSearchInput').value = ""; 
-    document.querySelectorAll('#searchContainer input').forEach(function(i) { i.value = ""; });
+    document.querySelectorAll('#searchContainer input').forEach(function(input) { 
+        input.value = ""; 
+    });
     
-    // Вытаскиваем из долгосрочной памяти исходный, нетронутый текст файла
-    var originalCSV = localStorage.getItem('saved_csv_text');
+    // 2. Мгновенно сбрасываем массив отфильтрованных строк до полной исходной таблицы
+    currentPage = 1; 
+    currentFilteredRows = globalRows.concat(); 
     
-    if (originalCSV) {
-        // Полностью перезапускаем парсинг — это мгновенно восстановит ВСЕ столбцы и данные
-        processCSVData(originalCSV);
-    } else {
-        // Резервный вариант, если файл не был сохранен в память
-        currentPage = 1; 
-        currentFilteredRows = globalRows.concat(); 
-        renderTableStructure();
-        renderTableData();
-    }
+    // 3. Просто перерисовываем данные на экране — меню столбцов больше не откроется!
+    renderTableStructure();
+    renderTableData();
 });
 
 
@@ -1070,7 +1214,6 @@ function runCombinedSearch() {
     });
 
     currentFilteredRows = globalRows.filter(function(cells) {
-        // Умный поиск по знаку %: проверяем, что все слова одновременно есть в строке
         var mG = true;
         if (gQ) {
             var searchWords = gQ.split('%').map(function(w) { return w.trim(); }).filter(function(w) { return w !== ""; });
@@ -1089,24 +1232,20 @@ function runCombinedSearch() {
     currentPage = 1; renderTableData();
 }
 
-
-
 function renderTableStructure() {
     var th = document.getElementById('tableHead'); 
     th.innerHTML = ''; 
     if (tableHeaders.length === 0) return;
     
     var row = document.createElement('tr'); 
-    var dragSrcIndex = null; // Переменная для запоминания индекса зажатой колонки
+    var dragSrcIndex = null; 
 
     tableHeaders.forEach(function(h, idx) { 
         var t = document.createElement('th'); 
-                // Создаем контейнер для текста заголовка
         var titleSpan = document.createElement('span');
         titleSpan.textContent = h || ("Колонка " + (idx + 1));
         t.appendChild(titleSpan);
 
-        // Создаем миниатюрную кнопку-крестик для удаления столбца
         var closeBtn = document.createElement('span');
         closeBtn.textContent = ' ×';
         closeBtn.style.cursor = 'pointer';
@@ -1115,147 +1254,108 @@ function renderTableStructure() {
         closeBtn.style.fontWeight = 'bold';
         closeBtn.title = 'Скрыть этот столбец';
         
-        // Клик по крестику скрывает колонку
-                        closeBtn.addEventListener('click', function(e) {
-            e.stopPropagation(); // Защита от срабатывания перетаскивания шапки
-            
-            // 1. Физически удаляем заголовок из массива названий колонок
+        closeBtn.addEventListener('click', function(e) {
+            e.stopPropagation(); 
+
+    // --- НАЧАЛО ПРАВКИ: Синхронизация. Находим чекбокс по имени заголовка и снимаем галочку ---
+    var currentHeaderName = tableHeaders[idx];
+    var relatedCheckbox = document.querySelector('#checkboxesGrid input[data-header-name="' + currentHeaderName + '"]');
+    if (relatedCheckbox) {
+        relatedCheckbox.checked = false;
+    }
+    // --- КОНЕЦ ПРАВКИ ---
+
             tableHeaders.splice(idx, 1);
-            
-            // 2. Безопасно удаляем ячейку из главного массива данных (создавая новые чистые строки)
             globalRows = globalRows.map(function(cells) {
-                var newCells = cells.concat(); // Делаем независимую копию строки
-                newCells.splice(idx, 1);       // Удаляем ровно одну ячейку по индексу
+                var newCells = cells.concat(); 
+                newCells.splice(idx, 1);       
                 return newCells;
             });
-            
-            // 3. Синхронно удаляем ячейку из текущего отфильтрованного массива
             currentFilteredRows = currentFilteredRows.map(function(cells) {
                 var newCells = cells.concat();
                 newCells.splice(idx, 1);
                 return newCells;
             });
-            
-            // 4. Полностью обновляем детальные фильтры, шапку и саму таблицу
             generateSearchFields();
             renderTableStructure();
             renderTableData();
         });
-
-
         
         t.appendChild(closeBtn);
         t.setAttribute('draggable', 'true');
-
-
         t.setAttribute('data-index', idx);
 
-        // Событие 1: Пользователь схватил заголовок
         t.addEventListener('dragstart', function(e) {
             dragSrcIndex = idx;
             e.dataTransfer.effectAllowed = 'move';
         });
 
-        // Событие 2: Тащим заголовок над соседними ячейками
         t.addEventListener('dragover', function(e) {
             e.preventDefault();
             this.classList.add('drag-over');
         });
 
-        // Событие 3: Курсор ушел с соседней ячейки
         t.addEventListener('dragleave', function() {
             this.classList.remove('drag-over');
         });
 
-        // Событие 4: Мышку отпустили (сброс столбца)
         t.addEventListener('drop', function(e) {
             e.preventDefault();
             this.classList.remove('drag-over');
             var targetIndex = parseInt(this.getAttribute('data-index'));
 
             if (dragSrcIndex !== null && dragSrcIndex !== targetIndex) {
-    // Функция для безопасного перемещения элемента внутри любого массива без багов сдвига индексов
+                function moveItemInArray(arr, fromIdx, toIdx) {
+                    var cleanArray = arr.concat(); 
+                    var item = cleanArray.splice(fromIdx, 1)[0]; 
+                    cleanArray.splice(toIdx, 0, item); 
+                    return cleanArray;
+                }
 
-    function moveItemInArray(arr, fromIdx, toIdx) {
-        var cleanArray = arr.concat(); // Делаем чистую копию
-        var item = cleanArray.splice(fromIdx, 1)[0]; // Вырезаем сам элемент
-        cleanArray.splice(toIdx, 0, item); // Вставляем на новое точное место
-        return cleanArray;
-    }
+                tableHeaders = moveItemInArray(tableHeaders, dragSrcIndex, targetIndex);
+                globalRows = globalRows.map(function(cells) { return moveItemInArray(cells, dragSrcIndex, targetIndex); });
+                currentFilteredRows = currentFilteredRows.map(function(cells) { return moveItemInArray(cells, dragSrcIndex, targetIndex); });
 
-    // 1. Переставляем заголовки колонок
-    tableHeaders = moveItemInArray(tableHeaders, dragSrcIndex, targetIndex);
-
-    // 2. Переставляем ячейки во всем главном массиве данных
-    globalRows = globalRows.map(function(cells) {
-        return moveItemInArray(cells, dragSrcIndex, targetIndex);
-    });
-
-    // 3. Переставляем ячейки в текущем отфильтрованном массиве данных
-    currentFilteredRows = currentFilteredRows.map(function(cells) {
-        return moveItemInArray(cells, dragSrcIndex, targetIndex);
-    });
-
-    // 4. Полностью обновляем фильтры, шапку и саму таблицу
-    generateSearchFields();
-    renderTableStructure();
-    renderTableData();
-}
-
-
-
-
+                generateSearchFields();
+                renderTableStructure();
+                renderTableData();
+            }
         });
 
-                // Если этот индекс сохранен как скрытый, не добавляем его на экран
-        //if (window.hiddenIndices && window.hiddenIndices.includes(idx)) {
-        //    return; 
-        //}
         row.appendChild(t); 
     }); 
     th.appendChild(row);
-
-
 }
 
-
+// Измерение скорости живой фильтрации процессором ПК
 function renderTableData() {
+    var startTime = performance.now(); // 🏁 Включаем секундомер поиска
+
     var tb = document.getElementById('tableBody'); 
     tb.innerHTML = '';
     
     var gQ = document.getElementById('globalSearchInput').value.trim();
-    var columnInputs = document.querySelectorAll('#searchContainer input');
-    
-    document.getElementById('counter').textContent = "Количество строк: " + currentFilteredRows.length;
     var pRows = currentFilteredRows.slice((currentPage - 1) * pageSize, currentPage * pageSize);
     
-    // Встроенная функция-маркер (подсвечивает совпадения желтым цветом)
     function highlightText(text, searchStr) {
-    if (!searchStr) return text;
-    var html = text;
-    
-    // Разбиваем строку подсветки по знаку % на массив отдельных слов
-    var words = searchStr.split('%').map(function(w) { return w.trim(); }).filter(function(w) { return w !== ""; });
-    
-    // Поочередно подсвечиваем каждое слово внутри ячейки
-    words.forEach(function(word) {
-        if (!word) return;
-        var safeStr = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        var regex = new RegExp("(" + safeStr + ")", "gi");
-        html = html.replace(regex, "<span style='font-weight:700;color:var(--accent-color);'>$1</span>");
-    });
-    
-    return html;
-}
-
+        if (!searchStr) return text;
+        var html = text;
+        var words = searchStr.split('%').map(function(w) { return w.trim(); }).filter(function(w) { return w !== ""; });
+        
+        words.forEach(function(word) {
+            if (!word) return;
+            var safeStr = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            var regex = new RegExp("(" + safeStr + ")", "gi");
+            html = html.replace(regex, "<span style='font-weight:700;color:var(--accent-color);'>$1</span>");
+        });
+        return html;
+    }
 
     pRows.forEach(function(cells) {
         var tr = document.createElement('tr');
-                tableHeaders.forEach(function(_, idx) {
+        tableHeaders.forEach(function(_, idx) {
             var td = document.createElement('td');
             var txt = String(cells[idx] !== undefined ? cells[idx] : '');
-            
-            // Безопасно считываем активный запрос для подсветки жирным шрифтом
             var activeQuery = gQ; 
             var columnInputs = document.querySelectorAll('#searchContainer input');
             columnInputs.forEach(function(input) { 
@@ -1266,7 +1366,6 @@ function renderTableData() {
             
             td.innerHTML = highlightText(txt, activeQuery);
 
-            
             if (txt.trim() !== "") {
                 var btn = document.createElement('button'); btn.className = 'copy-btn'; btn.textContent = '📋';
                 btn.addEventListener('click', function(e) {
@@ -1281,16 +1380,16 @@ function renderTableData() {
                 });
                 td.appendChild(btn);
             }
-                        // Если индекс столбца скрыт, не добавляем ячейку данных на экран
-            //if (window.hiddenIndices && window.hiddenIndices.includes(idx)) {
-            //    return;
-            //}
             tr.appendChild(td);
         });
         tb.appendChild(tr);
-
     });
+
     setupPagination();
+
+    var duration = (performance.now() - startTime).toFixed(1); // ⏱️ СТОП СЕКУНДОМЕР
+    document.getElementById('counter').innerHTML = 
+        "Строк: <strong>" + currentFilteredRows.length + "</strong> | ms: <strong>" + duration;
 }
 
 function setupPagination() {
@@ -1311,6 +1410,7 @@ function setupPagination() {
     var next = document.createElement('button'); next.className = 'pagination-btn'; next.textContent = 'Вперед »'; next.disabled = currentPage === totalPages;
     next.addEventListener('click', function() { currentPage++; renderTableData(); }); pc.appendChild(next);
 }
+
 function createPageBtn(p, container) {
     var b = document.createElement('button'); b.className = 'pagination-btn'; b.textContent = p; if (p === currentPage) b.classList.add('active');
     b.addEventListener('click', function() { currentPage = p; renderTableData(); document.querySelector('.table-wrapper').scrollTop = 0; }); container.appendChild(b);
@@ -1318,15 +1418,12 @@ function createPageBtn(p, container) {
 
 document.getElementById('vkCloudBtn').addEventListener('click', function() {
     var vkFileUrl = "..."; 
-
     if (vkFileUrl.includes('...')) {
         var userLink = prompt("Пожалуйста, введите прямую ссылку на ваш CSV-файл из Облака VK:");
         if (!userLink) return;
         vkFileUrl = userLink;
     }
-
     document.getElementById('fileStatus').innerHTML = "Загрузка из Облака VK...";
-
     fetch(vkFileUrl)
         .then(function(response) {
             if (!response.ok) throw new Error("Не удалось загрузить файл из облака");
@@ -1349,37 +1446,45 @@ document.getElementById('vkCloudBtn').addEventListener('click', function() {
         });
 });
 
-// Логика кнопки "Подробнее" для скрытия и показа фильтров по колонкам
+// Логика кнопки "Фильтры" для скрытия и показа фильтров по колонкам (с компактной иконкой)
 document.getElementById('toggleFiltersBtn').addEventListener('click', function() {
     var container = document.getElementById('searchContainer');
     
     if (container.style.display === 'none' || !container.style.display) {
         container.style.display = 'grid'; // Показываем сетку фильтров
-        this.textContent = 'Фильтры 🔼';
+        this.textContent = '🔍'; // Меняем стрелочку наверх
     } else {
         container.style.display = 'none'; // Скрываем сетку фильтров
-        this.textContent = 'Фильтры 🔽';
+        this.textContent = '🔍'; // Меняем стрелочку вниз
     }
 });
 
-// Переменная, которая следит, зажат ли Ctrl прямо сейчас
-var isCtrlPressed = false;
+// Логика кнопки "Столбцы" для возврата к выбору чекбоксов (компактный вид)
+document.getElementById('toggleColumnsBtn').addEventListener('click', function() {
+    var panel = document.getElementById('columnChooserPanel');
+    
+    if (panel.style.display === 'none' || !panel.style.display) {
+        panel.style.display = 'block'; // Показываем панель с чекбоксами обратно
+        this.innerHTML = '⚙️';
+    } else {
+        panel.style.display = 'none'; // Скрываем панель
+        this.innerHTML = '⚙️';
+    }
+});
 
+
+var isCtrlPressed = false;
 window.addEventListener('keydown', function(e) { if (e.key === 'Control') isCtrlPressed = true; });
 window.addEventListener('keyup', function(e) { if (e.key === 'Control') { isCtrlPressed = false; removeAllCtrlHighlights(); } });
 
-// Навешиваем событие подсветки на всю таблицу
-// Навешиваем непрерывное живое отслеживание мыши без блокировки повторов
 document.getElementById('dataTable').addEventListener('mousemove', function(e) {
     if (!isCtrlPressed) return;
     var tr = e.target.closest('tr');
     if (tr && tr.parentElement.tagName === 'TBODY') {
-        // Мгновенно убираем подсветку с других строк и принудительно обновляем текущую при каждом движении
         removeAllCtrlHighlights();
         tr.classList.add('ctrl-highlight');
     }
 });
-
 
 document.getElementById('dataTable').addEventListener('mouseout', function(e) {
     var tr = e.target.closest('tr');
@@ -1392,34 +1497,23 @@ function removeAllCtrlHighlights() {
     });
 }
 
-
-// Живое копирование всей строки по клику с зажатым Ctrl
 document.getElementById('dataTable').addEventListener('click', function(e) {
-    // Если Ctrl не зажат, обычный клик работает как обычно
     if (!isCtrlPressed) return;
-    
     var tr = e.target.closest('tr');
-    // Проверяем, что кликнули именно по строке с данными внутри тела таблицы
     if (tr && tr.parentElement.tagName === 'TBODY') {
         e.preventDefault();
         e.stopPropagation();
         
         var rowData = [];
-        // Собираем чистый текст из всех ячеек этой строки (пропуская кнопку копирования 📋)
         var cells = tr.querySelectorAll('td');
         cells.forEach(function(td) {
-            // Клонируем ячейку, чтобы удалить из текста кнопку копирования перед сборкой
             var clone = td.cloneNode(true);
             var btn = clone.querySelector('.copy-btn');
             if (btn) clone.removeChild(btn);
-            
             rowData.push(clone.textContent.trim());
         });
         
-        // Объединяем ячейки, разделяя их переносом строки (кареткой \n)
         var textToCopy = rowData.join('\n');
-        
-        // Временное поле для заброса текста в буфер обмена
         var textarea = document.createElement('textarea');
         textarea.value = textToCopy;
         textarea.style.position = 'fixed';
@@ -1428,8 +1522,6 @@ document.getElementById('dataTable').addEventListener('click', function(e) {
         
         try {
             document.execCommand('copy');
-            
-            // Красивый визуальный отклик: строка на секунду вспыхивает зеленым цветом
             var originalBg = tr.style.backgroundColor;
             tr.style.transition = 'background-color 0.15s ease';
             tr.style.backgroundColor = 'var(--bg-filebox)';
@@ -1437,19 +1529,14 @@ document.getElementById('dataTable').addEventListener('click', function(e) {
             setTimeout(function() {
                 tr.style.backgroundColor = originalBg;
             }, 300);
-            
         } catch (err) {
             console.error('Не удалось скопировать строку:', err);
         }
-        
         document.body.removeChild(textarea);
     }
 });
 
-
-// Функция вызова мягкого точечного уведомления
 function showToast(message) {
-    // Удаляем старое уведомление, если оно еще не исчезло
     var oldToast = document.querySelector('.toast-notification');
     if (oldToast) oldToast.remove();
 
@@ -1458,15 +1545,19 @@ function showToast(message) {
     toast.innerHTML = '<span style="color:var(--accent-color);">✓</span> ' + message;
     document.body.appendChild(toast);
 
-    // Микро-таймаут для запуска плавной CSS-анимации появления
     setTimeout(function() { toast.classList.add('show'); }, 10);
 
-    // Плавное скрытие и удаление через 2 секунды
     setTimeout(function() {
         toast.classList.remove('show');
         setTimeout(function() { toast.remove(); }, 200);
     }, 2000);
 }
+
+// Автоматически сохраняем измененный лимит столбцов в память браузера
+document.getElementById('columnLimitInput').addEventListener('input', function() {
+    localStorage.setItem('saved_column_limit', this.value);
+});
+
 
 
 
