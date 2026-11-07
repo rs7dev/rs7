@@ -743,14 +743,27 @@ document.getElementById('clearFiltersBtn').addEventListener('click', function() 
 document.getElementById('pageSizeSelect').addEventListener('change', function() {
     pageSize = this.value === 'all' ? globalRows.length : parseInt(this.value); currentPage = 1; renderTableData();
 });
+
 function runCombinedSearch() {
     var gQ = document.getElementById('globalSearchInput').value.toLowerCase().trim();
     var activeFilters = [];
     document.querySelectorAll('#searchContainer input').forEach(function(i) {
-        var val = i.value.toLowerCase().trim(); if (val) activeFilters.push({ idx: parseInt(i.getAttribute('data-index')), q: val });
+        var val = i.value.toLowerCase().trim(); 
+        if (val) activeFilters.push({ idx: parseInt(i.getAttribute('data-index')), q: val });
     });
+
     currentFilteredRows = globalRows.filter(function(cells) {
-        var mG = !gQ ? true : cells.some(function(c) { return String(c || '').toLowerCase().includes(gQ); });
+        // Умный поиск по знаку %: проверяем, что все слова одновременно есть в строке
+        var mG = true;
+        if (gQ) {
+            var searchWords = gQ.split('%').map(function(w) { return w.trim(); }).filter(function(w) { return w !== ""; });
+            mG = searchWords.every(function(word) {
+                return cells.some(function(c) {
+                    return String(c || '').toLowerCase().includes(word);
+                });
+            });
+        }
+        
         var mC = activeFilters.every(function(f) {
             var cV = ''; cells.forEach(function(c, i) { if (i === f.idx) cV = String(c).toLowerCase(); }); return cV.includes(f.q);
         });
@@ -758,6 +771,8 @@ function runCombinedSearch() {
     });
     currentPage = 1; renderTableData();
 }
+
+
 
 function renderTableStructure() {
     var th = document.getElementById('tableHead'); 
