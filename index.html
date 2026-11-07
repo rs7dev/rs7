@@ -760,9 +760,36 @@ body > .container {
     
     <!-- НОВОЕ: Объединяем правые элементы в один неразрывный ряд -->
     <div class="header-controls" style="display: flex; align-items: center; gap: 12px;">
-        <button id="vkCloudBtn" class="vk-cloud-btn" title="Загрузить из Облака VK">☁️ VK</button>
-        
-       <div class="theme-switcher-wrapper" style="position: relative; display: flex; align-items: center; gap: 8px;">
+     <!-- Блок облачной загрузки файлов -->
+        <!-- Лаконичный блок облачной загрузки в фирменных цветах активной темы -->
+          <!-- Облачная загрузка с официальными мини-логотипами в цвет темы -->
+           <!-- Ультракомпактные облачные кнопки-иконки в размер переключателя тем -->
+<!-- Увеличенные облачные кнопки-иконки в точный размер переключателя тем -->
+<div style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
+    
+    <!-- Кнопка Яндекс.Диск (Крупный официальный логотип) -->
+    <button id="yandexCloudBtn" class="toggle-filters-btn" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 38px !important; height: 38px !important; padding: 0 !important; min-width: 38px !important; line-height: 0 !important;" title="Загрузить CSV-файл из Яндекс Диска">
+        <!-- Официальный SVG Логотип Яндекса -->
+        <svg width="22" height="22" viewBox="0 0 100 100" fill="none" xmlns="http://w3.org" style="flex-shrink: 0; display: block;">
+            <circle cx="50" cy="50" r="50" fill="#FF0000"/>
+            <path d="M56 75H45V61.1L30.9 33H42.7L50.5 50.8L58.2 33H69.5L56 59V75Z" fill="white"/>
+        </svg>
+    </button>
+    
+    <!-- Кнопка Google Диск (Крупный официальный логотип) -->
+    <button id="googleCloudBtn" class="toggle-filters-btn" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 38px !important; height: 38px !important; padding: 0 !important; min-width: 38px !important; line-height: 0 !important;" title="Загрузить CSV-файл из Google Drive">
+        <!-- Официальный многоцветный SVG Логотип Google Диска -->
+        <svg width="22" height="22" viewBox="0 0 2000 2000" xmlns="http://w3.org" style="flex-shrink: 0; display: block;">
+            <path d="M684.5 40L14.5 1200l324 560 670-1160z" fill="#0066da"/>
+            <path d="M1338.5 40H684.5L1008.5 600l661 1160 316-560z" fill="#00aa47"/>
+            <path d="M1008.5 600l330 560H338.5l-324 600z" fill="#ffba00"/>
+        </svg>
+    </button>
+    
+</div>
+
+
+    <div class="theme-switcher-wrapper" style="position: relative; display: flex; align-items: center; gap: 8px;">
     <div id="themeMenuPanel" class="theme-menu-panel">
         <!-- Оригинальные темы оформления -->
         <button class="theme-menu-item" data-theme="light" title="Светлая">☀️</button>
@@ -1437,35 +1464,91 @@ function createPageBtn(p, container) {
     b.addEventListener('click', function() { currentPage = p; renderTableData(); document.querySelector('.table-wrapper').scrollTop = 0; }); container.appendChild(b);
 }
 
-document.getElementById('vkCloudBtn').addEventListener('click', function() {
-    var vkFileUrl = "..."; 
-    if (vkFileUrl.includes('...')) {
-        var userLink = prompt("Пожалуйста, введите прямую ссылку на ваш CSV-файл из Облака VK:");
-        if (!userLink) return;
-        vkFileUrl = userLink;
+// --- ОБРАБОТКА ЗАГРУЗКИ ИЗ ЯНДЕКС.ДИСКА ---
+document.getElementById('yandexCloudBtn').addEventListener('click', function() {
+    var userLink = prompt("Пожалуйста, введите ссылку 'Поделиться' на ваш CSV-файл из Яндекс Диска:");
+    if (!userLink) return;
+
+    document.getElementById('fileStatus').innerHTML = "Загрузка из Яндекс.Диска...";
+
+    // Используем публичный API Яндекса для получения прямой ссылки на скачивание
+    var apiUrl = "https://yandex.net" + encodeURIComponent(userLink);
+
+    fetch(apiUrl)
+        .then(function(res) { 
+            if (!res.ok) throw new Error("Файл не найден или закрыт доступ");
+            return res.json(); 
+        })
+        .then(function(json) {
+            // Скачиваем сам бинарный файл по полученному прямому адресу href
+            return fetch(json.href);
+        })
+        .then(function(response) { 
+            if (!response.ok) throw new Error("Не удалось скачать файл");
+            return response.arrayBuffer(); 
+        })
+        .then(function(buffer) {
+            decodeAndProcessBuffer(buffer, "Яндекс.Диска");
+        })
+        .catch(function(error) {
+            showCloudError(error);
+        });
+});
+
+// --- ОБРАБОТКА ЗАГРУЗКИ ИЗ GOOGLE ДИСКА ---
+document.getElementById('googleCloudBtn').addEventListener('click', function() {
+    var userLink = prompt("Пожалуйста, введите ссылку 'Поделиться' на ваш CSV-файл из Google Диска:");
+    if (!userLink) return;
+
+    document.getElementById('fileStatus').innerHTML = "Загрузка из Google Диска...";
+
+    // Извлекаем уникальный ID файла из стандартной ссылки Гугла с помощью регулярного выражения
+    var match = userLink.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    if (!match) {
+        alert("Не удалось распознать формат ссылки Google Drive. Убедитесь, что скопировали ссылку 'Поделиться'.");
+        document.getElementById('fileStatus').innerHTML = "<span style='color:#ef4444;'>Ошибка ссылки</span>";
+        return;
     }
-    document.getElementById('fileStatus').innerHTML = "Загрузка из Облака VK...";
-    fetch(vkFileUrl)
+    var fileId = match[1];
+    
+    // Пересобираем ссылку в формат Direct Download (прямой экспорт)
+    var directUrl = "https://google.com" + fileId;
+
+    fetch(directUrl)
         .then(function(response) {
-            if (!response.ok) throw new Error("Не удалось загрузить файл из облака");
+            if (!response.ok) throw new Error("Не удалось загрузить файл. Проверьте, что доступ открыт 'Всем, у кого есть ссылка'");
             return response.arrayBuffer();
         })
         .then(function(buffer) {
-            var decoder = new TextDecoder('windows-1251');
-            var text = decoder.decode(buffer);
-            if (text.includes('')) {
-                var utfDecoder = new TextDecoder('utf-8');
-                text = utfDecoder.decode(buffer);
-            }
-            processCSVData(text);
-            document.getElementById('fileStatus').innerHTML = "Файл успешно загружен из <strong>Облака VK</strong>";
+            decodeAndProcessBuffer(buffer, "Google Диска");
         })
         .catch(function(error) {
-            console.error(error);
-            alert("Ошибка загрузки: " + error.message + "\n\nОбратите внимание: если вы запускаете HTML-файл просто с рабочего стола, браузер заблокирует загрузку из интернета из-за политики безопасности CORS. Страницу нужно разместить на хостинге (например, GitHub Pages).");
-            document.getElementById('fileStatus').innerHTML = "<span style='color:#ef4444;'>Ошибка загрузки из облака</span>";
+            showCloudError(error);
         });
 });
+
+// Утилита автоопределения кодировки (UTF-8 / Windows-1251) для облачных файлов
+function decodeAndProcessBuffer(buffer, cloudName) {
+    var decoder = new TextDecoder('windows-1251');
+    var text = decoder.decode(buffer);
+    
+    // Если внутри файла кодировка сломалась (появились пустые маркеры), перечитываем в UTF-8
+    if (text.includes(String.fromCharCode(65533))) {
+        var utfDecoder = new TextDecoder('utf-8');
+        text = utfDecoder.decode(buffer);
+    }
+    
+    processCSVData(text);
+    document.getElementById('fileStatus').innerHTML = "Файл успешно загружен из <strong>" + cloudName + "</strong>";
+}
+
+// Вывод красивой ошибки при блокировке CORS на локальном ПК
+function showCloudError(error) {
+    console.error(error);
+    alert("Ошибка загрузки: " + error.message + "\n\n⚠️ НАПОМИНАНИЕ: Если вы запускаете этот HTML-файл просто с рабочего стола, браузер блокирует скачивание из облаков из-за политики CORS. Как только вы загрузите этот проект на GitHub Pages, загрузка заработает автоматически!");
+    document.getElementById('fileStatus').innerHTML = "<span style='color:#ef4444;'>Блокировка CORS (требуется GitHub)</span>";
+}
+
 
 // Логика кнопки "Фильтры" для скрытия и показа фильтров по колонкам (с компактной иконкой)
 document.getElementById('toggleFiltersBtn').addEventListener('click', function() {
