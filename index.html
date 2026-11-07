@@ -788,7 +788,7 @@ body > .container {
     <!-- Поисковый узел: Кнопки фильтрации и сброса теперь слева от ввода -->
 <div class="search-bar-wrapper">
     <button id="toggleFiltersBtn" class="toggle-filters-btn" disabled title="Показать/скрыть фильтры колонок">🔍</button>
-    <input type="text" id="globalSearchInput" class="global-search" placeholder="Глобальный поиск (знак % для нескольких слов)..." disabled>
+    <input type="text" id="globalSearchInput" class="global-search" placeholder="Глобальный поиск (разделитель % для нескольких слов)..." disabled>
     <button id="clearFiltersBtn" class="toggle-filters-btn" disabled title="Очистить все фильтры и поиск">❌</button>
 </div>
 
@@ -1167,7 +1167,7 @@ document.getElementById('applyColumnsBtn').addEventListener('click', function() 
 
     var duration = (performance.now() - startTime).toFixed(1); // ⏱️ СТОП СЕКУНДОМЕР
     document.getElementById('counter').innerHTML = 
-    "Строк: <strong>" + currentFilteredRows.length + "</strong> | <strong>" + duration + " ms</strong>";
+    "строк: <strong>" + currentFilteredRows.length + "</strong> | <strong>" + duration + " ms</strong>";
 
 });
 
