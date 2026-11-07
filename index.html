@@ -524,6 +524,74 @@ th.drag-over {
     background: var(--bg-container);
 }
 
+/* Стили для панели чекбоксов выбора колонок */
+.column-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-main);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    transition: background-color 0.15s ease;
+}
+.column-checkbox-label:hover {
+    background-color: var(--bg-hover-tr);
+}
+.column-checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--accent-color);
+}
+
+// Обработка сборки таблицы строго по отмеченным чекбоксам
+// Обработка сборки таблицы строго по отмеченным чекбоксам
+document.getElementById('applyColumnsBtn').addEventListener('click', function() {
+    var chosenIndices = [], chosenHeaders = [];
+    document.querySelectorAll('#checkboxesGrid input[type="checkbox"]').forEach(function(chk) {
+        if (chk.checked) { 
+            chosenIndices.push(parseInt(chk.getAttribute('data-raw-index'))); 
+            chosenHeaders.push(chk.getAttribute('data-header-name')); 
+        }
+    });
+    if (chosenIndices.length === 0) { alert("Выберите хотя бы один столбец!"); return; }
+    
+    tableHeaders = chosenHeaders; 
+    globalRows = [];
+    
+    rawCSVLines.forEach(function(line) {
+        var res = line.split(rawDelimiter);
+        var filtered = chosenIndices.map(function(idx) { return res[idx] !== undefined ? res[idx] : ""; });
+        if (filtered.length > 0 && filtered.some(function(c) { return c !== ""; })) globalRows.push(filtered);
+    });
+    
+    document.getElementById('columnChooserPanel').style.display = 'none';
+    
+    // АКТИВАЦИЯ ИНТЕРФЕЙСА: Таблица полностью собрана, включаем видимость и снимаем disabled
+    document.getElementById('toggleFiltersBtn').disabled = false;
+    document.getElementById('clearFiltersBtn').disabled = false;
+    document.getElementById('globalSearchInput').disabled = false;
+    
+    var sizeWrapper = document.getElementById('pageSizeWrapper');
+    if (sizeWrapper) sizeWrapper.style.display = 'block';
+    
+    var tableWrapper = document.querySelector('.table-wrapper');
+    if (tableWrapper) tableWrapper.style.display = 'block';
+    
+    // Инициализируем поисковые массивы и запускаем рендеринг таблицы на экран
+    currentPage = 1; 
+    currentFilteredRows = globalRows.concat();
+    
+    generateSearchFields(); 
+    renderTableStructure();
+    renderTableData();
+});
+
+
+
 
 
     </style>
@@ -532,8 +600,15 @@ th.drag-over {
 
 <div class="container">
     <div class="header-row">
-    <h2>поиск (CSV)</h2>
     
+    <div style="display: flex; align-items: center; gap: 10px;">
+    <h2>поиск (CSV)</h2>
+    <!-- Поле ввода лимита столбцов -->
+    <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-muted); background: var(--bg-filebox); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-filebox);">
+        Лимит: <input type="number" id="columnLimitInput" value="5" min="1" style="width: 45px; padding: 2px 4px; border: 1px solid var(--border-filebox); border-radius: 4px; background: var(--input-bg); color: var(--text-main); font-weight: bold; text-align: center;" />
+    </div>
+    </div>
+
     <div class="file-box">
         <span id="fileStatus">Нажмите сюда, чтобы <strong>выбрать файл .csv</strong></span>
         <input type="file" id="csvFile" accept=".csv" />
@@ -559,13 +634,21 @@ th.drag-over {
     <div class="search-bar-wrapper">
     <input type="text" id="globalSearchInput" class="global-search" placeholder="Общий поиск..." disabled />
         <!-- Новая кнопка раскрытия подробных фильтров -->
-    <button id="toggleFiltersBtn" class="toggle-filters-btn" title="расширенные фильтры" disabled>Подробнее 🔽</button>
-    <button id="clearFiltersBtn" class="clear-btn" disabled>очистить</button>
+    <button id="toggleFiltersBtn" class="toggle-filters-btn" title="расширенные фильтры" enabled>Фильтры 🔽</button>
+    <button id="clearFiltersBtn" class="clear-btn" enabled>очистить</button>
 </div>
 
 
     <div id="searchContainer" class="search-grid" style="display: none;"></div>
     
+<!-- Скрытая панель выбора столбцов (появляется если превышен лимит) -->
+<div id="columnChooserPanel" style="display: none; padding: 20px; background: var(--bg-filebox); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 15px;">
+    <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 15px; color: var(--text-title);">Файл содержит много столбцов. Отметьте необходимые для отображения:</h3>
+    <div id="checkboxesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 15px;"></div>
+    <button id="applyColumnsBtn" class="vk-cloud-btn" style="padding: 8px 20px;">Применить выбор и загрузить таблицу</button>
+</div>
+
+
     <!-- Строка управления (счетчик + выбор кол-ва строк) -->
     <div class="controls-row">
         <div id="counter" class="counter"></div>
@@ -674,43 +757,121 @@ document.addEventListener('click', function(e) {
 
 
 document.getElementById('csvFile').addEventListener('change', function(e) {
-    var file = e.target.files[0]; if (!file) return;
-    document.getElementById('fileStatus').innerHTML = "Выбран файл: <strong>" + file.name + "</strong>";
+    var file = e.target.files; if (!file || file.length === 0) return;
+    var name = file.item(0).name; 
+    document.getElementById('fileStatus').innerHTML = "Выбран файл: <strong>" + name + "</strong>";
     var reader = new FileReader();
     reader.onload = function(evt) {
         var text = evt.target.result;
-        if (text.includes('')) {
-            var ur = new FileReader(); ur.onload = function(eUtf) { processCSVData(eUtf.target.result); }; ur.readAsText(file, 'utf-8');
-        } else { processCSVData(text); }
+        if (text.indexOf(String.fromCharCode(65533)) !== -1) {
+            var ur = new FileReader(); ur.onload = function(eUtf) { 
+                // Жёстко сохраняем исходный текст в localStorage, чтобы к нему имели доступ все функции
+                localStorage.setItem('saved_csv_text', eUtf.target.result);
+                processCSVData(eUtf.target.result); 
+            }; ur.readAsText(file[0], 'utf-8');
+        } else { 
+            localStorage.setItem('saved_csv_text', text);
+            processCSVData(text); 
+        }
     };
-    reader.readAsText(file, 'windows-1251');
+    reader.readAsText(file[0], 'windows-1251');
 });
+
+
+// Глобальная переменная для хранения сырых строк файла во время выбора чекбоксов
+var rawCSVLines = []; 
+var rawDelimiter = ';';
+
 function processCSVData(text) {
-    var lines = text.split(/\r?\n/).filter(function(l) { return l.trim() !== ""; }); if (lines.length === 0) return;
-    var firstLine = lines.shift(), delimiter = ';';
-    if (firstLine.includes('\t')) { delimiter = '\t'; } else if (!firstLine.includes(';') && firstLine.includes(',')) { delimiter = ','; }
+    // Принудительно скрываем старую таблицу перед проверкой лимитов
+    var wrapper = document.querySelector('.table-wrapper');
+    if (wrapper) wrapper.style.display = 'none';
+    
+    var cleanText = text.replace(/\r/g, "");
+    var lines = cleanText.split("\n").filter(function(l) { return l.trim() !== ""; }); 
+    if (lines.length === 0) return;
+    
+    var firstLine = lines.shift();
+    var delimiter = firstLine.includes('\t') ? '\t' : (!firstLine.includes(';') && firstLine.includes(',') ? ',' : ';');
+    
     function parseCSVLine(line, delim) {
         var res = [], cur = '', q = false;
         for (var i = 0; i < line.length; i++) {
-            var c = line.charAt(i);
-            if (c === '"') { q = !q; } else if (c === delim && !q) { res.push(cur.trim().replace(/^"|"$/g, '')); cur = ''; } else { cur += c; }
+            var c = line.charAt(i); if (c === '"') { q = !q; } else if (c === delim && !q) { res.push(cur.trim().replace(/^"|"$/g, '')); cur = ''; } else { cur += c; }
         }
         res.push(cur.trim().replace(/^"|"$/g, '')); return res;
     }
-    tableHeaders = parseCSVLine(firstLine, delimiter); globalRows = [];
-    lines.forEach(function(l) {
-        var cells = parseCSVLine(l, delimiter); if (cells.length > 0 && cells.some(function(c) { return c !== ""; })) { globalRows.push(cells); }
+    
+    // Сохраняем сырые данные во временные переменные для кнопки применения выборки
+    rawCSVLines = lines;
+    rawDelimiter = delimiter;
+    
+    var allHeaders = parseCSVLine(firstLine, delimiter);
+    var limit = parseInt(document.getElementById('columnLimitInput').value) || 4;
+    
+    // Прячем прошлую панель выбора столбцов
+    document.getElementById('columnChooserPanel').style.display = 'none';
+    
+    if (allHeaders.length > limit) {
+        // Ситуация А: Столбцов слишком много, строим панель чекбоксов
+        var grid = document.getElementById('checkboxesGrid');
+        grid.innerHTML = '';
+        
+        allHeaders.forEach(function(headerName, idx) {
+            var label = document.createElement('label');
+            label.className = 'column-checkbox-label';
+            
+            var chk = document.createElement('input');
+            chk.type = 'checkbox';
+            chk.setAttribute('data-raw-index', idx);
+            
+            var cleanName = headerName || ("Колонка " + (idx + 1));
+            chk.setAttribute('data-header-name', cleanName);
+            
+            if (idx < limit) chk.checked = true; 
+            
+            var txt = document.createTextNode(cleanName);
+            label.appendChild(chk);
+            label.appendChild(txt);
+            grid.appendChild(label);
+        });
+        
+                document.getElementById('columnChooserPanel').style.display = 'block';
+        
+        // ИСПРАВЛЕНО: Мгновенно разблокируем кнопки верхнего ряда сразу при загрузке файла!
+        document.getElementById('toggleFiltersBtn').disabled = false;
+        document.getElementById('clearFiltersBtn').disabled = false;
+        
+        return; // Приостанавливаем загрузку таблицы!
+    }
+    
+    // ЭТАП Б: Столбцов мало...
+
+    
+    // Ситуация Б: Столбцов мало, строим обычную таблицу сразу
+    tableHeaders = allHeaders; 
+    globalRows = [];
+    lines.forEach(function(l) { 
+        var cells = parseCSVLine(l, delimiter); 
+        if (cells.length > 0 && cells.some(function(c) { return c !== ""; })) globalRows.push(cells); 
     });
+    
+        // Оставляем только разблокировку строки общего ввода, остальное переносим
+    document.getElementById('globalSearchInput').disabled = false; 
 
-    document.getElementById('globalSearchInput').disabled = false;
-    document.getElementById('clearFiltersBtn').disabled = false;
-    document.getElementById('toggleFiltersBtn').disabled = false; // Активируем кнопку "Подробнее"
 
-    document.getElementById('globalSearchInput').value = "";
-    document.getElementById('pageSizeWrapper').style.display = 'block';
-    currentPage = 1; currentFilteredRows = globalRows.concat();
-    generateSearchFields(); renderTableStructure(); renderTableData();
+    if (document.getElementById('pageSizeWrapper')) document.getElementById('pageSizeWrapper').style.display = 'block'; 
+    if (wrapper) wrapper.style.display = 'block';
+    
+    currentPage = 1; 
+    currentFilteredRows = globalRows.concat();
+    generateSearchFields(); 
+    renderTableStructure();
+    renderTableData();
 }
+
+
+
 function generateSearchFields() {
     var container = document.getElementById('searchContainer'); container.innerHTML = ''; container.style.display = 'none';
     tableHeaders.forEach(function(h, idx) {
@@ -723,22 +884,25 @@ function generateSearchFields() {
 }
 document.getElementById('globalSearchInput').addEventListener('input', runCombinedSearch);
 document.getElementById('clearFiltersBtn').addEventListener('click', function() {
-    document.getElementById('globalSearchInput').value = "";
+    // Очищаем поля ввода на экране
+    document.getElementById('globalSearchInput').value = ""; 
     document.querySelectorAll('#searchContainer input').forEach(function(i) { i.value = ""; });
-            // Сбрасываем массив скрытых столбцов
-    window.hiddenIndices = [];
     
-    // Возвращаем видимость всем окошкам детального поиска
-    document.querySelectorAll('#searchContainer .search-field').forEach(function(field) {
-        field.style.display = 'flex';
-    });
+    // Вытаскиваем из долгосрочной памяти исходный, нетронутый текст файла
+    var originalCSV = localStorage.getItem('saved_csv_text');
     
-    // Перерисовываем абсолютно целую и невредимую таблицу
-    currentPage = 1; 
-    currentFilteredRows = globalRows.concat(); 
-    renderTableStructure();
-    renderTableData();
+    if (originalCSV) {
+        // Полностью перезапускаем парсинг — это мгновенно восстановит ВСЕ столбцы и данные
+        processCSVData(originalCSV);
+    } else {
+        // Резервный вариант, если файл не был сохранен в память
+        currentPage = 1; 
+        currentFilteredRows = globalRows.concat(); 
+        renderTableStructure();
+        renderTableData();
+    }
 });
+
 
 document.getElementById('pageSizeSelect').addEventListener('change', function() {
     pageSize = this.value === 'all' ? globalRows.length : parseInt(this.value); currentPage = 1; renderTableData();
@@ -799,25 +963,32 @@ function renderTableStructure() {
         closeBtn.title = 'Скрыть этот столбец';
         
         // Клик по крестику скрывает колонку
-                closeBtn.addEventListener('click', function(e) {
+                        closeBtn.addEventListener('click', function(e) {
             e.stopPropagation(); // Защита от срабатывания перетаскивания шапки
             
-            // Инициализируем массив скрытых индексов, если его нет
-            if (!window.hiddenIndices) window.hiddenIndices = [];
+            // 1. Физически удаляем заголовок из массива названий колонок
+            tableHeaders.splice(idx, 1);
             
-            // Запоминаем, какой именно по счету столбец нужно спрятать
-            window.hiddenIndices.push(idx);
+            // 2. Безопасно удаляем ячейку из главного массива данных (создавая новые чистые строки)
+            globalRows = globalRows.map(function(cells) {
+                var newCells = cells.concat(); // Делаем независимую копию строки
+                newCells.splice(idx, 1);       // Удаляем ровно одну ячейку по индексу
+                return newCells;
+            });
             
-            // Просто обновляем отображение таблицы (данные не удаляются!)
+            // 3. Синхронно удаляем ячейку из текущего отфильтрованного массива
+            currentFilteredRows = currentFilteredRows.map(function(cells) {
+                var newCells = cells.concat();
+                newCells.splice(idx, 1);
+                return newCells;
+            });
+            
+            // 4. Полностью обновляем детальные фильтры, шапку и саму таблицу
+            generateSearchFields();
             renderTableStructure();
             renderTableData();
-            
-            // Скрываем соответствующее нижнее окошко детального фильтра
-            var allSearchFields = document.querySelectorAll('#searchContainer .search-field');
-            if (allSearchFields[idx]) {
-                allSearchFields[idx].style.display = 'none';
-            }
         });
+
 
         
         t.appendChild(closeBtn);
@@ -851,6 +1022,7 @@ function renderTableStructure() {
 
             if (dragSrcIndex !== null && dragSrcIndex !== targetIndex) {
     // Функция для безопасного перемещения элемента внутри любого массива без багов сдвига индексов
+
     function moveItemInArray(arr, fromIdx, toIdx) {
         var cleanArray = arr.concat(); // Делаем чистую копию
         var item = cleanArray.splice(fromIdx, 1)[0]; // Вырезаем сам элемент
@@ -883,9 +1055,9 @@ function renderTableStructure() {
         });
 
                 // Если этот индекс сохранен как скрытый, не добавляем его на экран
-        if (window.hiddenIndices && window.hiddenIndices.includes(idx)) {
-            return; 
-        }
+        //if (window.hiddenIndices && window.hiddenIndices.includes(idx)) {
+        //    return; 
+        //}
         row.appendChild(t); 
     }); 
     th.appendChild(row);
@@ -926,20 +1098,21 @@ function renderTableData() {
 
     pRows.forEach(function(cells) {
         var tr = document.createElement('tr');
-        tableHeaders.forEach(function(_, idx) {
-            var td = document.createElement('td'), txt = '';
-            cells.forEach(function(c, i) { if (i === idx) txt = String(c); });
+                tableHeaders.forEach(function(_, idx) {
+            var td = document.createElement('td');
+            var txt = String(cells[idx] !== undefined ? cells[idx] : '');
             
-            // Определяем, какой фильтр сейчас активен для этой колонки
-            var activeQuery = gQ;
-            columnInputs.forEach(function(input) {
+            // Безопасно считываем активный запрос для подсветки жирным шрифтом
+            var activeQuery = gQ; 
+            var columnInputs = document.querySelectorAll('#searchContainer input');
+            columnInputs.forEach(function(input) { 
                 if (parseInt(input.getAttribute('data-index')) === idx && input.value.trim()) {
-                    activeQuery = input.value.trim();
+                    activeQuery = input.value.trim(); 
                 }
             });
-
-            // Записываем текст с подсветкой маркера
+            
             td.innerHTML = highlightText(txt, activeQuery);
+
             
             if (txt.trim() !== "") {
                 var btn = document.createElement('button'); btn.className = 'copy-btn'; btn.textContent = '📋';
@@ -956,9 +1129,9 @@ function renderTableData() {
                 td.appendChild(btn);
             }
                         // Если индекс столбца скрыт, не добавляем ячейку данных на экран
-            if (window.hiddenIndices && window.hiddenIndices.includes(idx)) {
-                return;
-            }
+            //if (window.hiddenIndices && window.hiddenIndices.includes(idx)) {
+            //    return;
+            //}
             tr.appendChild(td);
         });
         tb.appendChild(tr);
@@ -1029,10 +1202,10 @@ document.getElementById('toggleFiltersBtn').addEventListener('click', function()
     
     if (container.style.display === 'none' || !container.style.display) {
         container.style.display = 'grid'; // Показываем сетку фильтров
-        this.textContent = 'Подробнее 🔼';
+        this.textContent = 'Фильтры 🔼';
     } else {
         container.style.display = 'none'; // Скрываем сетку фильтров
-        this.textContent = 'Подробнее 🔽';
+        this.textContent = 'Фильтры 🔽';
     }
 });
 
