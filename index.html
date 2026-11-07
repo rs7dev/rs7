@@ -3,45 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>поиск CSV</title>
-    <style>
+    <title>гигапоиск CSV</title>
+   
+<style>
         /* Базовые переменные для удобного переключения тем */
         :root {
-    --bg-body: #f8fafc;
-    --bg-container: #ffffff;
-    --text-main: #334155;
-    --text-title: #0f172a;
-    --text-muted: #64748b;
-    --border-color: #cbd5e1;
-    --bg-filebox: #f1f5f9;
-    --border-filebox: #cbd5e1;
-    --bg-th: #e2e8f0;
-    --bg-hover-tr: #f8fafc;
-    --bg-copy-btn: #ffffff;
-    --input-bg: #ffffff;
-    --input-disabled: #f8fafc;
-    --accent-color: #3b82f6;
-    --radius-main: 10px;
-}
-
-
+            --bg-body: #f8fafc;
+            --bg-container: #ffffff;
+            --text-main: #334155;
+            --text-title: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --bg-filebox: #f1f5f9;
+            --border-filebox: #cbd5e1;
+            --bg-th: #e2e8f0;
+            --bg-hover-tr: #f8fafc;
+            --bg-copy-btn: #ffffff;
+            --input-bg: #ffffff;
+            --input-disabled: #f8fafc;
+            --accent-color: #3b82f6;
+            --radius-main: 10px;
+        }
 
         /* Цвета для Ночного режима */
         [data-theme="dark"], [data-theme="dark"] body {
             --bg-body: #0b0f19;
-    --bg-container: #111827;
-    --text-main: #cbd5e1;
-    --text-title: #f8fafc;
-    --text-muted: #94a3b8;
-    --border-color: #1f2937;
-    --bg-filebox: #1f2937;
-    --border-filebox: #374151;
-    --bg-th: #1f2937;
-    --bg-hover-tr: #1f2937;
-    --bg-copy-btn: #1f2937;
-    --input-bg: #111827;
-    --input-disabled: #0b0f19;
-    --accent-color: #60a5fa;
+            --bg-container: #111827;
+            --text-main: #cbd5e1;
+            --text-title: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #1f2937;
+            --bg-filebox: #1f2937;
+            --border-filebox: #374151;
+            --bg-th: #1f2937;
+            --bg-hover-tr: #1f2937;
+            --bg-copy-btn: #1f2937;
+            --input-bg: #111827;
+            --input-disabled: #0b0f19;
+            --accent-color: #60a5fa;
         }
 
         [data-theme="dark"] .container {
@@ -96,102 +95,191 @@
             color: #94a3b8 !important;
         }
 
-/* Мягкая фосфорно-зеленая тема Матрицы (Комфортная для глаз) */
-/* Новая стильная Хвойная тема по вашему скриншоту */
-/* Совершенная Хвойная тема (Сбалансированная и контрастная) */
-[data-theme="matrix"], [data-theme="matrix"] body {
-    --bg-body: #1c3119;              /* Верхний глубокий хвойный фон со скриншота */
-    --bg-container: #0f1811;         /* Нижний благородный матово-графитовый фон */
-    --text-main: #f1f5f9;            /* Мягкий молочно-белый текст для защиты глаз */
-    --text-title: #ffffff;           /* Чистый белый для главных заголовков */
-    --text-muted: #a7bdae;           /* Четкий, читаемый оливково-серый текст подписей */
-    --border-color: #1e3324;         /* Тонкие хвойные разделительные линии */
-    --bg-filebox: #1c3119;           /* Плашка загрузки в цвет верхнего фона */
-    --border-filebox: #3d5945;       /* Сдержанные зеленые границы элементов */
-    --bg-th: #1f3624;                /* Плотная глубокая шапка таблицы */
-    --bg-hover-tr: #18291c;          /* Подсветка строки при наведении мыши */
-    --bg-copy-btn: #142118;          /* Приглушенные подложки кнопок */
-    --input-bg: #0f1811;             /* Графитовые поля ввода */
-    --input-disabled: #142118;
-    --accent-color: #86efac;         /* Благородный мятно-пастельный цвет для жирного текста поиска */
-}
+        /* Мягкая фосфорно-зеленая тема Матрицы */
+        [data-theme="matrix"], [data-theme="matrix"] body {
+            --bg-body: #1c3119;
+            --bg-container: #0f1811;
+            --text-main: #f1f5f9;
+            --text-title: #ffffff;
+            --text-muted: #a7bdae;
+            --border-color: #1e3324;
+            --bg-filebox: #1c3119;
+            --border-filebox: #3d5945;
+            --bg-th: #1f3624;
+            --bg-hover-tr: #18291c;
+            --bg-copy-btn: #142118;
+            --input-bg: #0f1811;
+            --input-disabled: #142118;
+            --accent-color: #86efac;
+        }
 
-/* Красивая изумрудная подсветка активных полей */
-[data-theme="matrix"] .global-search:focus {
-    border-color: #527a5f !important;
-    box-shadow: 0 0 0 3px rgba(134, 239, 172, 0.1) !important;
-}
-[data-theme="matrix"] .pagination-btn.active {
-    background-color: #2d4a37 !important;
-    border-color: #527a5f !important;
-    color: #ffffff !important;
-}
+        [data-theme="matrix"] .global-search:focus {
+            border-color: #527a5f !important;
+            box-shadow: 0 0 0 3px rgba(134, 239, 172, 0.1) !important;
+        }
+        [data-theme="matrix"] .pagination-btn.active {
+            background-color: #2d4a37 !important;
+            border-color: #527a5f !important;
+            color: #ffffff !important;
+        }
+        [data-theme="matrix"] .clear-btn:hover:not(:disabled) { 
+            background-color: #451a1a !important;
+            border-color: #991b1b !important; 
+            color: #fca5a5 !important; 
+        }
 
-/* Специальное благородное наведение для кнопки очистки в хвойной теме */
-[data-theme="matrix"] .clear-btn:hover:not(:disabled) { 
-    background-color: #451a1a !important; /* Глубокий винно-бордовый цвет вместо ядовито-красного */
-    border-color: #991b1b !important; 
-    color: #fca5a5 !important; 
-}
+        /* Воздушная тема Аэро */
+        [data-theme="aero"], [data-theme="aero"] body {
+            --bg-body: #d2eaee;
+            --bg-container: #e6f4f6;
+            --text-main: #1e293b;
+            --text-title: #0f172a;
+            --text-muted: #577c82;
+            --border-color: #a4cbd1;
+            --bg-filebox: #d2eaee;
+            --border-filebox: #a4cbd1;
+            --bg-th: #bfe3e7;
+            --bg-hover-tr: #dcf2f5;
+            --bg-copy-btn: #daf0f2;
+            --input-bg: #e6f4f6;
+            --input-disabled: #daf0f2;
+            --accent-color: #0891b2;
+        }
 
+        [data-theme="aero"] .global-search:focus {
+            border-color: var(--accent-color) !important;
+        }
+        [data-theme="aero"] .pagination-btn.active {
+            background-color: var(--accent-color) !important;
+            border-color: var(--accent-color) !important;
+        }
+        /* ==========================================================================
+           НОВЫЕ ПАЛИТРЫ (Светлые читаемые шапки + Насыщенный периметр + Тёмный Дом)
+           ========================================================================== */
 
-/* Воздушная тема Аэро по вашему новому скриншоту */
-[data-theme="aero"], [data-theme="aero"] body {
-    --bg-body: #d2eaee;              /* Верхний нежный аквамариновый фон со скриншота */
-    --bg-container: #e6f4f6;         /* Нижний светлый мятно-голубой фон */
-    --text-main: #1e293b;            /* Глубокий темно-серый текст таблицы для четкости */
-    --text-title: #0f172a;           /* Темные контрастные заголовки */
-    --text-muted: #577c82;           /* Приглушенный серо-бирюзовый цвет подписей */
-    --border-color: #a4cbd1;         /* Тонкие нежные мятные разделительные линии */
-    --bg-filebox: #d2eaee;           /* Фон кнопок загрузки в цвет верхнего фона */
-    --border-filebox: #a4cbd1;       /* Красивые бирюзовые границы элементов */
-    --bg-th: #bfe3e7;                /* Светлая аккуратная шапка таблицы */
-    --bg-hover-tr: #dcf2f5;          /* Мягкая подсветка строки при наведении */
-    --bg-copy-btn: #daf0f2;          /* Подложки кнопок */
-    --input-bg: #e6f4f6;             /* Светлые мятные поля ввода */
-    --input-disabled: #daf0f2;
-    --accent-color: #0891b2;         /* Контрастный насыщенный бирюзовый для жирного текста поиска */
-}
+        /* 🏠 Тема: Уютный дом (Премиальная темная палитра «Ночной сити») */
+        [data-theme="cozy-home"] { background-color: #0A1B24 !important; }
+        [data-theme="cozy-home"] body { background-color: #0A1B24 !important; color: #DCE5E8 !important; }
+        [data-theme="cozy-home"], [data-theme="cozy-home"] body {
+            --bg-body: #0A1B24; --bg-container: #11232E; --text-main: #DCE5E8; --text-title: #FFFFFF;
+            --text-muted: #84A4C4; --border-color: #1A3442; --bg-filebox: #1A2830; --border-filebox: #4F9097;
+            --bg-th: #0A6067; --bg-hover-tr: #1C3647; --bg-copy-btn: #1A2830; --input-bg: #0A1B24;
+            --input-disabled: #11232E; --accent-color: #C49C4C;
+        }
+        [data-theme="cozy-home"] .container { background: #11232E !important; color: #DCE5E8 !important; border-color: #1A3442 !important; }
+        [data-theme="cozy-home"] input, [data-theme="cozy-home"] select, [data-theme="cozy-home"] .global-search { background-color: #0A1B24 !important; color: #FFFFFF !important; border-color: #4F9097 !important; }
+        [data-theme="cozy-home"] .file-box { background-color: #1A2830 !important; border-color: #4F9097 !important; color: #DCE5E8 !important; }
+        [data-theme="cozy-home"] .copy-btn, [data-theme="cozy-home"] .pagination-btn { background: #1A2830 !important; border-color: #1A3442 !important; color: #ffffff !important; }
+        [data-theme="cozy-home"] th { background-color: #0A6067 !important; border-color: #1A3442 !important; }
+        [data-theme="cozy-home"] td { border-color: #1A3442 !important; color: #DCE5E8 !important; }
+        [data-theme="cozy-home"] tr:hover td { background-color: #1C3647 !important; }
 
-/* Красивая подсветка элементов для темы Аэро */
-[data-theme="aero"] .global-search:focus {
-    border-color: var(--accent-color) !important;
-}
-[data-theme="aero"] .pagination-btn.active {
-    background-color: var(--accent-color) !important;
-    border-color: var(--accent-color) !important;
-}
+        /* ☕ Тема: Чай с лимоном (Светлая таблица + Чайный периметр) */
+        [data-theme="lemon-tea"] { background-color: #837306 !important; }
+        [data-theme="lemon-tea"] body { background-color: #837306 !important; color: #1D0E12 !important; }
+        [data-theme="lemon-tea"], [data-theme="lemon-tea"] body {
+            --bg-body: #837306; --bg-container: #FAFAFA; --text-main: #1D0E12; --text-title: #FFFFFF;
+            --text-muted: #FAF0D4; --border-color: #706203; --bg-filebox: #E6C455; --border-filebox: #706203;
+            --bg-th: #F3D678; --bg-hover-tr: #F0E8BF; --bg-copy-btn: #EBEBEB; --input-bg: #FFFFFF;
+            --input-disabled: #EBEBEB; --accent-color: #3C5A80;
+        }
+        [data-theme="lemon-tea"] .container { background: #FAFAFA !important; color: #1D0E12 !important; border-color: #706203 !important; }
+        [data-theme="lemon-tea"] input, [data-theme="lemon-tea"] select, [data-theme="lemon-tea"] .global-search { background-color: #FFFFFF !important; color: #1D0E12 !important; border-color: #706203 !important; }
+        [data-theme="lemon-tea"] th { background-color: #F3D678 !important; border-color: #706203 !important; }
+        [data-theme="lemon-tea"] td { border-color: #706203 !important; color: #1D0E12 !important; }
+        [data-theme="lemon-tea"] tr:hover td { background-color: #F0E8BF !important; }
 
+        /* ⛰️ Тема: Горная саванна (Светлая таблица + Каменистый периметр) */
+        [data-theme="savanna"] { background-color: #A47A58 !important; }
+        [data-theme="savanna"] body { background-color: #A47A58 !important; color: #1A1810 !important; }
+        [data-theme="savanna"], [data-theme="savanna"] body {
+            --bg-body: #A47A58; --bg-container: #FDFDFD; --text-main: #1A1810; --text-title: #FFFFFF;
+            --text-muted: #FAF0E4; --border-color: #8C9690; --bg-filebox: #E0AF79; --border-filebox: #735D4C;
+            --bg-th: #F4C28A; --bg-hover-tr: #EBECE6; --bg-copy-btn: #E6EAE8; --input-bg: #FFFFFF;
+            --input-disabled: #E6EAE8; --accent-color: #3D3814;
+        }
+        [data-theme="savanna"] .container { background: #FDFDFD !important; color: #1A1810 !important; border-color: #8C9690 !important; }
+        [data-theme="savanna"] input, [data-theme="savanna"] select, [data-theme="savanna"] .global-search { background-color: #FFFFFF !important; color: #1A1810 !important; border-color: #8C9690 !important; }
+        [data-theme="savanna"] th { background-color: #F4C28A !important; border-color: #8C9690 !important; }
+        [data-theme="savanna"] td { border-color: #8C9690 !important; color: #1A1810 !important; }
+        [data-theme="savanna"] tr:hover td { background-color: #EBECE6 !important; }
 
-        body {  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 15px; background-color: var(--bg-body); color: var(--text-main); transition: background-color 0.2s ease, color 0.2s ease; -webkit-font-smoothing: antialiased; }
+        /* 🌿 Тема: Шалфей и хвоя (Светлая таблица + Оливковый периметр) */
+        [data-theme="sage"] { background-color: #4C542C !important; }
+        [data-theme="sage"] body { background-color: #4C542C !important; color: #0B1006 !important; }
+        [data-theme="sage"], [data-theme="sage"] body {
+            --bg-body: #4C542C; --bg-container: #FAFAF8; --text-main: #0B1006; --text-title: #FFFFFF;
+            --text-muted: #E4ECD8; --border-color: #7D8577; --bg-filebox: #A4BD8A; --border-filebox: #7D8577;
+            --bg-th: #BED4A4; --bg-hover-tr: #E2E6DC; --bg-copy-btn: #EAEAE6; --input-bg: #FFFFFF;
+            --input-disabled: #E2E6DC; --accent-color: #557833;
+        }
+        [data-theme="sage"] .container { background: #FAFAF8 !important; color: #0B1006 !important; border-color: #7D8577 !important; }
+        [data-theme="sage"] input, [data-theme="sage"] select, [data-theme="sage"] .global-search { background-color: #FFFFFF !important; color: #0B1006 !important; border-color: #7D8577 !important; }
+        [data-theme="sage"] th { background-color: #BED4A4 !important; border-color: #7D8577 !important; }
+        [data-theme="sage"] td { border-color: #7D8577 !important; color: #0B1006 !important; }
+        [data-theme="sage"] tr:hover td { background-color: #E2E6DC !important; }
+
+        /* ❄️ Тема: Заснеженный лес (Светлая таблица + Сине-зеленый периметр) */
+        [data-theme="snow-forest"] { background-color: #2B5C6C !important; }
+        [data-theme="snow-forest"] body { background-color: #2B5C6C !important; color: #0D161A; }
+        [data-theme="snow-forest"], [data-theme="snow-forest"] body {
+            --bg-body: #2B5C6C; --bg-container: #F5F8FA; --text-main: #0D161A; --text-title: #FFFFFF;
+            --text-muted: #DEE7ED; --border-color: #5C91A2; --bg-filebox: #8EACCC; --border-filebox: #5C91A2;
+            --bg-th: #A1BCD4; --bg-hover-tr: #DEE6EB; --bg-copy-btn: #E4ECF2; --input-bg: #FFFFFF;
+            --input-disabled: #DEE6EB; --accent-color: #358EA1;
+        }
+        [data-theme="snow-forest"] .container { background: #F5F8FA !important; color: #0D161A !important; border-color: #5C91A2 !important; }
+        [data-theme="snow-forest"] input, [data-theme="snow-forest"] select, [data-theme="snow-forest"] .global-search { background-color: #FFFFFF !important; color: #0D161A !important; border-color: #5C91A2 !important; }
+        [data-theme="snow-forest"] th { background-color: #A1BCD4 !important; border-color: #5C91A2 !important; }
+        [data-theme="snow-forest"] td { border-color: #5C91A2 !important; color: #0D161A !important; }
+        [data-theme="snow-forest"] tr:hover td { background-color: #DEE6EB !important; }
+
+        /* 🌊 Тема: Глубокий океан (Светлая таблица + Плотный синий периметр) */
+        [data-theme="ocean"] { background-color: #04547E !important; }
+        [data-theme="ocean"] body { background-color: #04547E !important; color: #07121A !important; }
+        [data-theme="ocean"], [data-theme="ocean"] body {
+            --bg-body: #04547E; --bg-container: #F0F4F7; --text-main: #07121A; --text-title: #FFFFFF;
+            --text-muted: #D4E3ED; --border-color: #5C8CA9; --bg-filebox: #7AA6C2; --border-filebox: #5C8CA9;
+            --bg-th: #90B9D3; --bg-hover-tr: #D6E2EB; --bg-copy-btn: #DAE4EC; --input-bg: #FFFFFF;
+            --input-disabled: #D6E2EB; --accent-color: #04709E;
+        }
+        [data-theme="ocean"] .container { background: #F0F4F7 !important; color: #07121A !important; border-color: #5C8CA9 !important; }
+        [data-theme="ocean"] input, [data-theme="ocean"] select, [data-theme="ocean"] .global-search { background-color: #FFFFFF !important; color: #07121A !important; border-color: #5C8CA9 !important; }
+        [data-theme="ocean"] th { background-color: #90B9D3 !important; border-color: #5C8CA9 !important; }
+        [data-theme="ocean"] td { border-color: #5C8CA9 !important; color: #07121A !important; }
+        [data-theme="ocean"] tr:hover td { background-color: #D6E2EB !important; }
+
+        /* --- Настройка контрастных цветов для текста в шапках таблиц --- */
+        [data-theme="lemon-tea"] th { color: #837306 !important; font-weight: bold; }
+        [data-theme="savanna"] th { color: #A47A58 !important; font-weight: bold; }
+        [data-theme="sage"] th { color: #4C542C !important; font-weight: bold; }
+        [data-theme="snow-forest"] th { color: #2B5C6C !important; font-weight: bold; }
+        [data-theme="ocean"] th { color: #04547E !important; font-weight: bold; }
+        [data-theme="cozy-home"] th { color: var(--accent-color) !important; font-weight: bold; }
+        /* ==========================================================================
+           4. ОРИГИНАЛЬНЫЕ ФУНКЦИОНАЛЬНЫЕ СТИЛИ (Часть 1)
+           ========================================================================= */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 15px; background-color: var(--bg-body); color: var(--text-main); transition: background-color 0.2s ease, color 0.2s ease; -webkit-font-smoothing: antialiased; }
         
-.container { 
-    max-width: 100% !important; 
-    margin: 0; 
-    background: var(--bg-container); 
-    /* Возвращаем стандартные 25px отступа со всех четырех сторон */
-    padding: 20px 25px 25px 25px; 
-    border-radius: 12px; 
-    position: relative; 
-    box-sizing: border-box; 
-    border: 1px solid var(--border-color); 
-}
+        .container { 
+            max-width: 100% !important; 
+            margin: 0; 
+            background: var(--bg-container); 
+            padding: 20px 25px 25px 25px; 
+            border-radius: 12px; 
+            position: relative; 
+            box-sizing: border-box; 
+            border: 1px solid var(--border-color); 
+        }
 
-/* Полностью СТИРАЕМ или УДАЛЯЕМ этот ошибочный блок с margin-right из кода: */
-/* .header-row, .search-bar-wrapper, .controls-row, #searchContainer, #pagination { ... } */
-
-.header-row { 
-    display: flex; 
-    align-items: center; 
-    justify-content: space-between; 
-    gap: 20px; 
-    margin-bottom: 25px; 
-    /* Элементы больше не будут прыгать на новые строки */
-    flex-wrap: nowrap; 
-}
-
-
-
+        .header-row { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            gap: 20px; 
+            margin-bottom: 25px; 
+            flex-wrap: nowrap; 
+        }
 
         .theme-toggle-btn { position: static !important; padding: 10px 14px; font-size: 18px; background: var(--bg-copy-btn); border: 1px solid var(--border-filebox); border-radius: 8px; cursor: pointer; }
         
@@ -206,43 +294,38 @@
         .global-search:disabled { background-color: var(--input-disabled); border-color: var(--border-filebox); cursor: not-allowed; }
         
         .clear-btn { 
-    padding: 0 22px; 
-    font-size: 14px; 
-    font-weight: 600; 
-    /* Базовый цвет кнопки: мягкий серый/темный в зависимости от темы */
-    background-color: var(--bg-filebox); 
-    color: var(--text-main); 
-    border: 1px solid var(--border-filebox); 
-    border-radius: 8px; 
-    cursor: pointer; 
-    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease; 
-    white-space: nowrap; 
-}
+            padding: 0 22px; 
+            font-size: 14px; 
+            font-weight: 600; 
+            background-color: var(--bg-filebox); 
+            color: var(--text-main); 
+            border: 1px solid var(--border-filebox); 
+            border-radius: 8px; 
+            cursor: pointer; 
+            transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease; 
+            white-space: nowrap; 
+        }
 
-/* Эффект при наведении: кнопка аккуратно загорается красным, предупреждая об очистке */
-.clear-btn:hover:not(:disabled) { 
-    background-color: #fee2e2; /* Блеклый нежно-красный фон */
-    border-color: #f87171;     /* Пастельный красный контур */
-    color: #ef4444;            /* Красный текст */
-}
+        .clear-btn:hover:not(:disabled) { 
+            background-color: #fee2e2; 
+            border-color: #f87171;     
+            color: #ef4444;            
+        }
 
-/* Адаптация эффекта наведения под темные темы (Ночная и Хвойная) */
-[data-theme="dark"] .clear-btn:hover:not(:disabled),
-[data-theme="matrix"] .clear-btn:hover:not(:disabled) { 
-    background-color: #7f1d1d; /* Глубокий темно-красный фон */
-    border-color: #b91c1c; 
-    color: #fca5a5;            /* Мягкий розово-белый текст */
-}
+        [data-theme="dark"] .clear-btn:hover:not(:disabled),
+        [data-theme="matrix"] .clear-btn:hover:not(:disabled) { 
+            background-color: #7f1d1d; 
+            border-color: #b91c1c; 
+            color: #fca5a5;            
+        }
 
-/* Стиль, когда кнопка заблокирована (в полях поиска ничего не введено) */
-.clear-btn:disabled { 
-    background-color: var(--input-disabled); 
-    cursor: not-allowed; 
-    color: var(--text-muted); 
-    border: 1px solid var(--border-color); 
-    opacity: 0.6;
-}
-
+        .clear-btn:disabled { 
+            background-color: var(--input-disabled); 
+            cursor: not-allowed; 
+            color: var(--text-muted); 
+            border: 1px solid var(--border-color); 
+            opacity: 0.6;
+        }
 
         .search-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
              gap: 15px; margin-bottom: 5px; padding: 15px; background: var(--bg-filebox); border: 1px solid var(--border-color); border-radius: 8px; }
@@ -251,350 +334,325 @@
         .search-field input { padding: 10px; border: 1px solid var(--border-filebox); border-radius: 6px; font-size: 14px; outline: none; background-color: var(--input-bg); color: var(--text-main); }
         
         .table-wrapper { 
-    overflow-x: auto; 
-    border: 1px solid var(--border-color); 
-    border-radius: 8px; 
-    max-height: calc(100vh - 280px) !important; 
-    min-height: 200px; 
-    margin-right: 0; /* Сбросили прошлый сдвиг */
-    padding-right: 5px; /* Создает микро-зазор перед самой полосой прокрутки */
-}
-
-
+            overflow-x: auto; 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px; 
+            max-height: calc(100vh - 280px) !important; 
+            min-height: 200px; 
+            margin-right: 0; 
+            padding-right: 5px; 
+        }
 
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 15px; }
         th { 
-    background-color: var(--bg-th) !important; 
-    /* Увеличили боковой отступ до 24px */
-    padding: 10px 20px; 
-    font-weight: 600; 
-    color: var(--text-muted); 
-    border: 1px solid var(--border-color); 
-    border-bottom: 2px solid var(--border-color); 
-    position: sticky; 
-    top: 0; 
-    z-index: 5; 
-    font-size: 13px; 
-    text-transform: uppercase; 
-    letter-spacing: 0.5px; 
-}
-td { 
-    /* Увеличили боковой отступ до 24px, а правый для кнопки копирования сделали 55px */
-    padding: 12px 24px; 
-    padding-right: 55px; 
-    border: 1px solid var(--border-color); 
-    position: relative; 
-    line-height: 1.4; 
-}
-
-
-        
+            background-color: var(--bg-th) !important; 
+            padding: 10px 20px; 
+            font-weight: 600; 
+            color: var(--text-muted); 
+            border: 1px solid var(--border-color); 
+            border-bottom: 2px solid var(--border-color); 
+            position: sticky; 
+            top: 0; 
+            z-index: 5; 
+            font-size: 13px; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px; 
+        }
+        td { 
+            padding: 12px 24px; 
+            padding-right: 55px; 
+            border: 1px solid var(--border-color); 
+            position: relative; 
+            line-height: 1.4; 
+        }
+        /* ==========================================================================
+           4. ОРИГИНАЛЬНЫЕ ФУНКЦИОНАЛЬНЫЕ СТИЛИ (Часть 2 + Конец)
+           ========================================================================= */
         .copy-btn { 
-    position: absolute; 
-    right: 8px; 
-    top: 50%; 
-    transform: translateY(-50%); 
-    opacity: 0; 
-    background: var(--bg-copy-btn); 
-    border: 1px solid var(--border-filebox); 
-    border-radius: 6px; 
-    cursor: pointer; 
-    padding: 6px 8px; 
-    font-size: 12px; 
-    color: var(--text-main); 
-    transition: opacity 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
-}
+            position: absolute; 
+            right: 8px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            opacity: 0; 
+            background: var(--bg-copy-btn); 
+            border: 1px solid var(--border-filebox); 
+            border-radius: 6px; 
+            cursor: pointer; 
+            padding: 6px 8px; 
+            font-size: 12px; 
+            color: var(--text-main); 
+            transition: opacity 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+        }
 
-/* Показываем кнопку только при наведении на ячейку */
-td:hover .copy-btn { 
-    opacity: 1; 
-}
+        td:hover .copy-btn { 
+            opacity: 1; 
+        }
 
-/* Стиль при наведении на саму иконку */
-.copy-btn:hover { 
-    border-color: var(--accent-color); 
-    background-color: var(--bg-filebox); 
-}
+        .copy-btn:hover { 
+            border-color: var(--accent-color); 
+            background-color: var(--bg-filebox); 
+        }
 
-/* Цвет кнопки при успешном копировании (зеленая галочка) */
-.copy-btn.copied { 
-    background-color: #dcfce7 !important; 
-    border-color: #22c55e !important; 
-    color: #16a34a !important; 
-}
-
+        .copy-btn.copied { 
+            background-color: #dcfce7 !important; 
+            border-color: #22c55e !important; 
+            color: #16a34a !important; 
+        }
         
-        /* Блок управления данными (счётчик и выбор строк) */
         .controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
         .counter { font-size: 14px; color: var(--text-muted); font-weight: bold; }
         .page-size-selector { font-size: 14px; color: var(--text-muted); }
         .page-size-selector select { padding: 5px; border-radius: 6px; border: 1px solid var(--border-filebox); outline: none; background: var(--input-bg); color: var(--text-main); margin-left: 5px; cursor: pointer; }
 
-        /* Элементы пагинатора */
         .pagination-container { 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    gap: 6px; 
-    margin-top: auto; /* Выталкивает пагинатор в самый низ контейнера */
-    padding-top: 20px;
-    flex-wrap: wrap; 
-}
-
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 6px; 
+            margin-top: auto; 
+            padding-top: 20px;
+            flex-wrap: wrap; 
+        }
 
         .pagination-btn { 
-    padding: 8px 14px; 
-    font-size: 13px; 
-    font-weight: 600; 
-    background: var(--bg-copy-btn); 
-    border: 1px solid var(--border-filebox); 
-    border-radius: 6px; 
-    cursor: pointer; 
-    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease; 
-    color: var(--text-main); 
-}
+            padding: 8px 14px; 
+            font-size: 13px; 
+            font-weight: 600; 
+            background: var(--bg-copy-btn); 
+            border: 1px solid var(--border-filebox); 
+            border-radius: 6px; 
+            cursor: pointer; 
+            transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease; 
+            color: var(--text-main); 
+        }
 
-/* Эффект при наведении на доступную кнопку */
-.pagination-btn:hover:not(:disabled) { 
-    border-color: var(--accent-color); 
-    color: var(--accent-color); 
-    background-color: var(--bg-filebox); 
-}
+        .pagination-btn:hover:not(:disabled) { 
+            border-color: var(--accent-color); 
+            color: var(--accent-color); 
+            background-color: var(--bg-filebox); 
+        }
 
-/* Стиль для кнопки текущей (активной) страницы */
-.pagination-btn.active { 
-    background-color: var(--accent-color) !important; 
-    border-color: var(--accent-color) !important; 
-    color: white !important; 
-}
+        .pagination-btn.active { 
+            background-color: var(--accent-color) !important; 
+            border-color: var(--accent-color) !important; 
+            color: white !important; 
+        }
 
-/* Стиль для заблокированных кнопок (например, "Назад" на первой странице) */
-.pagination-btn:disabled { 
-    opacity: 0.4; 
-    cursor: not-allowed; 
-    border-color: var(--border-color); 
-}
+        .pagination-btn:disabled { 
+            opacity: 0.4; 
+            cursor: not-allowed; 
+            border-color: var(--border-color); 
+        }
 
         .pagination-dots { padding: 0 5px; color: var(--text-muted); font-weight: bold; }
 
-.vk-cloud-btn {
-    padding: 10px 18px;
-    font-size: 14px;
-    font-weight: 600;
-    background-color: #0077ff; /* Фирменный синий цвет VK */
-    color: white !important;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.15s ease, transform 0.1s ease;
-    white-space: nowrap;
-}
-.vk-cloud-btn:hover {
-    background-color: #0066dd;
-}
-.vk-cloud-btn:active {
-    transform: scale(0.98);
-}
-[data-theme="dark"] .vk-cloud-btn {
-    background-color: #2563eb;
-}
-[data-theme="dark"] .vk-cloud-btn:hover {
-    background-color: #1d4ed8;
-}
-
-
-.toggle-filters-btn {
-    padding: 0 18px;
-    font-size: 14px;
-    font-weight: 600;
-    background-color: var(--bg-filebox);
-    color: var(--text-main);
-    border: 1px solid var(--border-filebox);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    white-space: nowrap;
-}
-.toggle-filters-btn:hover:not(:disabled) {
-    border-color: var(--accent-color);
-    color: var(--accent-color);
-}
-.toggle-filters-btn:disabled {
-    background-color: var(--input-disabled);
-    cursor: not-allowed;
-    color: var(--text-muted);
-    border: 1px solid var(--border-color);
-    opacity: 0.6;
-}
-
-
-/* Специальный класс для контрастного выделения периметра строки */
-tr.ctrl-highlight td {
-    border-top: 2px solid var(--ctrl-border) !important;
-    border-bottom: 2px solid var(--ctrl-border) !important;
-    background-color: var(--ctrl-bg) !important;
-}
-tr.ctrl-highlight td:first-child {
-    border-left: 2px solid var(--ctrl-border) !important;
-}
-tr.ctrl-highlight td:last-child {
-    border-right: 2px solid var(--ctrl-border) !important;
-}
-
-/* Настройка контрастных цветов для каждой из 4 тем оформления */
-:root { --ctrl-border: #0f172a; --ctrl-bg: #f1f5f9; }               /* Светлая: темный контур */
-[data-theme="dark"] { --ctrl-border: #38bdf8; --ctrl-bg: #1e293b; }   /* Ночная: светлый неоново-голубой контур */
-[data-theme="matrix"] { --ctrl-border: #4ade80; --ctrl-bg: #18291c; } /* Хвойная: светлый салатовый контур */
-[data-theme="aero"] { --ctrl-border: #0891b2; --ctrl-bg: #daf0f2; }   /* Аэро: насыщенный бирюзовый контур */
-
-/* Стили для аккуратного всплывающего уведомления */
-.toast-notification {
-    position: fixed;
-    bottom: 25px;
-    left: 25px;
-    background-color: var(--bg-container);
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    z-index: 9999;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.2s ease, transform 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-/* Класс, который делает уведомление видимым */
-.toast-notification.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-
-/* Стили для перетаскивания столбцов мышкой */
-th[draggable="true"] {
-    cursor: grab;
-    user-select: none;
-}
-th[draggable="true"]:active {
-    cursor: grabbing;
-}
-/* Пунктирная линия-ориентир вашего цвета темы в месте сброса */
-th.drag-over {
-    border-left: 3px dashed var(--accent-color) !important;
-}
-
-
-/* Выезжающая горизонтальная панель выбора тем */
-.theme-menu-panel {
-    display: flex;
-    gap: 6px;
-    background: var(--bg-filebox);
-    border: 1px solid var(--border-filebox);
-    padding: 4px 6px;
-    border-radius: 8px;
-    opacity: 0;
-    pointer-events: none;
-    transform: translateX(20px);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    white-space: nowrap;
-}
-/* Класс активации: панель выезжает влево и становится видимой */
-.theme-menu-panel.open {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateX(0);
-}
-/* Иконки внутри выезжающего меню */
-.theme-menu-item {
-    background: var(--bg-copy-btn);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    cursor: pointer;
-    padding: 6px 10px;
-    font-size: 15px;
-    transition: all 0.15s ease;
-}
-.theme-menu-item:hover {
-    border-color: var(--accent-color);
-    background: var(--bg-container);
-}
-
-/* Стили для панели чекбоксов выбора колонок */
-.column-checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-main);
-    cursor: pointer;
-    padding: 6px;
-    border-radius: 4px;
-    transition: background-color 0.15s ease;
-}
-.column-checkbox-label:hover {
-    background-color: var(--bg-hover-tr);
-}
-.column-checkbox-label input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-    accent-color: var(--accent-color);
-}
-
-// Обработка сборки таблицы строго по отмеченным чекбоксам
-// Обработка сборки таблицы строго по отмеченным чекбоксам
-document.getElementById('applyColumnsBtn').addEventListener('click', function() {
-    var chosenIndices = [], chosenHeaders = [];
-    document.querySelectorAll('#checkboxesGrid input[type="checkbox"]').forEach(function(chk) {
-        if (chk.checked) { 
-            chosenIndices.push(parseInt(chk.getAttribute('data-raw-index'))); 
-            chosenHeaders.push(chk.getAttribute('data-header-name')); 
+        .vk-cloud-btn {
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            background-color: #0077ff; 
+            color: white !important;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.15s ease, transform 0.1s ease;
+            white-space: nowrap;
         }
-    });
-    if (chosenIndices.length === 0) { alert("Выберите хотя бы один столбец!"); return; }
-    
-    tableHeaders = chosenHeaders; 
-    globalRows = [];
-    
-    rawCSVLines.forEach(function(line) {
-        var res = line.split(rawDelimiter);
-        var filtered = chosenIndices.map(function(idx) { return res[idx] !== undefined ? res[idx] : ""; });
-        if (filtered.length > 0 && filtered.some(function(c) { return c !== ""; })) globalRows.push(filtered);
-    });
-    
-    document.getElementById('columnChooserPanel').style.display = 'none';
-    
-    // АКТИВАЦИЯ ИНТЕРФЕЙСА: Таблица полностью собрана, включаем видимость и снимаем disabled
-    document.getElementById('toggleFiltersBtn').disabled = false;
-    document.getElementById('clearFiltersBtn').disabled = false;
-    document.getElementById('globalSearchInput').disabled = false;
-    
-    var sizeWrapper = document.getElementById('pageSizeWrapper');
-    if (sizeWrapper) sizeWrapper.style.display = 'block';
-    
-    var tableWrapper = document.querySelector('.table-wrapper');
-    if (tableWrapper) tableWrapper.style.display = 'block';
-    
-    // Инициализируем поисковые массивы и запускаем рендеринг таблицы на экран
-    currentPage = 1; 
-    currentFilteredRows = globalRows.concat();
-    
-    generateSearchFields(); 
-    renderTableStructure();
-    renderTableData();
-});
+        .vk-cloud-btn:hover { background-color: #0066dd; }
+        .vk-cloud-btn:active { transform: scale(0.98); }
+        [data-theme="dark"] .vk-cloud-btn { background-color: #2563eb; }
+        [data-theme="dark"] .vk-cloud-btn:hover { background-color: #1d4ed8; }
+
+        .toggle-filters-btn {
+            padding: 0 18px;
+            font-size: 14px;
+            font-weight: 600;
+            background-color: var(--bg-filebox);
+            color: var(--text-main);
+            border: 1px solid var(--border-filebox);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .toggle-filters-btn:hover:not(:disabled) { border-color: var(--accent-color); color: var(--accent-color); }
+        .toggle-filters-btn:disabled { background-color: var(--input-disabled); cursor: not-allowed; color: var(--text-muted); border: 1px solid var(--border-color); opacity: 0.6; }
+
+        tr.ctrl-highlight td {
+            border-top: 2px solid var(--ctrl-border) !important;
+            border-bottom: 2px solid var(--ctrl-border) !important;
+            background-color: var(--ctrl-bg) !important;
+        }
+        tr.ctrl-highlight td:first-child { border-left: 2px solid var(--ctrl-border) !important; }
+        tr.ctrl-highlight td:last-child { border-right: 2px solid var(--ctrl-border) !important; }
+
+        :root { --ctrl-border: #0f172a; --ctrl-bg: #f1f5f9; }               
+        [data-theme="dark"] { --ctrl-border: #38bdf8; --ctrl-bg: #1e293b; }   
+        [data-theme="matrix"] { --ctrl-border: #4ade80; --ctrl-bg: #18291c; } 
+        [data-theme="aero"] { --ctrl-border: #0891b2; --ctrl-bg: #daf0f2; }   
+
+        .toast-notification {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            background-color: var(--bg-container);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .toast-notification.show { opacity: 1; transform: translateY(0); }
+
+        th[draggable="true"] { cursor: grab; user-select: none; }
+        th[draggable="true"]:active { cursor: grabbing; }
+        th.drag-over { border-left: 3px dashed var(--accent-color) !important; }
+
+        .theme-menu-panel {
+            display: flex;
+            gap: 6px;
+            background: var(--bg-filebox);
+            border: 1px solid var(--border-filebox);
+            padding: 4px 6px;
+            border-radius: 8px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(20px);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+        }
+        .theme-menu-panel.open { opacity: 1; pointer-events: auto; transform: translateX(0); }
+        .theme-menu-item { background: var(--bg-copy-btn); border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; padding: 6px 10px; font-size: 15px; transition: all 0.15s ease; }
+        .theme-menu-item:hover { border-color: var(--accent-color); background: var(--bg-container); }
+
+        .column-checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; color: var(--text-main); cursor: pointer; padding: 6px; border-radius: 4px; transition: background-color 0.15s ease; }
+        .column-checkbox-label:hover { background-color: var(--bg-hover-tr); }
+        .column-checkbox-label input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent-color); }
+
+/* ==========================================================================
+   КОЛОР ИСПРАВЛЕНИЕ: ЯРКИЕ И ВЫРАЗИТЕЛЬНЫЕ ЦВЕТА ТЕМ ДЛЯ НАДПИСЕЙ
+   ========================================================================== */
+
+/* ☕ Тема: Чай с лимоном — сочный медово-янтарный цвет */
+[data-theme="lemon-tea"] .counter,
+[data-theme="lemon-tea"] .page-size-selector {
+    color: #B8860B !important; 
+    font-weight: 700;
+}
+[data-theme="lemon-tea"] .page-size-selector select {
+    border-color: #B8860B !important;
+    background-color: #FFFFFF !important;
+    color: #B8860B !important;
+}
+
+/* ⛰️ Тема: Горная саванна — выразительный кирпично-глиняный цвет */
+[data-theme="savanna"] .counter,
+[data-theme="savanna"] .page-size-selector {
+    color: #C16A3D !important; 
+    font-weight: 700;
+}
+[data-theme="savanna"] .page-size-selector select {
+    border-color: #C16A3D !important;
+    background-color: #FFFFFF !important;
+    color: #C16A3D !important;
+}
+
+/* 🌿 Тема: Шалфей и хвоя — насыщенный травянисто-зеленый цвет */
+[data-theme="sage"] .counter,
+[data-theme="sage"] .page-size-selector {
+    color: #557833 !important; 
+    font-weight: 700;
+}
+[data-theme="sage"] .page-size-selector select {
+    border-color: #557833 !important;
+    background-color: #FFFFFF !important;
+    color: #557833 !important;
+}
+[data-theme="sage"] td span,
+[data-theme="sage"] td span[style] {
+    color: #557833 !important; 
+}
+
+/* ❄️ Тема: Заснеженный лес — чистый льдисто-бирюзовый цвет */
+[data-theme="snow-forest"] .counter,
+[data-theme="snow-forest"] .page-size-selector {
+    color: #227B91 !important; 
+    font-weight: 700;
+}
+[data-theme="snow-forest"] .page-size-selector select {
+    border-color: #227B91 !important;
+    background-color: #FFFFFF !important;
+    color: #227B91 !important;
+}
+[data-theme="snow-forest"] td span,
+[data-theme="snow-forest"] td span[style] {
+    color: #358EA1 !important; 
+}
+
+/* 🌊 Тема: Глубокий океан — яркий насыщенный синий цвет волны */
+[data-theme="ocean"] .counter,
+[data-theme="ocean"] .page-size-selector {
+    color: #04709E !important; 
+    font-weight: 700;
+}
+[data-theme="ocean"] .page-size-selector select {
+    border-color: #04709E !important;
+    background-color: #FFFFFF !important;
+    color: #04709E !important;
+}
+[data-theme="ocean"] td span,
+[data-theme="ocean"] td span[style] {
+    color: #04709E !important; 
+}
+
+/* ==========================================================================
+   СТИЛЬНАЯ ЗЕБРА-ПОДСВЕТКА СТРОК ДЛЯ ПОВЫШЕННОЙ ЧИТАЕМОСТИ
+   ========================================================================== */
+
+/* 🏠 Тема: Уютный дом (Тёмная) — чередуем глубокий синий со слегка высветленным */
+[data-theme="cozy-home"] table tr:nth-child(even) td {
+    background-color: #162B39 !important; 
+}
+
+/* ☕ Тема: Чай с лимоном — разбавляем белые строки микро-янтарным налётом */
+[data-theme="lemon-tea"] table tr:nth-child(even) td {
+    background-color: #FAF6E6 !important; 
+}
+
+/* ⛰️ Тема: Горная саванна — чередуем строки с нежным песчаным оттенком */
+[data-theme="savanna"] table tr:nth-child(even) td {
+    background-color: #FAF5EE !important; 
+}
+
+/* 🌿 Тема: Шалфей и хвоя — добавляем еле заметную оливковую полоску */
+[data-theme="sage"] table tr:nth-child(even) td {
+    background-color: #F3F6EE !important; 
+}
+
+/* ❄️ Тема: Заснеженный лес — чередуем с воздушным прохладно-голубым тоном */
+[data-theme="snow-forest"] table tr:nth-child(even) td {
+    background-color: #EEF4F7 !important; 
+}
+
+/* 🌊 Тема: Глубокий океан — полоски в тон мягкой морской пены */
+[data-theme="ocean"] table tr:nth-child(even) td {
+    background-color: #EBF1F5 !important; 
+}
+
+
+</style>
 
 
 
-
-
-    </style>
 </head>
 <body>
 
@@ -602,7 +660,7 @@ document.getElementById('applyColumnsBtn').addEventListener('click', function() 
     <div class="header-row">
     
     <div style="display: flex; align-items: center; gap: 10px;">
-    <h2>поиск (CSV)</h2>
+    <h2></h2>
     <!-- Поле ввода лимита столбцов -->
     <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-muted); background: var(--bg-filebox); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-filebox);">
         Лимит: <input type="number" id="columnLimitInput" value="5" min="1" style="width: 45px; padding: 2px 4px; border: 1px solid var(--border-filebox); border-radius: 4px; background: var(--input-bg); color: var(--text-main); font-weight: bold; text-align: center;" />
@@ -618,24 +676,34 @@ document.getElementById('applyColumnsBtn').addEventListener('click', function() 
     <div class="header-controls" style="display: flex; align-items: center; gap: 12px;">
         <button id="vkCloudBtn" class="vk-cloud-btn" title="Загрузить из Облака VK">☁️ VK</button>
         
-        <div class="theme-switcher-wrapper" style="position: relative; display: flex; align-items: center; gap: 8px;">
-            <div id="themeMenuPanel" class="theme-menu-panel">
-                <button class="theme-menu-item" data-theme="light" title="Светлая">☀️</button>
-                <button class="theme-menu-item" data-theme="dark" title="Ночная">🌙</button>
-                <button class="theme-menu-item" data-theme="matrix" title="Хвойная">🌲</button>
-                <button class="theme-menu-item" data-theme="aero" title="Аэро">🧊</button>
-            </div>
-            <button id="themeToggleBtn" class="theme-toggle-btn" title="Клик — круг, Зажатие — меню">🌙</button>
-        </div>
+       <div class="theme-switcher-wrapper" style="position: relative; display: flex; align-items: center; gap: 8px;">
+    <div id="themeMenuPanel" class="theme-menu-panel">
+        <!-- Оригинальные темы оформления -->
+        <button class="theme-menu-item" data-theme="light" title="Светлая">☀️</button>
+        <button class="theme-menu-item" data-theme="dark" title="Ночная">🌙</button>
+        <button class="theme-menu-item" data-theme="matrix" title="Хвойная">🌲</button>
+        <button class="theme-menu-item" data-theme="aero" title="Аэро">🧊</button>
+        
+        <!-- Новые высококонтрастные темы из палитр -->
+        <button class="theme-menu-item" data-theme="cozy-home" title="Уютный дом">🏠</button>
+        <button class="theme-menu-item" data-theme="lemon-tea" title="Чай с лимоном">☕</button>
+        <button class="theme-menu-item" data-theme="savanna" title="Горная саванна">⛰️</button>
+        <button class="theme-menu-item" data-theme="sage" title="Шалфей и хвоя">🌿</button>
+        <button class="theme-menu-item" data-theme="snow-forest" title="Заснеженный лес">❄️</button>
+        <button class="theme-menu-item" data-theme="ocean" title="Глубокий океан">🌊</button>
+    </div>
+    <button id="themeToggleBtn" class="theme-toggle-btn" title="Клик — круг, Зажатие — меню">🌙</button>
+</div>
+
     </div>
 </div>
 
 
     <div class="search-bar-wrapper">
-    <input type="text" id="globalSearchInput" class="global-search" placeholder="Общий поиск..." disabled />
+    <input type="text" id="globalSearchInput" class="global-search" placeholder="Общий поиск... % - разделитель" disabled />
         <!-- Новая кнопка раскрытия подробных фильтров -->
     <button id="toggleFiltersBtn" class="toggle-filters-btn" title="расширенные фильтры" enabled>Фильтры 🔽</button>
-    <button id="clearFiltersBtn" class="clear-btn" enabled>очистить</button>
+    <button id="clearFiltersBtn" class="clear-btn" enabled>Очистить</button>
 </div>
 
 
@@ -687,8 +755,17 @@ function applyTheme(t) {
         if (t === 'dark') themeToggleBtn.textContent = '🌙'; 
         if (t === 'matrix') themeToggleBtn.textContent = '🌲'; 
         if (t === 'aero') themeToggleBtn.textContent = '🧊'; 
+        
+        // Поддержка иконок для всех 6 новых палитр
+        if (t === 'cozy-home') themeToggleBtn.textContent = '🏠'; 
+        if (t === 'lemon-tea') themeToggleBtn.textContent = '☕'; 
+        if (t === 'savanna') themeToggleBtn.textContent = '⛰️'; 
+        if (t === 'sage') themeToggleBtn.textContent = '🌿'; 
+        if (t === 'snow-forest') themeToggleBtn.textContent = '❄️'; 
+        if (t === 'ocean') themeToggleBtn.textContent = '🌊'; 
     }
 }
+
 applyTheme(savedTheme);
 
 // 2. Циклически переключаем и записываем выбранную тему в localStorage по кругу
@@ -709,6 +786,7 @@ themeToggleBtn.addEventListener('mousedown', function(e) {
 });
 
 // Отслеживаем отпускание ЛКМ
+// Отслеживаем отпускание ЛКМ
 themeToggleBtn.addEventListener('mouseup', function(e) {
     if (e.button !== 0) return;
     clearTimeout(themeTimer); // Сбрасываем таймер зажатия
@@ -721,14 +799,24 @@ themeToggleBtn.addEventListener('mouseup', function(e) {
         } else {
             var cur = document.documentElement.getAttribute('data-theme');
             var next = 'light'; 
+            
+            // Логика последовательного переключения всех тем по кругу
             if (!cur) next = 'dark'; 
             else if (cur === 'dark') next = 'matrix'; 
             else if (cur === 'matrix') next = 'aero'; 
+            else if (cur === 'aero') next = 'cozy-home';     // Плавный переход к новым палитрам
+            else if (cur === 'cozy-home') next = 'lemon-tea';
+            else if (cur === 'lemon-tea') next = 'savanna';
+            else if (cur === 'savanna') next = 'sage';
+            else if (cur === 'sage') next = 'snow-forest';
+            else if (cur === 'snow-forest') next = 'ocean';   // Последняя тема замыкает круг на 'light'
+            
             applyTheme(next); 
             localStorage.setItem('saved_table_theme', next);
         }
     }
 });
+
 
 // Предотвращаем сбои, если мышка ушла с кнопки с зажатой клавишей
 themeToggleBtn.addEventListener('mouseleave', function() {
@@ -1073,7 +1161,7 @@ function renderTableData() {
     var gQ = document.getElementById('globalSearchInput').value.trim();
     var columnInputs = document.querySelectorAll('#searchContainer input');
     
-    document.getElementById('counter').textContent = "Найдено строк: " + currentFilteredRows.length;
+    document.getElementById('counter').textContent = "Количество строк: " + currentFilteredRows.length;
     var pRows = currentFilteredRows.slice((currentPage - 1) * pageSize, currentPage * pageSize);
     
     // Встроенная функция-маркер (подсвечивает совпадения желтым цветом)
