@@ -864,6 +864,9 @@ body > .container {
 
 var globalRows = [], currentFilteredRows = [], tableHeaders = [], currentPage = 1, pageSize = 50;
 
+var searchTimeout = null; // Таймер задержки для клавиатуры
+
+
 // 1. Извлекаем сохраненную тему из памяти браузера при старте страницы
 var savedTheme = localStorage.getItem('saved_table_theme') || 'light';
 var themeToggleBtn = document.getElementById('themeToggleBtn');
@@ -963,24 +966,33 @@ document.addEventListener('click', function(e) {
 });
 
 document.getElementById('csvFile').addEventListener('change', function(e) {
-    var file = e.target.files; if (!file || file.length === 0) return;
-    var name = file.item(0).name; 
-    document.getElementById('fileStatus').innerHTML = "в работе: <strong>" + name + "</strong>";
+    var files = e.target.files; if (!files || files.length === 0) return;
+    var file = files[0]; // 🌟 ИСПРАВЛЕНО: Берём ровно первый файл из массива!
+    var name = file.name; 
+    document.getElementById('fileStatus').innerHTML = "Выбран файл: <strong>" + name + "</strong>";
+    
+    // Мягкая проверка на Excel, чтобы предотвратить падение кода локально
+    if (name.endsWith('.xlsx') || name.endsWith('.xls')) {
+        alert("Формат Excel (.xlsx) временно недоступен без локального сервера.\nПожалуйста, сохраните таблицу в Excel как 'CSV (разделитель - запятая)' и выберите полученный файл.");
+        document.getElementById('fileStatus').innerHTML = "<span style='color:#ef4444;'>Выберите файл .csv</span>";
+        return;
+    }
+    
     var reader = new FileReader();
     reader.onload = function(evt) {
         var text = evt.target.result;
         if (text.indexOf(String.fromCharCode(65533)) !== -1) {
             var ur = new FileReader(); ur.onload = function(eUtf) { 
-                localStorage.setItem('saved_csv_text', eUtf.target.result);
                 processCSVData(eUtf.target.result); 
-            }; ur.readAsText(file[0], 'utf-8');
+            }; ur.readAsText(file, 'utf-8'); // 🌟 ИСПРАВЛЕНО: Читаем правильный объект file
         } else { 
-            localStorage.setItem('saved_csv_text', text);
             processCSVData(text); 
         }
     };
-    reader.readAsText(file[0], 'windows-1251');
+    reader.readAsText(file, 'windows-1251'); // 🌟 ИСПРАВЛЕНО: Читаем правильный объект file
 });
+
+
 
 var rawCSVLines = []; 
 var rawDelimiter = ';';
@@ -1182,7 +1194,16 @@ function generateSearchFields() {
     });
 }
 
-document.getElementById('globalSearchInput').addEventListener('input', runCombinedSearch);
+// Умный поиск с защитой от тормозов при вводе с клавиатуры
+document.getElementById('globalSearchInput').addEventListener('input', function() {
+    clearTimeout(searchTimeout); // Сбрасываем прошлый таймер, если пользователь нажал новую клавишу
+    
+    // Запускаем поиск только через 350 мс после того, как пользователь перестал нажимать кнопки
+    searchTimeout = setTimeout(function() {
+        runCombinedSearch();
+    }, 350); 
+});
+
 // Исправленная логика кнопки сброса: очищает поиск БЕЗ вызова панели столбцов
 document.getElementById('clearFiltersBtn').addEventListener('click', function() {
     // 1. Стираем текст из главного поиска и всех детальных фильтров колонок
