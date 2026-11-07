@@ -906,14 +906,23 @@ function renderTableData() {
     
     // Встроенная функция-маркер (подсвечивает совпадения желтым цветом)
     function highlightText(text, searchStr) {
-        if (!searchStr) return text;
-        var safeStr = searchStr.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    if (!searchStr) return text;
+    var html = text;
+    
+    // Разбиваем строку подсветки по знаку % на массив отдельных слов
+    var words = searchStr.split('%').map(function(w) { return w.trim(); }).filter(function(w) { return w !== ""; });
+    
+    // Поочередно подсвечиваем каждое слово внутри ячейки
+    words.forEach(function(word) {
+        if (!word) return;
+        var safeStr = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
         var regex = new RegExp("(" + safeStr + ")", "gi");
+        html = html.replace(regex, "<span style='font-weight:700;color:var(--accent-color);'>$1</span>");
+    });
+    
+    return html;
+}
 
-        // return text.replace(regex, "<mark style='background-color: #fef08a; color: #000000; padding: 2px; border-radius: 4px;'>$1</mark>");
-        return text.replace(regex, "<span style='font-weight: 700; color: var(--accent-color);'>$1</span>");
- 
-    }
 
     pRows.forEach(function(cells) {
         var tr = document.createElement('tr');
