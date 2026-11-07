@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <script src="https://jsdelivr.net"></script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>гигапоиск CSV</title>
@@ -755,7 +757,11 @@ body > .container {
 
     <div class="file-box">
         <span id="fileStatus"> <strong>открыть файл .csv</strong></span>
-        <input type="file" id="csvFile" accept=".csv" />
+        <!-- <input type="file" id="csvFile" accept=".csv" /> -->
+        <!-- Было: accept=".csv" -->
+<!-- Стало: -->
+<input type="file" id="csvFile" accept=".csv, .xlsx, .xls" style="position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer;" />
+
     </div>
     
     <!-- НОВОЕ: Объединяем правые элементы в один неразрывный ряд -->
@@ -963,24 +969,58 @@ document.addEventListener('click', function(e) {
 });
 
 document.getElementById('csvFile').addEventListener('change', function(e) {
-    var file = e.target.files; if (!file || file.length === 0) return;
-    var name = file.item(0).name; 
-    document.getElementById('fileStatus').innerHTML = "в работе: <strong>" + name + "</strong>";
+    var files = e.target.files; if (!files || files.length === 0) return;
+    var file = files[0]; // 🌟 Указываем точный первый файл из массива!
+    var name = file.name; 
+    document.getElementById('fileStatus').innerHTML = "Выбран файл: <strong>" + name + "</strong>";
+    
+    // Проверяем, является ли файл таблицей Excel
+    var isExcel = name.endsWith('.xlsx') || name.endsWith('.xls');
     var reader = new FileReader();
-    reader.onload = function(evt) {
-        var text = evt.target.result;
-        if (text.indexOf(String.fromCharCode(65533)) !== -1) {
-            var ur = new FileReader(); ur.onload = function(eUtf) { 
-                localStorage.setItem('saved_csv_text', eUtf.target.result);
-                processCSVData(eUtf.target.result); 
-            }; ur.readAsText(file[0], 'utf-8');
-        } else { 
-            localStorage.setItem('saved_csv_text', text);
-            processCSVData(text); 
-        }
-    };
-    reader.readAsText(file[0], 'windows-1251');
+    
+    if (isExcel) {
+        // --- ОБРАБОТКА EXCEL С ПОЛНОЙ БИБЛИОТЕКОЙ SHEETJS ---
+        reader.onload = function(evt) {
+            try {
+                var data = new Uint8Array(evt.target.result);
+                var workbook = XLSX.read(data, { type: 'array' });
+                
+                // Берем самый первый (активный) лист из книги Excel
+                var firstSheetName = workbook.SheetNames[0]; // 🌟 Указываем точный индекс первого листа
+                var worksheet = workbook.Sheets[firstSheetName];
+                
+                // Конвертируем Excel-лист в текстовые строки CSV с разделителем ";"
+                var csvText = XLSX.utils.sheet_to_csv(worksheet, { FS: ';' });
+                
+                // Сохраняем в localStorage для работы кнопки сброса ❌
+                localStorage.setItem('saved_csv_text', csvText);
+                
+                // Передаем сгенерированный текст в готовую систему парсинга
+                processCSVData(csvText);
+            } catch (err) {
+                alert("Ошибка при чтении Excel файла: " + err.message);
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    } else {
+        // --- ВАШ СТАРЫЙ НАДЕЖНЫЙ ВАРИАНТ ДЛЯ СТАНДАРТНОГО CSV ---
+        reader.onload = function(evt) {
+            var text = evt.target.result;
+            if (text.indexOf(String.fromCharCode(65533)) !== -1) {
+                var ur = new FileReader(); ur.onload = function(eUtf) { 
+                    localStorage.setItem('saved_csv_text', eUtf.target.result);
+                    processCSVData(eUtf.target.result); 
+                }; ur.readAsText(file, 'utf-8');
+            } else { 
+                localStorage.setItem('saved_csv_text', text);
+                processCSVData(text); 
+            }
+        };
+        reader.readAsText(file, 'windows-1251');
+    }
 });
+
+
 
 var rawCSVLines = []; 
 var rawDelimiter = ';';
@@ -1167,7 +1207,7 @@ document.getElementById('applyColumnsBtn').addEventListener('click', function() 
 
     var duration = (performance.now() - startTime).toFixed(1); // ⏱️ СТОП СЕКУНДОМЕР
     document.getElementById('counter').innerHTML = 
-    "строк: <strong>" + currentFilteredRows.length + "</strong> | <strong>" + duration + " ms</strong>";
+    " <strong>" + currentFilteredRows.length + "</strong> | <strong>" + duration + " ms</strong>";
 
 });
 
