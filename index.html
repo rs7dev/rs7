@@ -1225,27 +1225,45 @@ function activateTab(tabId) {
 function closeTab(tabId, e) {
     if (e) e.stopPropagation();
     var index = tabs.findIndex(function(t) { return t.id === tabId; }); if (index === -1) return;
-    
+
+    // --- ФИКС ДЛЯ ОЧИСТКИ ОПЕРАТИВНОЙ ПАМЯТИ (ОЗУ) ---
+    var closedTab = tabs[index];
+    if (closedTab) {
+        closedTab.globalRows = [];
+        closedTab.currentFilteredRows = [];
+        closedTab.tableHeaders = [];
+        if (closedTab.originalHeaders) closedTab.originalHeaders = [];
+        if (closedTab.rawLines) closedTab.rawLines = [];
+    }
+    // ------------------------------------------------
+
     tabs.splice(index, 1);
-    deleteTabFromDB(tabId);
-    
+    deleteTabFromDB(tabId); // Ваша встроенная функция очистки жесткого диска (IndexedDB)
+
     if (tabs.length === 0) {
         activeTabId = null;
         document.getElementById('tabsContainer').innerHTML = ''; document.getElementById('tableHead').innerHTML = '';
         document.getElementById('tableBody').innerHTML = ''; document.getElementById('counter').textContent = '';
-        document.getElementById('pagination').innerHTML = ''; document.getElementById('searchContainer').innerHTML = '';
+        document.getElementById('pagination').innerHTML = ''; document.getElementById('searchcontainer').innerHTML = '';
         
         document.getElementById('toggleFiltersBtn').disabled = true; document.getElementById('clearFiltersBtn').disabled = true;
         document.getElementById('toggleColumnsBtn').disabled = true; document.getElementById('globalSearchInput').disabled = true;
-        document.getElementById('globalSearchInput').value = ''; document.getElementById('pageSizeWrapper').style.display = 'none';
+        document.getElementById('globalSearchInput').value = ''; document.getElementById('pagesizewrapper').style.display = 'none';
         document.querySelector('.table-wrapper').style.display = 'none';
-        //document.getElementById('fileStatus').innerHTML = "Все вкладки закрыты. Нажмите «➕ Новый файл» для начала работы.";
+        
+        // РАСКОММЕНТИРУЕМ СТРОКУ СТАТУСА (чтобы возвращался красивый стартовый текст)
+        var fileStatus = document.getElementById('fileStatus');
+        if (fileStatus) {
+            fileStatus.innerHTML = "Все вкладки закрыты. Нажмите «➕ Новый файл» для начала работы.";
+            fileStatus.parentNode.style.display = 'flex';
+        }
     } else if (activeTabId === tabId) {
         var nextActiveIndex = index > 0 ? index - 1 : 0; activateTab(tabs[nextActiveIndex].id);
     } else {
         renderTabsUI();
     }
 }
+
 
 function renderTabsUI() {
     var container = document.getElementById('tabsContainer'); container.innerHTML = '';
