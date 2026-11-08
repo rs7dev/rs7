@@ -56,7 +56,7 @@
             border-color: #475569 !important;
         }
         [data-theme="dark"] input::placeholder {
-            color: #94a3b8 !important;
+            color: #94a3b8 !important; 
         }
         [data-theme="dark"] th {
             background-color: #334155 !important;
@@ -631,7 +631,7 @@ html:not([data-theme]) table tr:nth-child(even) td,
     background-color: #162235 !important; 
 }
 
-/* 🌲 Старая Хвойная тема (Матрица) — добавляем блёклую лесную полоску */
+/* 🌲 Старая Хвойная тема (Хвойная) — добавляем блёклую лесную полоску */
 [data-theme="matrix"] table tr:nth-child(even) td {
     background-color: #132016 !important; 
 }
@@ -734,6 +734,14 @@ body > .container {
     width: 100% !important;
 }
 
+/* Выделение активной вкладки под цвет выбранной темы */
+.active-tab {
+    border-color: var(--accent-color) !important;
+    box-shadow: inset 0 -2px 0 var(--accent-color) !important;
+    font-weight: 700 !important;
+}
+
+
 </style>
 
 
@@ -753,10 +761,7 @@ body > .container {
 
     </div>
 
-    <div class="file-box">
-        <span id="fileStatus"> <strong>открыть файл .csv</strong></span>
-        <input type="file" id="csvFile" accept=".csv" />
-    </div>
+
     
     <!-- НОВОЕ: Объединяем правые элементы в один неразрывный ряд -->
     <div class="header-controls" style="display: flex; align-items: center; gap: 12px;">
@@ -766,18 +771,18 @@ body > .container {
            <!-- Ультракомпактные облачные кнопки-иконки в размер переключателя тем -->
 <!-- Увеличенные облачные кнопки-иконки в точный размер переключателя тем -->
 <!-- Современные минималистичные облачные иконки-логотипы Яндекс и Google -->
-<div style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
+<!-- Облачная загрузка и лаконичный статус активного файла -->
+<div style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; align-items: center;">
     
-    <!-- Кнопка Яндекс.Диск (Жирная Y в белом круге) -->
+    <!-- Кнопка Яндекс.Диск -->
     <button id="yandexCloudBtn" class="toggle-filters-btn" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 38px !important; height: 38px !important; padding: 0 !important; min-width: 38px !important; line-height: 0 !important;" title="Загрузить CSV-файл из Яндекс Диска">
-        <!-- Геометрически усиленный логотип: жирная буква Y -->
         <svg width="24" height="24" viewBox="0 0 100 100" xmlns="http://w3.org" style="flex-shrink: 0; display: block;">
             <circle cx="50" cy="50" r="50" fill="white"/>
             <path d="M57.5 22H71L55 49V78H45V49L29 22H42.5L50 37.5L57.5 22Z" fill="#E60000" style="stroke: #E60000; stroke-width: 5; stroke-linejoin: round; stroke-linecap: round;"/>
         </svg>
     </button>
     
-    <!-- Кнопка Google Диск (Четырехцветная буква G) -->
+    <!-- Кнопка Google Диск -->
     <button id="googleCloudBtn" class="toggle-filters-btn" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 38px !important; height: 38px !important; padding: 0 !important; min-width: 38px !important; line-height: 0 !important;" title="Загрузить CSV-файл из Google Drive">
         <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://w3.org" style="flex-shrink: 0; display: block;">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -786,9 +791,30 @@ body > .container {
             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.85c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
         </svg>
     </button>
+
+    <!-- Аккуратный текстовый статус: теперь он выводится здесь, в цвет темы -->
+    <div id="fileStatus" style="font-size: 13px; font-weight: 600; color: var(--text-muted); margin-left: 6px;">
     
+    </div>
+
+    <!-- Полностью скрытый технический инпут для выбора файлов (невидим, но работает по клику на кнопку) -->
+    <input type="file" id="csvFile" accept=".csv" style="display: none;" />
 </div>
 
+
+<!-- Контекстное меню быстрого выбора темы -->
+<div id="themeContextMenu" class="context-menu" style="display: none; position: absolute; z-index: 10000; background: var(--bg-container); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 6px 0;">
+    <div class="context-menu-item" data-theme="light" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">☀️ Светлая</div>
+    <div class="context-menu-item" data-theme="dark" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">🌙 Темная</div>
+    <div class="context-menu-item" data-theme="matrix" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">🌲 Хвойная</div>
+    <div class="context-menu-item" data-theme="aero" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">🧊 Аэро</div>
+    <div class="context-menu-item" data-theme="cozy-home" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">🏠 Уютный дом</div>
+    <div class="context-menu-item" data-theme="lemon-tea" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">☕ Чай с лимоном</div>
+    <div class="context-menu-item" data-theme="savanna" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">⛰️ Горная саванна</div>
+    <div class="context-menu-item" data-theme="sage" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">🌿 Шалфей и хвоя</div>
+    <div class="context-menu-item" data-theme="snow-forest" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">❄️ Заснеженный лес</div>
+    <div class="context-menu-item" data-theme="ocean" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">🌊 Глубокий океан</div>
+</div>
 
 
 
@@ -818,13 +844,44 @@ body > .container {
 
 
     <!-- Поисковый узел: Кнопки фильтрации и сброса теперь слева от ввода -->
+<!-- 1. Верхний блок: Строка поиска, фильтров и облачной загрузки -->
 <div class="search-bar-wrapper">
     <button id="toggleFiltersBtn" class="toggle-filters-btn" disabled title="Показать/скрыть фильтры колонок">🔍</button>
-    <input type="text" id="globalSearchInput" class="global-search" placeholder="Глобальный поиск (разделитель % для нескольких слов)..." disabled>
     <button id="clearFiltersBtn" class="toggle-filters-btn" disabled title="Очистить все фильтры и поиск">❌</button>
+    <input type="text" id="globalSearchInput" class="global-search" placeholder="Глобальный поиск (знак % для нескольких слов)..." disabled>
+</div>
+
+<!-- 2. НОВЫЙ БЛОК: Строка вкладок для переключения между таблицами -->
+<!-- 2. СТРОКА ВКЛАДОК: Изначально пустая и ждет открытия файлов -->
+<div id="tabsWrapper" style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+    <!-- Очищено: Сюда JavaScript будет динамически добавлять реальные вкладки открытых файлов -->
+    <div id="tabsContainer" style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;"></div>
+    
+    <!-- Постоянная кнопка добавления нового файла на страницу -->
+    <button id="addTabBtn" class="toggle-filters-btn" style="padding: 6px 12px; font-size: 13px; font-weight: bold; background: var(--bg-filebox);" title="Открыть еще один файл в новой вкладке">➕ Открыть</button>
 </div>
 
 
+<!-- 3. Блок управления активной таблицей (Шестерёнка, счётчик и пагинатор) -->
+<div class="controls-row" style="display: flex; justify-content: space-between; align-items: center; position: relative; min-height: 36px; gap: 15px; margin-top: 5px;">
+    <div style="display: flex; align-items: center; gap: 15px; z-index: 2;">
+        <button id="toggleColumnsBtn" class="toggle-filters-btn" disabled title="Выбор столбцов и колонок" style="padding: 6px 10px; font-size: 14px;">⚙️</button>
+        <div id="counter" class="counter" style="white-space: nowrap;"></div>
+    </div>
+    
+    <div id="pagination" class="pagination-container" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: 6px; padding-top: 0; margin-top: 0; align-items: center; z-index: 1;"></div>
+    
+    <div id="pageSizeWrapper" class="page-size-selector" style="display: none; white-space: nowrap; z-index: 2;">
+        Показывать строк:
+        <select id="pageSizeSelect">
+            <option value="20" selected>20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="500">500</option>
+            <option value="all">Все</option>
+        </select>
+    </div>
+</div>
 
     <div id="searchContainer" class="search-grid" style="display: none;"></div>
     
@@ -837,34 +894,7 @@ body > .container {
 
 
 
-    <!-- Блок управления таблицей: Шестерёнка теперь логично стоит перед счётчиком строк -->
-<!-- Блок управления таблицей: Шестерёнка зафиксирована сверху -->
-<!-- 1. Строка управления данными (Кнопка шестерёнки зафиксирована в самом верху этого блока) -->
-<!-- Блок управления таблицей: Шестерёнка, счётчик и пагинатор в ОДНУ линию -->
-<!-- Блок управления таблицей: Пагинатор зафиксирован строго по центру строки -->
-<div class="controls-row" style="display: flex; justify-content: space-between; align-items: center; position: relative; min-height: 36px; gap: 15px;">
-    
-    <!-- Левая сторона: Шестерёнка + Счетчик строк -->
-    <div style="display: flex; align-items: center; gap: 15px; z-index: 2;">
-        <button id="toggleColumnsBtn" class="toggle-filters-btn" disabled title="Выбор столбцов и колонок" style="padding: 6px 10px; font-size: 14px;">⚙️</button>
-        <div id="counter" class="counter" style="white-space: nowrap;"></div>
-    </div>
-    
-    <!-- Центр строки: Пагинатор идеально отцентрирован относительно всего экрана -->
-    <div id="pagination" class="pagination-container" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: 6px; padding-top: 0; margin-top: 0; align-items: center; z-index: 1;"></div>
-    
-    <!-- Правая сторона: Выбор количества строк -->
-    <div id="pageSizeWrapper" class="page-size-selector" style="display: none; white-space: nowrap; z-index: 2;">
-        Показывать строк:
-        <select id="pageSizeSelect">
-            <option value="20" selected>20</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-            <option value="500">500</option>
-            <option value="all">Все</option>
-        </select>
-    </div>
-</div>
+
 
 
 
@@ -894,22 +924,18 @@ body > .container {
 
 <script>
 
-var globalRows = [], currentFilteredRows = [], tableHeaders = [], currentPage = 1, pageSize = 50;
+// 1. Центральное хранилище вкладок и настройки активного экрана
+var tabs = []; 
+var activeTabId = null;
+var searchTimeout = null; // Дебаунсинг-таймер для клавиатуры
 
-var searchTimeout = null; // Таймер задержки для клавиатуры
+// Временные кэш-переменные для парсинга файлов на Этапе А (чекбоксы)
+var rawCSVLines = []; 
+var rawDelimiter = ';';
 
-
-// 1. Извлекаем сохраненную тему из памяти браузера при старте страницы
+// 2. Извлекаем тему оформления из памяти браузера при старте страницы
 var savedTheme = localStorage.getItem('saved_table_theme') || 'light';
 var themeToggleBtn = document.getElementById('themeToggleBtn');
-
-// --- НАЧАЛО ПРАВКИ: Восстанавливаем лимит столбцов из памяти ПК ---
-var savedLimit = localStorage.getItem('saved_column_limit') || '4'; // 4 по умолчанию
-var limitInput = document.getElementById('columnLimitInput');
-if (limitInput) {
-    limitInput.value = savedLimit;
-}
-// --- КОНЕЦ ПРАВКИ ---
 
 function applyTheme(t) {
     if (t === 'light') { 
@@ -920,8 +946,6 @@ function applyTheme(t) {
         if (t === 'dark') themeToggleBtn.textContent = '🌙'; 
         if (t === 'matrix') themeToggleBtn.textContent = '🌲'; 
         if (t === 'aero') themeToggleBtn.textContent = '🧊'; 
-        
-        // Поддержка иконок для всех 6 новых палитр
         if (t === 'cozy-home') themeToggleBtn.textContent = '🏠'; 
         if (t === 'lemon-tea') themeToggleBtn.textContent = '☕'; 
         if (t === 'savanna') themeToggleBtn.textContent = '⛰️'; 
@@ -931,81 +955,134 @@ function applyTheme(t) {
     }
 }
 
+// --- НАЧАЛО ПРАВКИ: Возвращаем логику кнопке переключения тем ---
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', function() {
+        var current = document.documentElement.getAttribute('data-theme') || 'light';
+        var next = 'light';
+        
+        // Циклический перебор всех ваших 10 роскошных тем оформления
+        if (current === 'light') next = 'dark';
+        else if (current === 'dark') next = 'matrix';
+        else if (current === 'matrix') next = 'aero';
+        else if (current === 'aero') next = 'cozy-home';
+        else if (current === 'cozy-home') next = 'lemon-tea';
+        else if (current === 'lemon-tea') next = 'savanna';
+        else if (current === 'savanna') next = 'sage';
+        else if (current === 'sage') next = 'snow-forest';
+        else if (current === 'snow-forest') next = 'ocean';
+        else if (current === 'ocean') next = 'light';
+        
+        applyTheme(next);
+        localStorage.setItem('saved_table_theme', next);
+    });
+}
+// --- КОНЕЦ ПРАВКИ ---
+
+// --- НАЧАЛО ПРАВКИ: Возвращаем меню выбора темы при зажатии/правом клике ---
+// --- НАЧАЛО ПРАВКИ: Исправленное меню тем с защитой от ухода за экран и работающим зажатием ---
+var themeMenu = document.getElementById('themeContextMenu');
+var touchTimeout = null;
+
+if (themeToggleBtn && themeMenu) {
+    // 1. Показ меню по правому клику мыши (обычный ПК)
+    themeToggleBtn.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        showThemeMenu(e.clientX, e.clientY);
+    });
+
+    // 2. Исправленный показ меню по долгому зажатию пальца (мобильные)
+    themeToggleBtn.addEventListener('touchstart', function(e) {
+        var touch = e.touches[0]; // Берем координаты первого касания
+        var posX = touch.clientX;
+        var posY = touch.clientY;
+        
+        // Сбрасываем старый таймер перед запуском нового
+        clearTimeout(touchTimeout);
+        
+        touchTimeout = setTimeout(function() {
+            showThemeMenu(posX, posY);
+        }, 500); // 0.5 сек удержания вызывают меню без системных глюков
+    });
+
+    // Отменяем таймер зажатия, если пользователь убрал палец раньше времени
+    themeToggleBtn.addEventListener('touchend', function(e) {
+        clearTimeout(touchTimeout);
+    });
+    
+    // Защита: отменяем прокрутку экрана, если палец зажат на кнопке
+    themeToggleBtn.addEventListener('touchmove', function(e) {
+        clearTimeout(touchTimeout);
+    });
+
+    // Умная функция показа и позиционирования меню
+    function showThemeMenu(x, y) {
+        themeMenu.style.display = 'block'; // Сначала включаем, чтобы браузер считал его реальную ширину
+        
+        var menuWidth = themeMenu.offsetWidth || 160; // Узнаем ширину выпадающего окна
+        var windowWidth = window.innerWidth; // Узнаем ширину экрана пользователя
+        
+        // Корректировка по оси X: Если меню уходит вправо за экран, сдвигаем его влево
+        if (x + menuWidth > windowWidth) {
+            themeMenu.style.left = (windowWidth - menuWidth - 10) + 'px';
+        } else {
+            themeMenu.style.left = x + 'px';
+        }
+        
+        themeMenu.style.top = (y + 10) + 'px';
+    }
+
+    // Клик по пункту меню переключает тему
+    document.querySelectorAll('.context-menu-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+            var selectedTheme = this.getAttribute('data-theme');
+            applyTheme(selectedTheme);
+            localStorage.setItem('saved_table_theme', selectedTheme);
+            themeMenu.style.display = 'none';
+        });
+        item.addEventListener('mouseenter', function() { this.style.background = 'var(--bg-filebox)'; });
+        item.addEventListener('mouseleave', function() { this.style.background = 'transparent'; });
+    });
+
+    // Скрываем меню, если кликнули мимо него
+    document.addEventListener('click', function(e) {
+        if (!themeToggleBtn.contains(e.target) && !themeMenu.contains(e.target)) {
+            themeMenu.style.display = 'none';
+        }
+    });
+}
+// --- КОНЕЦ ПРАВКИ ---
+
+
+
 applyTheme(savedTheme);
 
-// 2. Циклически переключаем и записываем выбранную тему в localStorage по кругу
-var themeTimer = null;
-var isLongClick = false;
-var menuPanel = document.getElementById('themeMenuPanel');
+// 3. Восстанавливаем лимит столбцов из памяти ПК
+var savedLimit = localStorage.getItem('saved_column_limit') || '4';
+var limitInput = document.getElementById('columnLimitInput');
+if (limitInput) limitInput.value = savedLimit;
 
-// Отслеживаем нажатие ЛКМ (нажали кнопку и держим)
-themeToggleBtn.addEventListener('mousedown', function(e) {
-    if (e.button !== 0) return; 
-    isLongClick = false;
-    
-    // Если удерживаем кнопку дольше 400 миллисекунд — открываем горизонтальную панель
-    themeTimer = setTimeout(function() {
-        isLongClick = true;
-        menuPanel.classList.add('open');
-    }, 200);
+document.getElementById('columnLimitInput').addEventListener('input', function() {
+    localStorage.setItem('saved_column_limit', this.value);
 });
 
-// Отслеживаем отпускание ЛКМ
-themeToggleBtn.addEventListener('mouseup', function(e) {
-    if (e.button !== 0) return;
-    clearTimeout(themeTimer); 
-    
-    if (!isLongClick) {
-        if (menuPanel.classList.contains('open')) {
-            menuPanel.classList.remove('open');
-        } else {
-            var cur = document.documentElement.getAttribute('data-theme');
-            var next = 'light'; 
-            
-            if (!cur) next = 'dark'; 
-            else if (cur === 'dark') next = 'matrix'; 
-            else if (cur === 'matrix') next = 'aero'; 
-            else if (cur === 'aero') next = 'cozy-home';     
-            else if (cur === 'cozy-home') next = 'lemon-tea';
-            else if (cur === 'lemon-tea') next = 'savanna';
-            else if (cur === 'savanna') next = 'sage';
-            else if (cur === 'sage') next = 'snow-forest';
-            else if (cur === 'snow-forest') next = 'ocean';   
-            
-            applyTheme(next); 
-            localStorage.setItem('saved_table_theme', next);
-        }
-    }
-});
-
-themeToggleBtn.addEventListener('mouseleave', function() {
-    clearTimeout(themeTimer);
-});
-
-document.querySelectorAll('.theme-menu-item').forEach(function(item) {
-    item.addEventListener('click', function() {
-        var selectedTheme = this.getAttribute('data-theme');
-        applyTheme(selectedTheme);
-        localStorage.setItem('saved_table_theme', selectedTheme);
-        menuPanel.classList.remove('open'); 
-    });
-});
-
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('.theme-switcher-wrapper')) {
-        menuPanel.classList.remove('open');
-    }
-});
-
+// Перехватываем стандартное событие изменения инпута файлов
 document.getElementById('csvFile').addEventListener('change', function(e) {
     var files = e.target.files; if (!files || files.length === 0) return;
-    var file = files[0]; // 🌟 ИСПРАВЛЕНО: Берём ровно первый файл из массива!
-    var name = file.name; 
-    document.getElementById('fileStatus').innerHTML = "Выбран файл: <strong>" + name + "</strong>";
+    handleNewFileSelection(files[0]);
+});
+
+// Кнопка "+ Новый файл" имитирует клик по скрытому инпуту выбора файла
+document.getElementById('addTabBtn').addEventListener('click', function() {
+    document.getElementById('csvFile').click();
+});
+
+function handleNewFileSelection(file) {
+    var name = file.name;
+    // document.getElementById('fileStatus').innerHTML = "Обработка файла: <strong>" + name + "</strong>";
     
-    // Мягкая проверка на Excel, чтобы предотвратить падение кода локально
     if (name.endsWith('.xlsx') || name.endsWith('.xls')) {
-        alert("Формат Excel (.xlsx) временно недоступен без локального сервера.\nПожалуйста, сохраните таблицу в Excel как 'CSV (разделитель - запятая)' и выберите полученный файл.");
+        alert("Формат Excel (.xlsx) временно недоступен без локального сервера.\nПожалуйста, сохраните таблицу в Excel как 'CSV (разделитель - запятая)'.");
         document.getElementById('fileStatus').innerHTML = "<span style='color:#ef4444;'>Выберите файл .csv</span>";
         return;
     }
@@ -1015,21 +1092,16 @@ document.getElementById('csvFile').addEventListener('change', function(e) {
         var text = evt.target.result;
         if (text.indexOf(String.fromCharCode(65533)) !== -1) {
             var ur = new FileReader(); ur.onload = function(eUtf) { 
-                processCSVData(eUtf.target.result); 
-            }; ur.readAsText(file, 'utf-8'); // 🌟 ИСПРАВЛЕНО: Читаем правильный объект file
+                processCSVData(eUtf.target.result, name); 
+            }; ur.readAsText(file, 'utf-8');
         } else { 
-            processCSVData(text); 
+            processCSVData(text, name); 
         }
     };
-    reader.readAsText(file, 'windows-1251'); // 🌟 ИСПРАВЛЕНО: Читаем правильный объект file
-});
+    reader.readAsText(file, 'windows-1251');
+}
 
-
-
-var rawCSVLines = []; 
-var rawDelimiter = ';';
-
-function processCSVData(text) {
+function processCSVData(text, fileName) {
     var wrapper = document.querySelector('.table-wrapper');
     if (wrapper) wrapper.style.display = 'none';
     
@@ -1055,16 +1127,11 @@ function processCSVData(text) {
     var limit = parseInt(document.getElementById('columnLimitInput').value) || 4;
     
     document.getElementById('columnChooserPanel').style.display = 'none';
+    var grid = document.getElementById('checkboxesGrid'); grid.innerHTML = '';
     
-    // Находим сетку колонок внутри панели и полностью очищаем её
-    var grid = document.getElementById('checkboxesGrid');
-    grid.innerHTML = '';
-    
-    // Удаляем старый мастер-чекбокс перед пересборкой
     var oldMaster = document.getElementById('masterCheckboxWrapper');
     if (oldMaster) oldMaster.remove();
     
-    // 1. Строим Мастер-чекбокс ОТДЕЛЬНО
     var masterWrapper = document.createElement('div');
     masterWrapper.id = 'masterCheckboxWrapper';
     masterWrapper.style.cssText = 'border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;';
@@ -1074,104 +1141,45 @@ function processCSVData(text) {
     masterLabel.style.cssText = 'display: flex; align-items: center; font-weight: 700; cursor: pointer;';
 
     var masterChk = document.createElement('input');
-    masterChk.type = 'checkbox';
-    masterChk.id = 'masterColumnsSelector';
-    masterChk.style.marginRight = '8px';
+    masterChk.type = 'checkbox'; masterChk.id = 'masterColumnsSelector';
     masterChk.checked = (allHeaders.length <= limit); 
 
     masterChk.addEventListener('change', function() {
         var isChecked = this.checked;
-        document.querySelectorAll('#checkboxesGrid input[type="checkbox"]').forEach(function(chk) {
-            chk.checked = isChecked;
-        });
+        document.querySelectorAll('#checkboxesGrid input[type="checkbox"]').forEach(function(chk) { chk.checked = isChecked; });
     });
 
-    masterLabel.appendChild(masterChk);
-    masterLabel.appendChild(document.createTextNode(' Выбрать все колонки файла'));
-    masterWrapper.appendChild(masterLabel);
+    masterLabel.appendChild(masterChk); masterLabel.appendChild(document.createTextNode(' Выбрать все колонки файла'));
+    masterWrapper.appendChild(masterLabel); grid.parentNode.insertBefore(masterWrapper, grid);
     
-    // Вставляем мастер-чекбокс в панель управления
-    grid.parentNode.insertBefore(masterWrapper, grid);
-    
-    // 2. Строим чекбоксы для самих колонок файлов (они генерируются ВСЕГДА)
     allHeaders.forEach(function(headerName, idx) {
-        var label = document.createElement('label');
-        label.className = 'column-checkbox-label';
-        
-        var chk = document.createElement('input');
-        chk.type = 'checkbox';
-        chk.setAttribute('data-raw-index', idx);
-        
-        var cleanName = headerName || ("Колонка " + (idx + 1));
-        chk.setAttribute('data-header-name', cleanName);
-        
+        var label = document.createElement('label'); label.className = 'column-checkbox-label';
+        var chk = document.createElement('input'); chk.type = 'checkbox'; chk.setAttribute('data-raw-index', idx);
+        chk.setAttribute('data-header-name', headerName || ("Колонка " + (idx + 1)));
         if (idx < limit || allHeaders.length <= limit) chk.checked = true; 
-        
-        var txt = document.createTextNode(cleanName);
-        label.appendChild(chk);
-        label.appendChild(txt);
+        label.appendChild(chk); label.appendChild(document.createTextNode(headerName || ("Колонка " + (idx + 1))));
         grid.appendChild(label);
     });
     
-    // Включаем весь верхний ряд кнопок-иконок
-    document.getElementById('toggleFiltersBtn').disabled = false;
-    document.getElementById('clearFiltersBtn').disabled = false;
-    document.getElementById('toggleColumnsBtn').disabled = false; 
-    document.getElementById('globalSearchInput').disabled = false;
+    document.getElementById('applyColumnsBtn').setAttribute('data-pending-filename', fileName);
 
-    // ПРОВЕРКА ЛИМИТА: Перенесена под блок генерации чекбоксов, чтобы они не пропадали!
     if (allHeaders.length > limit) {
-        // --- НАЧАЛО ПРАВКИ: Заливаем фон всей плашки нежно-красным цветом ---
         var limitBox = document.getElementById('limitBox');
-        if (limitBox) {
-            limitBox.style.backgroundColor = '#fee2e2'; /* Блеклый нежно-красный фон */
-            limitBox.style.borderColor = '#f87171';     /* Красивый пастельный красный контур */
-            limitBox.style.color = '#ef4444';           /* Меняем цвет самого слова Лимит на контрастный красный */
-        }
-        // --- КОНЕЦ ПРАВКИ ---
-
-        // Разворачиваем готовую панель чекбоксов на экране и останавливаемся
+        if (limitBox) { limitBox.style.backgroundColor = '#fee2e2'; limitBox.style.borderColor = '#f87171'; limitBox.style.color = '#ef4444'; }
         document.getElementById('columnChooserPanel').style.display = 'block';
         return; 
     }
     
-    // Ситуация Б: Столбцов мало, строим обычную таблицу сразу
-    tableHeaders = allHeaders; 
-    globalRows = [];
-    lines.forEach(function(l) { 
-        var cells = parseCSVLine(l, delimiter); 
-        if (cells.length > 0 && cells.some(function(c) { return c !== ""; })) globalRows.push(cells); 
-    });
-    
-    if (document.getElementById('pageSizeWrapper')) document.getElementById('pageSizeWrapper').style.display = 'block'; 
-    if (wrapper) wrapper.style.display = 'block';
-    
-    currentPage = 1; 
-    currentFilteredRows = globalRows.concat();
-    generateSearchFields(); 
-    renderTableStructure();
-    
-    // Гарантируем скрытие панели при автозагрузке коротких файлов
-    document.getElementById('columnChooserPanel').style.display = 'none'; 
-    
-    renderTableData();
+    createNewTab(fileName, allHeaders, lines, delimiter, null);
 }
 
-
-
-
-// Замер сборки таблицы процессором ПК
+// Сборка по нажатию синей кнопки "Применить выбор" с защитой от дублирования вкладок
 document.getElementById('applyColumnsBtn').addEventListener('click', function() {
-    var startTime = performance.now(); // 🏁 Включаем секундомер
+    var startTime = performance.now();
+    var fileName = this.getAttribute('data-pending-filename'); // Читаем имя, если файл только что выбран
 
-    // --- НАЧАЛО ПРАВКИ: Возвращаем плашке лимита дефолтные цвета темы ---
     var limitBox = document.getElementById('limitBox');
-    if (limitBox) {
-        limitBox.style.backgroundColor = '';
-        limitBox.style.borderColor = '';
-        limitBox.style.color = '';
-    }
-    // --- КОНЕЦ ПРАВКИ ---
+    if (limitBox) { limitBox.style.backgroundColor = ''; limitBox.style.borderColor = ''; limitBox.style.color = ''; }
 
     var chosenIndices = [], chosenHeaders = [];
     document.querySelectorAll('#checkboxesGrid input[type="checkbox"]').forEach(function(chk) {
@@ -1182,254 +1190,261 @@ document.getElementById('applyColumnsBtn').addEventListener('click', function() 
     });
     if (chosenIndices.length === 0) { alert("Выберите хотя бы один столбец!"); return; }
     
-    tableHeaders = chosenHeaders; 
-    globalRows = [];
-    
-    rawCSVLines.forEach(function(line) {
-        var res = line.split(rawDelimiter);
-        var filtered = chosenIndices.map(function(idx) { return res[idx] !== undefined ? res[idx] : ""; });
-        if (filtered.length > 0 && filtered.some(function(c) { return c !== ""; })) globalRows.push(filtered);
-    });
-    
     document.getElementById('columnChooserPanel').style.display = 'none';
-    document.getElementById('toggleFiltersBtn').disabled = false;
-    document.getElementById('clearFiltersBtn').disabled = false;
-    document.getElementById('globalSearchInput').disabled = false;
     
-    var sizeWrapper = document.getElementById('pageSizeWrapper');
-    if (sizeWrapper) sizeWrapper.style.display = 'block';
+    // --- ИСПРАВЛЕНИЕ ЛОГИКИ: Проверяем, это новый файл или пересборка текущего ---
+    if (fileName) {
+        // Сценарий А: Файл только что загружен, создаём для него честную новую вкладку
+        createNewTab(fileName, chosenHeaders, rawCSVLines, rawDelimiter, chosenIndices);
+        // Очищаем временную метку, чтобы при следующем открытии шестерёнки сработал Сценарий Б
+        this.removeAttribute('data-pending-filename');
+    } else {
+        // Сценарий Б: Мы зашли через шестерёнку существующей вкладки. Пересобираем строго её!
+        var currentTab = getActiveTab();
+        if (currentTab) {
+            var cleanRows = [];
+            rawCSVLines.forEach(function(line) {
+                var res = line.split(rawDelimiter);
+                var cells = chosenIndices.map(function(idx) { return res[idx] !== undefined ? res[idx] : ""; });
+                if (cells.length > 0 && cells.some(function(c) { return c !== ""; })) cleanRows.push(cells);
+            });
+            
+            // Перезаписываем данные внутри активного пакета вкладки
+            currentTab.tableHeaders = chosenHeaders;
+            currentTab.globalRows = cleanRows;
+            currentTab.currentFilteredRows = cleanRows.concat();
+            currentTab.currentPage = 1;
+            
+            // Перерисовываем поиски и таблицу на основе новых колонок
+            generateSearchFields(); 
+            renderTableStructure(); 
+            renderTableData();
+        }
+    }
     
-    var tableWrapper = document.querySelector('.table-wrapper');
-    if (tableWrapper) tableWrapper.style.display = 'block';
-    
-    currentPage = 1; 
-    currentFilteredRows = globalRows.concat();
-    
-    generateSearchFields(); 
-    renderTableStructure();
-    renderTableData();
-
-    var duration = (performance.now() - startTime).toFixed(1); // ⏱️ СТОП СЕКУНДОМЕР
-    document.getElementById('counter').innerHTML = 
-    " <strong>" + currentFilteredRows.length + "</strong> | <strong>" + duration + " ms</strong>";
-
+    var duration = (performance.now() - startTime).toFixed(1);
+    var currentTab = getActiveTab();
+    if (currentTab) {
+        document.getElementById('counter').innerHTML = 
+            " <strong>" + currentTab.currentFilteredRows.length + "</strong> |  <strong>" + duration + " мс</strong>";
+    }
 });
 
+
+function createNewTab(fileName, headers, lines, delimiter, chosenIndices) {
+    var tabId = "tab_" + Date.now();
+    var cleanRows = [];
+    
+    lines.forEach(function(line) {
+        var res = line.split(delimiter);
+        var cells = [];
+        if (chosenIndices) {
+            cells = chosenIndices.map(function(idx) { return res[idx] !== undefined ? res[idx] : ""; });
+        } else {
+            cells = res;
+        }
+        if (cells.length > 0 && cells.some(function(c) { return c !== ""; })) cleanRows.push(cells);
+    });
+    
+    var newTab = {
+        id: tabId, name: fileName, tableHeaders: headers, globalRows: cleanRows, currentFilteredRows: cleanRows.concat(),
+        currentPage: 1, pageSize: 50, globalSearchQuery: "", columnFilters: []
+    };
+    
+    tabs.push(newTab);
+    activateTab(tabId);
+}
+
+function getActiveTab() {
+    return tabs.find(function(t) { return t.id === activeTabId; }) || null;
+}
+
+function activateTab(tabId) {
+    activeTabId = tabId; var currentTab = getActiveTab(); if (!currentTab) return;
+    
+    document.getElementById('globalSearchInput').value = currentTab.globalSearchQuery;
+    document.getElementById('pageSizeSelect').value = currentTab.pageSize === currentTab.globalRows.length ? 'all' : currentTab.pageSize;
+    
+    document.getElementById('toggleFiltersBtn').disabled = false;
+    document.getElementById('clearFiltersBtn').disabled = false;
+    document.getElementById('toggleColumnsBtn').disabled = false;
+    document.getElementById('globalSearchInput').disabled = false;
+    
+    if (document.getElementById('pageSizeWrapper')) document.getElementById('pageSizeWrapper').style.display = 'block';
+    if (document.querySelector('.table-wrapper')) document.querySelector('.table-wrapper').style.display = 'block';
+    
+    renderTabsUI(); generateSearchFields(); renderTableStructure(); renderTableData();
+}
+
+function closeTab(tabId, e) {
+    if (e) e.stopPropagation();
+    var index = tabs.findIndex(function(t) { return t.id === tabId; }); if (index === -1) return;
+    
+    tabs.splice(index, 1);
+    if (tabs.length === 0) {
+        activeTabId = null;
+        document.getElementById('tabsContainer').innerHTML = ''; document.getElementById('tableHead').innerHTML = '';
+        document.getElementById('tableBody').innerHTML = ''; document.getElementById('counter').textContent = '';
+        document.getElementById('pagination').innerHTML = ''; document.getElementById('searchContainer').innerHTML = '';
+        
+        document.getElementById('toggleFiltersBtn').disabled = true; document.getElementById('clearFiltersBtn').disabled = true;
+        document.getElementById('toggleColumnsBtn').disabled = true; document.getElementById('globalSearchInput').disabled = true;
+        document.getElementById('globalSearchInput').value = ''; document.getElementById('pageSizeWrapper').style.display = 'none';
+        document.querySelector('.table-wrapper').style.display = 'none';
+        // document.getElementById('fileStatus').innerHTML = "Все вкладки закрыты. Выберите файл для начала работы.";
+    } else if (activeTabId === tabId) {
+        var nextActiveIndex = index > 0 ? index - 1 : 0; activateTab(tabs[nextActiveIndex].id);
+    } else {
+        renderTabsUI();
+    }
+}
+
+function renderTabsUI() {
+    var container = document.getElementById('tabsContainer'); container.innerHTML = '';
+    tabs.forEach(function(tab) {
+        var btn = document.createElement('button'); btn.className = 'toggle-filters-btn';
+        if (tab.id === activeTabId) btn.classList.add('active-tab');
+        btn.style.cssText = 'padding: 6px 12px; font-size: 13px; font-weight: bold; position: relative; padding-right: 28px; cursor: pointer;';
+        btn.textContent = tab.name;
+        btn.addEventListener('click', function() { activateTab(tab.id); });
+        
+        var cross = document.createElement('span'); cross.textContent = '×';
+        cross.style.cssText = 'position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-weight: bold; color: var(--text-muted); cursor: pointer; font-size: 14px;';
+        cross.addEventListener('click', function(e) { closeTab(tab.id, e); });
+        
+        btn.appendChild(cross); container.appendChild(btn);
+    });
+    var activeTab = getActiveTab();
+    // if (activeTab) document.getElementById('fileStatus').innerHTML = "Активный файл: <strong>" + activeTab.name + "</strong>";
+}
+
 function generateSearchFields() {
+    var currentTab = getActiveTab(); if (!currentTab) return;
     var container = document.getElementById('searchContainer'); container.innerHTML = ''; container.style.display = 'none';
-    tableHeaders.forEach(function(h, idx) {
+    
+    currentTab.tableHeaders.forEach(function(h, idx) {
         var d = document.createElement('div'); d.className = 'search-field';
         var l = document.createElement('label'); l.textContent = h || ("Колонка " + (idx + 1));
         var input = document.createElement('input'); input.type = 'text'; input.placeholder = 'Фильтр...'; input.setAttribute('data-index', idx);
-        input.addEventListener('input', runCombinedSearch);
+        input.value = currentTab.columnFilters[idx] || "";
+        
+        input.addEventListener('input', function() {
+            clearTimeout(searchTimeout); searchTimeout = setTimeout(function() { runCombinedSearch(); }, 350);
+        });
         d.appendChild(l); d.appendChild(input); container.appendChild(d);
     });
 }
 
-// Умный поиск с защитой от тормозов при вводе с клавиатуры
 document.getElementById('globalSearchInput').addEventListener('input', function() {
-    clearTimeout(searchTimeout); // Сбрасываем прошлый таймер, если пользователь нажал новую клавишу
-    
-    // Запускаем поиск только через 350 мс после того, как пользователь перестал нажимать кнопки
-    searchTimeout = setTimeout(function() {
-        runCombinedSearch();
-    }, 350); 
+    clearTimeout(searchTimeout); searchTimeout = setTimeout(function() { runCombinedSearch(); }, 350); 
 });
 
-// Исправленная логика кнопки сброса: очищает поиск БЕЗ вызова панели столбцов
 document.getElementById('clearFiltersBtn').addEventListener('click', function() {
-    // 1. Стираем текст из главного поиска и всех детальных фильтров колонок
+    var currentTab = getActiveTab(); if (!currentTab) return;
     document.getElementById('globalSearchInput').value = ""; 
-    document.querySelectorAll('#searchContainer input').forEach(function(input) { 
-        input.value = ""; 
-    });
-    
-    // 2. Мгновенно сбрасываем массив отфильтрованных строк до полной исходной таблицы
-    currentPage = 1; 
-    currentFilteredRows = globalRows.concat(); 
-    
-    // 3. Просто перерисовываем данные на экране — меню столбцов больше не откроется!
-    renderTableStructure();
-    renderTableData();
+    document.querySelectorAll('#searchContainer input').forEach(function(input) { input.value = ""; });
+    currentTab.globalSearchQuery = ""; currentTab.columnFilters = []; currentTab.currentPage = 1; 
+    currentTab.currentFilteredRows = currentTab.globalRows.concat(); 
+    renderTableStructure(); renderTableData();
 });
-
 
 document.getElementById('pageSizeSelect').addEventListener('change', function() {
-    pageSize = this.value === 'all' ? globalRows.length : parseInt(this.value); currentPage = 1; renderTableData();
+    var currentTab = getActiveTab(); if (!currentTab) return;
+    currentTab.pageSize = this.value === 'all' ? currentTab.globalRows.length : parseInt(this.value); 
+    currentTab.currentPage = 1; renderTableData();
 });
 
 function runCombinedSearch() {
+    var currentTab = getActiveTab(); if (!currentTab) return;
     var gQ = document.getElementById('globalSearchInput').value.toLowerCase().trim();
+    currentTab.globalSearchQuery = document.getElementById('globalSearchInput').value;
+    
     var activeFilters = [];
-    document.querySelectorAll('#searchContainer input').forEach(function(i) {
-        var val = i.value.toLowerCase().trim(); 
-        if (val) activeFilters.push({ idx: parseInt(i.getAttribute('data-index')), q: val });
+    document.querySelectorAll('#searchContainer input').forEach(function(input) {
+        var idx = parseInt(input.getAttribute('data-index'));
+        var val = input.value.toLowerCase().trim(); currentTab.columnFilters[idx] = input.value;
+        if (val) activeFilters.push({ idx: idx, q: val });
     });
 
-    currentFilteredRows = globalRows.filter(function(cells) {
+    currentTab.currentFilteredRows = currentTab.globalRows.filter(function(cells) {
         var mG = true;
         if (gQ) {
             var searchWords = gQ.split('%').map(function(w) { return w.trim(); }).filter(function(w) { return w !== ""; });
             mG = searchWords.every(function(word) {
-                return cells.some(function(c) {
-                    return String(c || '').toLowerCase().includes(word);
-                });
+                return cells.some(function(c) { return String(c || '').toLowerCase().includes(word); });
             });
         }
-        
         var mC = activeFilters.every(function(f) {
             var cV = ''; cells.forEach(function(c, i) { if (i === f.idx) cV = String(c).toLowerCase(); }); return cV.includes(f.q);
         });
         return mG && mC;
     });
-    currentPage = 1; renderTableData();
+    currentTab.currentPage = 1; renderTableData();
 }
 
 function renderTableStructure() {
-    var th = document.getElementById('tableHead'); 
-    th.innerHTML = ''; 
-    if (tableHeaders.length === 0) return;
-    
-    var row = document.createElement('tr'); 
-    var dragSrcIndex = null; 
+    var currentTab = getActiveTab(); if (!currentTab) return;
+    var th = document.getElementById('tableHead'); th.innerHTML = ''; if (currentTab.tableHeaders.length === 0) return;
+    var row = document.createElement('tr'); var dragSrcIndex = null; 
 
-    tableHeaders.forEach(function(h, idx) { 
-        var t = document.createElement('th'); 
-        var titleSpan = document.createElement('span');
-        titleSpan.textContent = h || ("Колонка " + (idx + 1));
-        t.appendChild(titleSpan);
-
-        var closeBtn = document.createElement('span');
-        closeBtn.textContent = ' ×';
-        closeBtn.style.cursor = 'pointer';
-        closeBtn.style.marginLeft = '8px';
-        closeBtn.style.color = 'var(--text-muted)';
-        closeBtn.style.fontWeight = 'bold';
-        closeBtn.title = 'Скрыть этот столбец';
+    currentTab.tableHeaders.forEach(function(h, idx) { 
+        var t = document.createElement('th'); var titleSpan = document.createElement('span'); titleSpan.textContent = h || ("Колонка " + (idx + 1)); t.appendChild(titleSpan);
+        var closeBtn = document.createElement('span'); closeBtn.textContent = ' ×'; closeBtn.style.cssText = 'cursor:pointer; margin-left:8px; color:var(--text-muted); font-weight:bold;';
         
         closeBtn.addEventListener('click', function(e) {
-            e.stopPropagation(); 
+            e.stopPropagation(); var currentHeaderName = currentTab.tableHeaders[idx];
+            var relatedCheckbox = document.querySelector('#checkboxesGrid input[type="checkbox"][data-header-name="' + currentHeaderName + '"]');
+            if (relatedCheckbox) relatedCheckbox.checked = false;
 
-    // --- НАЧАЛО ПРАВКИ: Синхронизация. Находим чекбокс по имени заголовка и снимаем галочку ---
-    var currentHeaderName = tableHeaders[idx];
-    var relatedCheckbox = document.querySelector('#checkboxesGrid input[data-header-name="' + currentHeaderName + '"]');
-    if (relatedCheckbox) {
-        relatedCheckbox.checked = false;
-    }
-    // --- КОНЕЦ ПРАВКИ ---
-
-            tableHeaders.splice(idx, 1);
-            globalRows = globalRows.map(function(cells) {
-                var newCells = cells.concat(); 
-                newCells.splice(idx, 1);       
-                return newCells;
-            });
-            currentFilteredRows = currentFilteredRows.map(function(cells) {
-                var newCells = cells.concat();
-                newCells.splice(idx, 1);
-                return newCells;
-            });
-            generateSearchFields();
-            renderTableStructure();
-            renderTableData();
+            currentTab.tableHeaders.splice(idx, 1);
+            currentTab.globalRows = currentTab.globalRows.map(function(cells) { var n = cells.concat(); n.splice(idx, 1); return n; });
+            currentTab.currentFilteredRows = currentTab.currentFilteredRows.map(function(cells) { var n = cells.concat(); n.splice(idx, 1); return n; });
+            generateSearchFields(); renderTableStructure(); renderTableData();
         });
-        
-        t.appendChild(closeBtn);
-        t.setAttribute('draggable', 'true');
-        t.setAttribute('data-index', idx);
+        t.appendChild(closeBtn); t.setAttribute('draggable', 'true'); t.setAttribute('data-index', idx);
 
-        t.addEventListener('dragstart', function(e) {
-            dragSrcIndex = idx;
-            e.dataTransfer.effectAllowed = 'move';
-        });
-
-        t.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            this.classList.add('drag-over');
-        });
-
-        t.addEventListener('dragleave', function() {
-            this.classList.remove('drag-over');
-        });
-
+        t.addEventListener('dragstart', function(e) { dragSrcIndex = idx; e.dataTransfer.effectAllowed = 'move'; });
+        t.addEventListener('dragover', function(e) { e.preventDefault(); this.classList.add('drag-over'); });
+        t.addEventListener('dragleave', function() { this.classList.remove('drag-over'); });
         t.addEventListener('drop', function(e) {
-            e.preventDefault();
-            this.classList.remove('drag-over');
-            var targetIndex = parseInt(this.getAttribute('data-index'));
-
+            e.preventDefault(); this.classList.remove('drag-over'); var targetIndex = parseInt(this.getAttribute('data-index'));
             if (dragSrcIndex !== null && dragSrcIndex !== targetIndex) {
-                function moveItemInArray(arr, fromIdx, toIdx) {
-                    var cleanArray = arr.concat(); 
-                    var item = cleanArray.splice(fromIdx, 1)[0]; 
-                    cleanArray.splice(toIdx, 0, item); 
-                    return cleanArray;
-                }
-
-                tableHeaders = moveItemInArray(tableHeaders, dragSrcIndex, targetIndex);
-                globalRows = globalRows.map(function(cells) { return moveItemInArray(cells, dragSrcIndex, targetIndex); });
-                currentFilteredRows = currentFilteredRows.map(function(cells) { return moveItemInArray(cells, dragSrcIndex, targetIndex); });
-
-                generateSearchFields();
-                renderTableStructure();
-                renderTableData();
+                function m(arr, f, to) { var c = arr.concat(), item = c.splice(f, 1); c.splice(to, 0, item); return c; }
+                currentTab.tableHeaders = m(currentTab.tableHeaders, dragSrcIndex, targetIndex);
+                currentTab.globalRows = currentTab.globalRows.map(function(cells) { return m(cells, dragSrcIndex, targetIndex); });
+                currentTab.currentFilteredRows = currentTab.currentFilteredRows.map(function(cells) { return m(cells, dragSrcIndex, targetIndex); });
+                generateSearchFields(); renderTableStructure(); renderTableData();
             }
         });
-
         row.appendChild(t); 
     }); 
     th.appendChild(row);
 }
 
-// Измерение скорости живой фильтрации процессором ПК
 function renderTableData() {
-    var startTime = performance.now(); // 🏁 Включаем секундомер поиска
-
-    var tb = document.getElementById('tableBody'); 
-    tb.innerHTML = '';
+    var currentTab = getActiveTab(); if (!currentTab) return;
+    var startTime = performance.now();
+    var tb = document.getElementById('tableBody'); tb.innerHTML = ''; var gQ = document.getElementById('globalSearchInput').value.trim();
+    var pRows = currentTab.currentFilteredRows.slice((currentTab.currentPage - 1) * currentTab.pageSize, currentTab.currentPage * currentTab.pageSize);
     
-    var gQ = document.getElementById('globalSearchInput').value.trim();
-    var pRows = currentFilteredRows.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-    
-    function highlightText(text, searchStr) {
-        if (!searchStr) return text;
-        var html = text;
-        var words = searchStr.split('%').map(function(w) { return w.trim(); }).filter(function(w) { return w !== ""; });
-        
-        words.forEach(function(word) {
-            if (!word) return;
-            var safeStr = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-            var regex = new RegExp("(" + safeStr + ")", "gi");
-            html = html.replace(regex, "<span style='font-weight:700;color:var(--accent-color);'>$1</span>");
-        });
+    function hl(text, searchStr) {
+        if (!searchStr) return text; var html = text, words = searchStr.split('%').map(function(w) { return w.trim(); }).filter(function(w) { return w !== ""; });
+        words.forEach(function(word) { if (!word) return; var safeStr = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), regex = new RegExp("(" + safeStr + ")", "gi"); html = html.replace(regex, "<span style='font-weight:700;color:var(--accent-color);'>$1</span>"); });
         return html;
     }
 
     pRows.forEach(function(cells) {
         var tr = document.createElement('tr');
-        tableHeaders.forEach(function(_, idx) {
-            var td = document.createElement('td');
-            var txt = String(cells[idx] !== undefined ? cells[idx] : '');
-            var activeQuery = gQ; 
-            var columnInputs = document.querySelectorAll('#searchContainer input');
-            columnInputs.forEach(function(input) { 
-                if (parseInt(input.getAttribute('data-index')) === idx && input.value.trim()) {
-                    activeQuery = input.value.trim(); 
-                }
-            });
-            
-            td.innerHTML = highlightText(txt, activeQuery);
+        currentTab.tableHeaders.forEach(function(_, idx) {
+            var td = document.createElement('td'); var txt = String(cells[idx] !== undefined ? cells[idx] : ''); var activeQuery = gQ; 
+            document.querySelectorAll('#searchContainer input').forEach(function(input) { if (parseInt(input.getAttribute('data-index')) === idx && input.value.trim()) activeQuery = input.value.trim(); });
+            td.innerHTML = hl(txt, activeQuery);
 
             if (txt.trim() !== "") {
                 var btn = document.createElement('button'); btn.className = 'copy-btn'; btn.textContent = '📋';
                 btn.addEventListener('click', function(e) {
-                    e.stopPropagation(); 
-                    var ta = document.createElement('textarea'); ta.value = txt; ta.style.position = 'fixed';
-                    document.body.appendChild(ta); ta.select(); 
-                    try { 
-                        document.execCommand('copy'); btn.textContent = "✓"; btn.classList.add('copied'); 
-                        setTimeout(function() { btn.textContent = "📋"; btn.classList.remove('copied'); }, 1000); 
-                    } catch(err){} 
-                    document.body.removeChild(ta);
+                    e.stopPropagation(); var ta = document.createElement('textarea'); ta.value = txt; ta.style.position = 'fixed'; document.body.appendChild(ta); ta.select(); 
+                    try { document.execCommand('copy'); btn.textContent = "✓"; btn.classList.add('copied'); setTimeout(function() { btn.textContent = "📋"; btn.classList.remove('copied'); }, 1000); } catch(err){} document.body.removeChild(ta);
                 });
                 td.appendChild(btn);
             }
@@ -1439,233 +1454,67 @@ function renderTableData() {
     });
 
     setupPagination();
-
-    var duration = (performance.now() - startTime).toFixed(1); // ⏱️ СТОП СЕКУНДОМЕР
-    document.getElementById('counter').innerHTML = 
-        "Строк: <strong>" + currentFilteredRows.length + "</strong> | ms: <strong>" + duration;
+    var duration = (performance.now() - startTime).toFixed(1);
+    document.getElementById('counter').innerHTML = " <strong>" + currentTab.currentFilteredRows.length + "</strong> |  <strong>" + duration + " мс</strong>";
 }
 
 function setupPagination() {
+    var currentTab = getActiveTab(); if (!currentTab) return;
     var pc = document.getElementById('pagination'); pc.innerHTML = '';
-    var totalPages = Math.ceil(currentFilteredRows.length / pageSize); if (totalPages <= 1) return;
-    var prev = document.createElement('button'); prev.className = 'pagination-btn'; prev.textContent = '« Назад'; prev.disabled = currentPage === 1;
-    prev.addEventListener('click', function() { currentPage--; renderTableData(); }); pc.appendChild(prev);
-    var start = Math.max(1, currentPage - 2), end = Math.min(totalPages, start + 4);
-    if (end - start < 4) start = Math.max(1, end - 4);
-    if (start > 1) {
-        createPageBtn(1, pc); if (start > 2) { var d = document.createElement('span'); d.className = 'pagination-dots'; d.textContent = '...'; pc.appendChild(d); }
-    }
+    var totalPages = Math.ceil(currentTab.currentFilteredRows.length / currentTab.pageSize); if (totalPages <= 1) return;
+    var prev = document.createElement('button'); prev.className = 'pagination-btn'; prev.textContent = '« Назад'; prev.disabled = currentTab.currentPage === 1;
+    prev.addEventListener('click', function() { currentTab.currentPage--; renderTableData(); }); pc.appendChild(prev);
+    var start = Math.max(1, currentTab.currentPage - 2), end = Math.min(totalPages, start + 4); if (end - start < 4) start = Math.max(1, end - 4);
+    if (start > 1) { createPageBtn(1, pc); if (start > 2) { var d = document.createElement('span'); d.className = 'pagination-dots'; d.textContent = '...'; pc.appendChild(d); } }
     for (var p = start; p <= end; p++) createPageBtn(p, pc);
-    if (end < totalPages) {
-        if (end < totalPages - 1) { var d = document.createElement('span'); d.className = 'pagination-dots'; d.textContent = '...'; pc.appendChild(d); }
-        createPageBtn(totalPages, pc);
-    }
-    var next = document.createElement('button'); next.className = 'pagination-btn'; next.textContent = 'Вперед »'; next.disabled = currentPage === totalPages;
-    next.addEventListener('click', function() { currentPage++; renderTableData(); }); pc.appendChild(next);
+    if (end < totalPages) { if (end < totalPages - 1) { var d = document.createElement('span'); d.className = 'pagination-dots'; d.textContent = '...'; pc.appendChild(d); } createPageBtn(totalPages, pc); }
+    var next = document.createElement('button'); next.className = 'pagination-btn'; next.textContent = 'Вперед »'; next.disabled = currentTab.currentPage === totalPages;
+    next.addEventListener('click', function() { currentTab.currentPage++; renderTableData(); }); pc.appendChild(next);
 }
 
 function createPageBtn(p, container) {
-    var b = document.createElement('button'); b.className = 'pagination-btn'; b.textContent = p; if (p === currentPage) b.classList.add('active');
-    b.addEventListener('click', function() { currentPage = p; renderTableData(); document.querySelector('.table-wrapper').scrollTop = 0; }); container.appendChild(b);
+    var currentTab = getActiveTab(); if (!currentTab) return;
+    var b = document.createElement('button'); b.className = 'pagination-btn'; b.textContent = p; if (p === currentTab.currentPage) b.classList.add('active');
+    b.addEventListener('click', function() { currentTab.currentPage = p; renderTableData(); document.querySelector('.table-wrapper').scrollTop = 0; }); container.appendChild(b);
 }
 
-// --- ОБРАБОТКА ЗАГРУЗКИ ИЗ ЯНДЕКС.ДИСКА ---
-document.getElementById('yandexCloudBtn').addEventListener('click', function() {
-    var userLink = prompt("Пожалуйста, введите ссылку 'Поделиться' на ваш CSV-файл из Яндекс Диска:");
-    if (!userLink) return;
-
-    document.getElementById('fileStatus').innerHTML = "Загрузка из Яндекс.Диска...";
-
-    // Используем публичный API Яндекса для получения прямой ссылки на скачивание
-    var apiUrl = "https://yandex.net" + encodeURIComponent(userLink);
-
-    fetch(apiUrl)
-        .then(function(res) { 
-            if (!res.ok) throw new Error("Файл не найден или закрыт доступ");
-            return res.json(); 
-        })
-        .then(function(json) {
-            // Скачиваем сам бинарный файл по полученному прямому адресу href
-            return fetch(json.href);
-        })
-        .then(function(response) { 
-            if (!response.ok) throw new Error("Не удалось скачать файл");
-            return response.arrayBuffer(); 
-        })
-        .then(function(buffer) {
-            decodeAndProcessBuffer(buffer, "Яндекс.Диска");
-        })
-        .catch(function(error) {
-            showCloudError(error);
-        });
-});
-
-// --- ОБРАБОТКА ЗАГРУЗКИ ИЗ GOOGLE ДИСКА ---
-document.getElementById('googleCloudBtn').addEventListener('click', function() {
-    var userLink = prompt("Пожалуйста, введите ссылку 'Поделиться' на ваш CSV-файл из Google Диска:");
-    if (!userLink) return;
-
-    document.getElementById('fileStatus').innerHTML = "Загрузка из Google Диска...";
-
-    // Извлекаем уникальный ID файла из стандартной ссылки Гугла с помощью регулярного выражения
-    var match = userLink.match(/\/d\/([a-zA-Z0-9-_]+)/);
-    if (!match) {
-        alert("Не удалось распознать формат ссылки Google Drive. Убедитесь, что скопировали ссылку 'Поделиться'.");
-        document.getElementById('fileStatus').innerHTML = "<span style='color:#ef4444;'>Ошибка ссылки</span>";
-        return;
-    }
-    var fileId = match[1];
-    
-    // Пересобираем ссылку в формат Direct Download (прямой экспорт)
-    var directUrl = "https://google.com" + fileId;
-
-    fetch(directUrl)
-        .then(function(response) {
-            if (!response.ok) throw new Error("Не удалось загрузить файл. Проверьте, что доступ открыт 'Всем, у кого есть ссылка'");
-            return response.arrayBuffer();
-        })
-        .then(function(buffer) {
-            decodeAndProcessBuffer(buffer, "Google Диска");
-        })
-        .catch(function(error) {
-            showCloudError(error);
-        });
-});
-
-// Утилита автоопределения кодировки (UTF-8 / Windows-1251) для облачных файлов
-function decodeAndProcessBuffer(buffer, cloudName) {
-    var decoder = new TextDecoder('windows-1251');
-    var text = decoder.decode(buffer);
-    
-    // Если внутри файла кодировка сломалась (появились пустые маркеры), перечитываем в UTF-8
-    if (text.includes(String.fromCharCode(65533))) {
-        var utfDecoder = new TextDecoder('utf-8');
-        text = utfDecoder.decode(buffer);
-    }
-    
-    processCSVData(text);
-    document.getElementById('fileStatus').innerHTML = "Файл успешно загружен из <strong>" + cloudName + "</strong>";
-}
-
-// Вывод красивой ошибки при блокировке CORS на локальном ПК
-function showCloudError(error) {
-    console.error(error);
-    alert("Ошибка загрузки: " + error.message + "\n\n⚠️ НАПОМИНАНИЕ: Если вы запускаете этот HTML-файл просто с рабочего стола, браузер блокирует скачивание из облаков из-за политики CORS. Как только вы загрузите этот проект на GitHub Pages, загрузка заработает автоматически!");
-    document.getElementById('fileStatus').innerHTML = "<span style='color:#ef4444;'>Блокировка CORS (требуется GitHub)</span>";
-}
-
-
-// Логика кнопки "Фильтры" для скрытия и показа фильтров по колонкам (с компактной иконкой)
 document.getElementById('toggleFiltersBtn').addEventListener('click', function() {
-    var container = document.getElementById('searchContainer');
-    
-    if (container.style.display === 'none' || !container.style.display) {
-        container.style.display = 'grid'; // Показываем сетку фильтров
-        this.textContent = '🔍'; // Меняем стрелочку наверх
-    } else {
-        container.style.display = 'none'; // Скрываем сетку фильтров
-        this.textContent = '🔍'; // Меняем стрелочку вниз
-    }
+    var container = document.getElementById('searchContainer'); container.style.display = (container.style.display === 'none' || !container.style.display) ? 'grid' : 'none';
 });
 
-// Логика кнопки "Столбцы" для возврата к выбору чекбоксов (компактный вид)
 document.getElementById('toggleColumnsBtn').addEventListener('click', function() {
-    var panel = document.getElementById('columnChooserPanel');
+    // Гарантируем, что синяя кнопка поймет, что это редактирование текущей таблицы, а не новый файл
+    document.getElementById('applyColumnsBtn').removeAttribute('data-pending-filename');
     
-    if (panel.style.display === 'none' || !panel.style.display) {
-        panel.style.display = 'block'; // Показываем панель с чекбоксами обратно
-        this.innerHTML = '⚙️';
-    } else {
-        panel.style.display = 'none'; // Скрываем панель
-        this.innerHTML = '⚙️';
-    }
+    var panel = document.getElementById('columnChooserPanel'); 
+    panel.style.display = (panel.style.display === 'none' || !panel.style.display) ? 'block' : 'none';
 });
 
 
 var isCtrlPressed = false;
 window.addEventListener('keydown', function(e) { if (e.key === 'Control') isCtrlPressed = true; });
 window.addEventListener('keyup', function(e) { if (e.key === 'Control') { isCtrlPressed = false; removeAllCtrlHighlights(); } });
-
 document.getElementById('dataTable').addEventListener('mousemove', function(e) {
-    if (!isCtrlPressed) return;
-    var tr = e.target.closest('tr');
-    if (tr && tr.parentElement.tagName === 'TBODY') {
-        removeAllCtrlHighlights();
-        tr.classList.add('ctrl-highlight');
-    }
+    if (!isCtrlPressed) return; var tr = e.target.closest('tr'); if (tr && tr.parentElement.tagName === 'TBODY') { removeAllCtrlHighlights(); tr.classList.add('ctrl-highlight'); }
 });
-
-document.getElementById('dataTable').addEventListener('mouseout', function(e) {
-    var tr = e.target.closest('tr');
-    if (tr) tr.classList.remove('ctrl-highlight');
-});
-
-function removeAllCtrlHighlights() {
-    document.querySelectorAll('#dataTable tbody tr').forEach(function(row) {
-        row.classList.remove('ctrl-highlight');
-    });
-}
+document.getElementById('dataTable').addEventListener('mouseout', function(e) { var tr = e.target.closest('tr'); if (tr) tr.classList.remove('ctrl-highlight'); });
+function removeAllCtrlHighlights() { document.querySelectorAll('#dataTable tbody tr').forEach(function(row) { row.classList.remove('ctrl-highlight'); }); }
 
 document.getElementById('dataTable').addEventListener('click', function(e) {
-    if (!isCtrlPressed) return;
-    var tr = e.target.closest('tr');
-    if (tr && tr.parentElement.tagName === 'TBODY') {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        var rowData = [];
-        var cells = tr.querySelectorAll('td');
-        cells.forEach(function(td) {
-            var clone = td.cloneNode(true);
-            var btn = clone.querySelector('.copy-btn');
-            if (btn) clone.removeChild(btn);
-            rowData.push(clone.textContent.trim());
-        });
-        
-        var textToCopy = rowData.join('\n');
-        var textarea = document.createElement('textarea');
-        textarea.value = textToCopy;
-        textarea.style.position = 'fixed';
-        document.body.appendChild(textarea);
-        textarea.select();
-        
-        try {
-            document.execCommand('copy');
-            var originalBg = tr.style.backgroundColor;
-            tr.style.transition = 'background-color 0.15s ease';
-            tr.style.backgroundColor = 'var(--bg-filebox)';
-            showToast("Строка успешно скопирована");
-            setTimeout(function() {
-                tr.style.backgroundColor = originalBg;
-            }, 300);
-        } catch (err) {
-            console.error('Не удалось скопировать строку:', err);
-        }
-        document.body.removeChild(textarea);
+    if (!isCtrlPressed) return; var tr = e.target.closest('tr'); if (tr && tr.parentElement.tagName === 'TBODY') {
+        e.preventDefault(); e.stopPropagation(); var rowData = [];
+        tr.querySelectorAll('td').forEach(function(td) { var clone = td.cloneNode(true), btn = clone.querySelector('.copy-btn'); if (btn) clone.removeChild(btn); rowData.push(clone.textContent.trim()); });
+        var textarea = document.createElement('textarea'); textarea.value = rowData.join('\n'); textarea.style.position = 'fixed'; document.body.appendChild(textarea); textarea.select();
+        try { document.execCommand('copy'); var originalBg = tr.style.backgroundColor; tr.style.transition = 'background-color 0.15s ease'; tr.style.backgroundColor = 'var(--bg-filebox)'; showToast("Строка успешно скопирована"); setTimeout(function() { tr.style.backgroundColor = originalBg; }, 300); } catch (err) {} document.body.removeChild(textarea);
     }
 });
 
 function showToast(message) {
-    var oldToast = document.querySelector('.toast-notification');
-    if (oldToast) oldToast.remove();
-
-    var toast = document.createElement('div');
-    toast.className = 'toast-notification';
-    toast.innerHTML = '<span style="color:var(--accent-color);">✓</span> ' + message;
-    document.body.appendChild(toast);
-
+    var oldToast = document.querySelector('.toast-notification'); if (oldToast) oldToast.remove();
+    var toast = document.createElement('div'); toast.className = 'toast-notification'; toast.innerHTML = '<span style="color:var(--accent-color);">✓</span> ' + message; document.body.appendChild(toast);
     setTimeout(function() { toast.classList.add('show'); }, 10);
-
-    setTimeout(function() {
-        toast.classList.remove('show');
-        setTimeout(function() { toast.remove(); }, 200);
-    }, 2000);
+    setTimeout(function() { toast.classList.remove('show'); setTimeout(function() { toast.remove(); }, 200); }, 2200);
 }
-
-// Автоматически сохраняем измененный лимит столбцов в память браузера
-document.getElementById('columnLimitInput').addEventListener('input', function() {
-    localStorage.setItem('saved_column_limit', this.value);
-});
 
 
 
