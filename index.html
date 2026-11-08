@@ -924,6 +924,62 @@ body > .container {
 
 <script>
 
+// --- НАЧАЛО ПРАВКИ: Подключение IndexedDB для долгосрочного хранения таблиц ---
+var db = null;
+var request = indexedDB.open("GigaSearchDB", 1);
+
+request.onupgradeneeded = function(e) {
+    var database = e.target.result;
+    if (!database.objectStoreNames.contains("saved_tabs")) {
+        database.createObjectStore("saved_tabs", { keyPath: "id" });
+    }
+};
+
+request.onsuccess = function(e) {
+    db = e.target.result;
+    // База данных успешно подключена, пробуем восстановить вкладки из памяти ПК
+    restoreTabsFromDB();
+};
+
+request.onerror = function(e) {
+    console.error("Ошибка IndexedDB:", e.target.error);
+};
+
+// Функция записи вкладки в базу данных ПК
+function saveTabToDB(tab) {
+    if (!db) return;
+    var tx = db.transaction("saved_tabs", "readwrite");
+    var store = tx.objectStore("saved_tabs");
+    store.put(tab);
+}
+
+// Функция удаления вкладки из базы данных ПК
+function deleteTabFromDB(tabId) {
+    if (!db) return;
+    var tx = db.transaction("saved_tabs", "readwrite");
+    var store = tx.objectStore("saved_tabs");
+    store.delete(tabId);
+}
+
+// Функция автовосстановления вкладок при открытии браузера
+function restoreTabsFromDB() {
+    if (!db) return;
+    var tx = db.transaction("saved_tabs", "readonly");
+    var store = tx.objectStore("saved_tabs");
+    var requestAll = store.getAll();
+    
+    requestAll.onsuccess = function(e) {
+        var savedTabs = e.target.result;
+        if (savedTabs && savedTabs.length > 0) {
+            tabs = savedTabs;
+            // Активируем самую последнюю открытую вкладку
+            activateTab(tabs[tabs.length - 1].id);
+        }
+    };
+}
+// --- КОНЕЦ ПРАВКИ ---
+
+
 // 1. Центральное хранилище вкладок и настройки активного экрана
 var tabs = []; 
 var activeTabId = null;
@@ -981,6 +1037,7 @@ if (themeToggleBtn) {
 
 // --- НАЧАЛО ПРАВКИ: Возвращаем меню выбора темы при зажатии/правом клике ---
 // --- НАЧАЛО ПРАВКИ: Исправленное меню тем с защитой от ухода за экран и работающим зажатием ---
+// --- НАЧАЛО ПРАВКИ: Контекстное меню тем с привязкой правого верхнего угла к точке нажатия ---
 var themeMenu = document.getElementById('themeContextMenu');
 var touchTimeout = null;
 
@@ -991,44 +1048,38 @@ if (themeToggleBtn && themeMenu) {
         showThemeMenu(e.clientX, e.clientY);
     });
 
-    // 2. Исправленный показ меню по долгому зажатию пальца (мобильные)
+    // 2. Показ меню по долгому зажатию пальца (мобильные)
     themeToggleBtn.addEventListener('touchstart', function(e) {
-        var touch = e.touches[0]; // Берем координаты первого касания
+        if (e.touches.length === 0) return;
+        var touch = e.touches[0];
         var posX = touch.clientX;
         var posY = touch.clientY;
         
-        // Сбрасываем старый таймер перед запуском нового
         clearTimeout(touchTimeout);
-        
         touchTimeout = setTimeout(function() {
             showThemeMenu(posX, posY);
-        }, 500); // 0.5 сек удержания вызывают меню без системных глюков
+        }, 500); 
     });
 
-    // Отменяем таймер зажатия, если пользователь убрал палец раньше времени
-    themeToggleBtn.addEventListener('touchend', function(e) {
+    themeToggleBtn.addEventListener('touchend', function() {
         clearTimeout(touchTimeout);
     });
     
-    // Защита: отменяем прокрутку экрана, если палец зажат на кнопке
-    themeToggleBtn.addEventListener('touchmove', function(e) {
+    themeToggleBtn.addEventListener('touchmove', function() {
         clearTimeout(touchTimeout);
     });
 
-    // Умная функция показа и позиционирования меню
+    // Функция позиционирования: правый верхний угол меню крепится к точке клика/касания
     function showThemeMenu(x, y) {
-        themeMenu.style.display = 'block'; // Сначала включаем, чтобы браузер считал его реальную ширину
+        themeMenu.style.display = 'block';
         
-        var menuWidth = themeMenu.offsetWidth || 160; // Узнаем ширину выпадающего окна
-        var windowWidth = window.innerWidth; // Узнаем ширину экрана пользователя
+        var windowWidth = window.innerWidth;
+        // Считаем отступ справа: вся ширина экрана минус координата X нажатия
+        var offsetRight = windowWidth - x;
         
-        // Корректировка по оси X: Если меню уходит вправо за экран, сдвигаем его влево
-        if (x + menuWidth > windowWidth) {
-            themeMenu.style.left = (windowWidth - menuWidth - 10) + 'px';
-        } else {
-            themeMenu.style.left = x + 'px';
-        }
-        
+        // Сбрасываем старый стиль left и жестко крепим через right
+        themeMenu.style.left = 'auto';
+        themeMenu.style.right = offsetRight + 'px';
         themeMenu.style.top = (y + 10) + 'px';
     }
 
@@ -1044,7 +1095,7 @@ if (themeToggleBtn && themeMenu) {
         item.addEventListener('mouseleave', function() { this.style.background = 'transparent'; });
     });
 
-    // Скрываем меню, если кликнули мимо него
+    // Скрываем меню при клике мимо
     document.addEventListener('click', function(e) {
         if (!themeToggleBtn.contains(e.target) && !themeMenu.contains(e.target)) {
             themeMenu.style.display = 'none';
@@ -1052,6 +1103,7 @@ if (themeToggleBtn && themeMenu) {
     });
 }
 // --- КОНЕЦ ПРАВКИ ---
+
 
 
 
@@ -1214,6 +1266,7 @@ document.getElementById('applyColumnsBtn').addEventListener('click', function() 
             currentTab.globalRows = cleanRows;
             currentTab.currentFilteredRows = cleanRows.concat();
             currentTab.currentPage = 1;
+            saveTabToDB(currentTab); // <-- ДОБАВИТЬ ЭТУ СТРОК
             
             // Перерисовываем поиски и таблицу на основе новых колонок
             generateSearchFields(); 
@@ -1252,6 +1305,7 @@ function createNewTab(fileName, headers, lines, delimiter, chosenIndices) {
     };
     
     tabs.push(newTab);
+    saveTabToDB(newTab); // <-- ДОБАВИТЬ ЭТУ СТРОКУ
     activateTab(tabId);
 }
 
@@ -1281,6 +1335,8 @@ function closeTab(tabId, e) {
     var index = tabs.findIndex(function(t) { return t.id === tabId; }); if (index === -1) return;
     
     tabs.splice(index, 1);
+    deleteTabFromDB(tabId); // <-- ДОБАВИТЬ ЭТУ СТРОКУ
+
     if (tabs.length === 0) {
         activeTabId = null;
         document.getElementById('tabsContainer').innerHTML = ''; document.getElementById('tableHead').innerHTML = '';
@@ -1399,6 +1455,7 @@ function renderTableStructure() {
             currentTab.tableHeaders.splice(idx, 1);
             currentTab.globalRows = currentTab.globalRows.map(function(cells) { var n = cells.concat(); n.splice(idx, 1); return n; });
             currentTab.currentFilteredRows = currentTab.currentFilteredRows.map(function(cells) { var n = cells.concat(); n.splice(idx, 1); return n; });
+            saveTabToDB(currentTab); // <-- ДОБАВИТЬ ЭТУ СТРОКУ
             generateSearchFields(); renderTableStructure(); renderTableData();
         });
         t.appendChild(closeBtn); t.setAttribute('draggable', 'true'); t.setAttribute('data-index', idx);
@@ -1413,6 +1470,7 @@ function renderTableStructure() {
                 currentTab.tableHeaders = m(currentTab.tableHeaders, dragSrcIndex, targetIndex);
                 currentTab.globalRows = currentTab.globalRows.map(function(cells) { return m(cells, dragSrcIndex, targetIndex); });
                 currentTab.currentFilteredRows = currentTab.currentFilteredRows.map(function(cells) { return m(cells, dragSrcIndex, targetIndex); });
+                saveTabToDB(currentTab); // запоминание
                 generateSearchFields(); renderTableStructure(); renderTableData();
             }
         });
