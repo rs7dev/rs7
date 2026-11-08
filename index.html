@@ -924,7 +924,16 @@ body > .container {
 
 <script>
 
-// --- НАЧАЛО ПРАВКИ: Подключение IndexedDB для долгосрочного хранения таблиц ---
+// 1. Центральное хранилище вкладок и настройки активного экрана
+var tabs = []; 
+var activeTabId = null;
+var searchTimeout = null; 
+
+// Временный кэш для сырых строк файла на этапе чекбоксов
+var rawCSVLines = []; 
+var rawDelimiter = ';';
+
+// 2. Инициализация IndexedDB для бессрочного сохранения тяжелых таблиц на жестком диске
 var db = null;
 var request = indexedDB.open("GigaSearchDB", 1);
 
@@ -937,15 +946,13 @@ request.onupgradeneeded = function(e) {
 
 request.onsuccess = function(e) {
     db = e.target.result;
-    // База данных успешно подключена, пробуем восстановить вкладки из памяти ПК
-    restoreTabsFromDB();
+    restoreTabsFromDB(); // База успешно подключена, восстанавливаем таблицы
 };
 
 request.onerror = function(e) {
     console.error("Ошибка IndexedDB:", e.target.error);
 };
 
-// Функция записи вкладки в базу данных ПК
 function saveTabToDB(tab) {
     if (!db) return;
     var tx = db.transaction("saved_tabs", "readwrite");
@@ -953,7 +960,6 @@ function saveTabToDB(tab) {
     store.put(tab);
 }
 
-// Функция удаления вкладки из базы данных ПК
 function deleteTabFromDB(tabId) {
     if (!db) return;
     var tx = db.transaction("saved_tabs", "readwrite");
@@ -961,7 +967,6 @@ function deleteTabFromDB(tabId) {
     store.delete(tabId);
 }
 
-// Функция автовосстановления вкладок при открытии браузера
 function restoreTabsFromDB() {
     if (!db) return;
     var tx = db.transaction("saved_tabs", "readonly");
@@ -972,166 +977,78 @@ function restoreTabsFromDB() {
         var savedTabs = e.target.result;
         if (savedTabs && savedTabs.length > 0) {
             tabs = savedTabs;
-            // Активируем самую последнюю открытую вкладку
-            activateTab(tabs[tabs.length - 1].id);
+            
+            // --- НАЧАЛО ПРАВКИ: Восстанавливаем именно ту вкладку, на которой остановились ---
+            var lastActiveId = localStorage.getItem('saved_active_tab_id');
+            var tabExists = tabs.some(function(t) { return t.id === lastActiveId; });
+            
+            if (lastActiveId && tabExists) {
+                activateTab(lastActiveId);
+            } else {
+                activateTab(tabs[tabs.length - 1].id); // Если данных нет, открываем последнюю
+            }
+            // --- КОНЕЦ ПРАВКИ ---
         }
     };
 }
-// --- КОНЕЦ ПРАВКИ ---
 
 
-// 1. Центральное хранилище вкладок и настройки активного экрана
-var tabs = []; 
-var activeTabId = null;
-var searchTimeout = null; // Дебаунсинг-таймер для клавиатуры
-
-// Временные кэш-переменные для парсинга файлов на Этапе А (чекбоксы)
-var rawCSVLines = []; 
-var rawDelimiter = ';';
-
-// 2. Извлекаем тему оформления из памяти браузера при старте страницы
+// 1. Восстановление сохранённой темы оформления при старте
 var savedTheme = localStorage.getItem('saved_table_theme') || 'light';
 var themeToggleBtn = document.getElementById('themeToggleBtn');
 
 function applyTheme(t) {
     if (t === 'light') { 
         document.documentElement.removeAttribute('data-theme'); 
-        themeToggleBtn.textContent = '☀️'; 
+        if (themeToggleBtn) themeToggleBtn.textContent = '☀️'; 
     } else { 
         document.documentElement.setAttribute('data-theme', t); 
-        if (t === 'dark') themeToggleBtn.textContent = '🌙'; 
-        if (t === 'matrix') themeToggleBtn.textContent = '🌲'; 
-        if (t === 'aero') themeToggleBtn.textContent = '🧊'; 
-        if (t === 'cozy-home') themeToggleBtn.textContent = '🏠'; 
-        if (t === 'lemon-tea') themeToggleBtn.textContent = '☕'; 
-        if (t === 'savanna') themeToggleBtn.textContent = '⛰️'; 
-        if (t === 'sage') themeToggleBtn.textContent = '🌿'; 
-        if (t === 'snow-forest') themeToggleBtn.textContent = '❄️'; 
-        if (t === 'ocean') themeToggleBtn.textContent = '🌊'; 
-    }
-}
-
-// --- НАЧАЛО ПРАВКИ: Возвращаем логику кнопке переключения тем ---
-if (themeToggleBtn) {
-    themeToggleBtn.addEventListener('click', function() {
-        var current = document.documentElement.getAttribute('data-theme') || 'light';
-        var next = 'light';
-        
-        // Циклический перебор всех ваших 10 роскошных тем оформления
-        if (current === 'light') next = 'dark';
-        else if (current === 'dark') next = 'matrix';
-        else if (current === 'matrix') next = 'aero';
-        else if (current === 'aero') next = 'cozy-home';
-        else if (current === 'cozy-home') next = 'lemon-tea';
-        else if (current === 'lemon-tea') next = 'savanna';
-        else if (current === 'savanna') next = 'sage';
-        else if (current === 'sage') next = 'snow-forest';
-        else if (current === 'snow-forest') next = 'ocean';
-        else if (current === 'ocean') next = 'light';
-        
-        applyTheme(next);
-        localStorage.setItem('saved_table_theme', next);
-    });
-}
-// --- КОНЕЦ ПРАВКИ ---
-
-// --- НАЧАЛО ПРАВКИ: Возвращаем меню выбора темы при зажатии/правом клике ---
-// --- НАЧАЛО ПРАВКИ: Исправленное меню тем с защитой от ухода за экран и работающим зажатием ---
-// --- НАЧАЛО ПРАВКИ: Контекстное меню тем с привязкой правого верхнего угла к точке нажатия ---
-var themeMenu = document.getElementById('themeContextMenu');
-var touchTimeout = null;
-
-if (themeToggleBtn && themeMenu) {
-    // 1. Показ меню по правому клику мыши (обычный ПК)
-    themeToggleBtn.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-        showThemeMenu(e.clientX, e.clientY);
-    });
-
-    // 2. Показ меню по долгому зажатию пальца (мобильные)
-    themeToggleBtn.addEventListener('touchstart', function(e) {
-        if (e.touches.length === 0) return;
-        var touch = e.touches[0];
-        var posX = touch.clientX;
-        var posY = touch.clientY;
-        
-        clearTimeout(touchTimeout);
-        touchTimeout = setTimeout(function() {
-            showThemeMenu(posX, posY);
-        }, 500); 
-    });
-
-    themeToggleBtn.addEventListener('touchend', function() {
-        clearTimeout(touchTimeout);
-    });
-    
-    themeToggleBtn.addEventListener('touchmove', function() {
-        clearTimeout(touchTimeout);
-    });
-
-    // Функция позиционирования: правый верхний угол меню крепится к точке клика/касания
-    function showThemeMenu(x, y) {
-        themeMenu.style.display = 'block';
-        
-        var windowWidth = window.innerWidth;
-        // Считаем отступ справа: вся ширина экрана минус координата X нажатия
-        var offsetRight = windowWidth - x;
-        
-        // Сбрасываем старый стиль left и жестко крепим через right
-        themeMenu.style.left = 'auto';
-        themeMenu.style.right = offsetRight + 'px';
-        themeMenu.style.top = (y + 10) + 'px';
-    }
-
-    // Клик по пункту меню переключает тему
-    document.querySelectorAll('.context-menu-item').forEach(function(item) {
-        item.addEventListener('click', function() {
-            var selectedTheme = this.getAttribute('data-theme');
-            applyTheme(selectedTheme);
-            localStorage.setItem('saved_table_theme', selectedTheme);
-            themeMenu.style.display = 'none';
-        });
-        item.addEventListener('mouseenter', function() { this.style.background = 'var(--bg-filebox)'; });
-        item.addEventListener('mouseleave', function() { this.style.background = 'transparent'; });
-    });
-
-    // Скрываем меню при клике мимо
-    document.addEventListener('click', function(e) {
-        if (!themeToggleBtn.contains(e.target) && !themeMenu.contains(e.target)) {
-            themeMenu.style.display = 'none';
+        if (themeToggleBtn) {
+            if (t === 'dark') themeToggleBtn.textContent = '🌙'; 
+            if (t === 'matrix') themeToggleBtn.textContent = '🌲'; 
+            if (t === 'aero') themeToggleBtn.textContent = '🧊'; 
+            if (t === 'cozy-home') themeToggleBtn.textContent = '🏠'; 
+            if (t === 'lemon-tea') themeToggleBtn.textContent = '☕'; 
+            if (t === 'savanna') themeToggleBtn.textContent = '⛰️'; 
+            if (t === 'sage') themeToggleBtn.textContent = '🌿'; 
+            if (t === 'snow-forest') themeToggleBtn.textContent = '❄️'; 
+            if (t === 'ocean') themeToggleBtn.textContent = '🌊'; 
         }
-    });
+    }
 }
-// --- КОНЕЦ ПРАВКИ ---
-
-
-
-
 applyTheme(savedTheme);
 
-// 3. Восстанавливаем лимит столбцов из памяти ПК
+// 2. Восстановление сохранённого лимита столбцов
 var savedLimit = localStorage.getItem('saved_column_limit') || '4';
 var limitInput = document.getElementById('columnLimitInput');
 if (limitInput) limitInput.value = savedLimit;
 
-document.getElementById('columnLimitInput').addEventListener('input', function() {
-    localStorage.setItem('saved_column_limit', this.value);
-});
+if (limitInput) {
+    limitInput.addEventListener('input', function() {
+        localStorage.setItem('saved_column_limit', this.value);
+    });
+}
 
-// Перехватываем стандартное событие изменения инпута файлов
-document.getElementById('csvFile').addEventListener('change', function(e) {
-    var files = e.target.files; if (!files || files.length === 0) return;
-    handleNewFileSelection(files[0]);
-});
+// 3. Отслеживание выбора файлов и кнопка "+ Новый файл"
+var fileInput = document.getElementById('csvFile');
+if (fileInput) {
+    fileInput.addEventListener('change', function(e) {
+        var files = e.target.files; if (!files || files.length === 0) return;
+        handleNewFileSelection(files[0]);
+    });
+}
 
-// Кнопка "+ Новый файл" имитирует клик по скрытому инпуту выбора файла
-document.getElementById('addTabBtn').addEventListener('click', function() {
-    document.getElementById('csvFile').click();
-});
+var addTabBtn = document.getElementById('addTabBtn');
+if (addTabBtn) {
+    addTabBtn.addEventListener('click', function() {
+        var fileIn = document.getElementById('csvFile');
+        if (fileIn) fileIn.click();
+    });
+}
 
 function handleNewFileSelection(file) {
     var name = file.name;
-    // document.getElementById('fileStatus').innerHTML = "Обработка файла: <strong>" + name + "</strong>";
+    document.getElementById('fileStatus').innerHTML = "Обработка файла: <strong>" + name + "</strong>";
     
     if (name.endsWith('.xlsx') || name.endsWith('.xls')) {
         alert("Формат Excel (.xlsx) временно недоступен без локального сервера.\nПожалуйста, сохраните таблицу в Excel как 'CSV (разделитель - запятая)'.");
@@ -1181,37 +1098,46 @@ function processCSVData(text, fileName) {
     document.getElementById('columnChooserPanel').style.display = 'none';
     var grid = document.getElementById('checkboxesGrid'); grid.innerHTML = '';
     
-    var oldMaster = document.getElementById('masterCheckboxWrapper');
-    if (oldMaster) oldMaster.remove();
+    var oldMaster = document.getElementById('masterCheckboxWrapper'); if (oldMaster) oldMaster.remove();
     
-    var masterWrapper = document.createElement('div');
-    masterWrapper.id = 'masterCheckboxWrapper';
+    var masterWrapper = document.createElement('div'); masterWrapper.id = 'masterCheckboxWrapper';
     masterWrapper.style.cssText = 'border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;';
-    
-    var masterLabel = document.createElement('label');
-    masterLabel.className = 'column-checkbox-label';
+    var masterLabel = document.createElement('label'); masterLabel.className = 'column-checkbox-label';
     masterLabel.style.cssText = 'display: flex; align-items: center; font-weight: 700; cursor: pointer;';
-
-    var masterChk = document.createElement('input');
-    masterChk.type = 'checkbox'; masterChk.id = 'masterColumnsSelector';
+    var masterChk = document.createElement('input'); masterChk.type = 'checkbox'; masterChk.id = 'masterColumnsSelector';
     masterChk.checked = (allHeaders.length <= limit); 
 
     masterChk.addEventListener('change', function() {
         var isChecked = this.checked;
         document.querySelectorAll('#checkboxesGrid input[type="checkbox"]').forEach(function(chk) { chk.checked = isChecked; });
     });
-
     masterLabel.appendChild(masterChk); masterLabel.appendChild(document.createTextNode(' Выбрать все колонки файла'));
     masterWrapper.appendChild(masterLabel); grid.parentNode.insertBefore(masterWrapper, grid);
     
+        // 2. Строим чекбоксы для самих колонок файлов (ФИКС: Новый файл ВСЕГДА открывается со всеми чекбоксами!)
     allHeaders.forEach(function(headerName, idx) {
-        var label = document.createElement('label'); label.className = 'column-checkbox-label';
-        var chk = document.createElement('input'); chk.type = 'checkbox'; chk.setAttribute('data-raw-index', idx);
-        chk.setAttribute('data-header-name', headerName || ("Колонка " + (idx + 1)));
-        if (idx < limit || allHeaders.length <= limit) chk.checked = true; 
-        label.appendChild(chk); label.appendChild(document.createTextNode(headerName || ("Колонка " + (idx + 1))));
+        var label = document.createElement('label'); 
+        label.className = 'column-checkbox-label';
+        
+        var chk = document.createElement('input'); 
+        chk.type = 'checkbox'; 
+        chk.setAttribute('data-raw-index', idx);
+        
+        var cleanName = headerName || ("Колонка " + (idx + 1));
+        chk.setAttribute('data-header-name', cleanName);
+        
+        // Новый файл еще не создан в массиве tabs, поэтому строим чекбоксы строго по правилу лимита
+        if (idx < limit || allHeaders.length <= limit) {
+            chk.checked = true; 
+        } else {
+            chk.checked = false;
+        }
+        
+        label.appendChild(chk); 
+        label.appendChild(document.createTextNode(cleanName));
         grid.appendChild(label);
     });
+
     
     document.getElementById('applyColumnsBtn').setAttribute('data-pending-filename', fileName);
 
@@ -1221,100 +1147,60 @@ function processCSVData(text, fileName) {
         document.getElementById('columnChooserPanel').style.display = 'block';
         return; 
     }
-    
     createNewTab(fileName, allHeaders, lines, delimiter, null);
 }
-
-// Сборка по нажатию синей кнопки "Применить выбор" с защитой от дублирования вкладок
-document.getElementById('applyColumnsBtn').addEventListener('click', function() {
-    var startTime = performance.now();
-    var fileName = this.getAttribute('data-pending-filename'); // Читаем имя, если файл только что выбран
-
-    var limitBox = document.getElementById('limitBox');
-    if (limitBox) { limitBox.style.backgroundColor = ''; limitBox.style.borderColor = ''; limitBox.style.color = ''; }
-
-    var chosenIndices = [], chosenHeaders = [];
-    document.querySelectorAll('#checkboxesGrid input[type="checkbox"]').forEach(function(chk) {
-        if (chk.checked) { 
-            chosenIndices.push(parseInt(chk.getAttribute('data-raw-index'))); 
-            chosenHeaders.push(chk.getAttribute('data-header-name')); 
-        }
-    });
-    if (chosenIndices.length === 0) { alert("Выберите хотя бы один столбец!"); return; }
-    
-    document.getElementById('columnChooserPanel').style.display = 'none';
-    
-    // --- ИСПРАВЛЕНИЕ ЛОГИКИ: Проверяем, это новый файл или пересборка текущего ---
-    if (fileName) {
-        // Сценарий А: Файл только что загружен, создаём для него честную новую вкладку
-        createNewTab(fileName, chosenHeaders, rawCSVLines, rawDelimiter, chosenIndices);
-        // Очищаем временную метку, чтобы при следующем открытии шестерёнки сработал Сценарий Б
-        this.removeAttribute('data-pending-filename');
-    } else {
-        // Сценарий Б: Мы зашли через шестерёнку существующей вкладки. Пересобираем строго её!
-        var currentTab = getActiveTab();
-        if (currentTab) {
-            var cleanRows = [];
-            rawCSVLines.forEach(function(line) {
-                var res = line.split(rawDelimiter);
-                var cells = chosenIndices.map(function(idx) { return res[idx] !== undefined ? res[idx] : ""; });
-                if (cells.length > 0 && cells.some(function(c) { return c !== ""; })) cleanRows.push(cells);
-            });
-            
-            // Перезаписываем данные внутри активного пакета вкладки
-            currentTab.tableHeaders = chosenHeaders;
-            currentTab.globalRows = cleanRows;
-            currentTab.currentFilteredRows = cleanRows.concat();
-            currentTab.currentPage = 1;
-            saveTabToDB(currentTab); // <-- ДОБАВИТЬ ЭТУ СТРОК
-            
-            // Перерисовываем поиски и таблицу на основе новых колонок
-            generateSearchFields(); 
-            renderTableStructure(); 
-            renderTableData();
-        }
-    }
-    
-    var duration = (performance.now() - startTime).toFixed(1);
-    var currentTab = getActiveTab();
-    if (currentTab) {
-        document.getElementById('counter').innerHTML = 
-            " <strong>" + currentTab.currentFilteredRows.length + "</strong> |  <strong>" + duration + " мс</strong>";
-    }
-});
-
 
 function createNewTab(fileName, headers, lines, delimiter, chosenIndices) {
     var tabId = "tab_" + Date.now();
     var cleanRows = [];
     
+    // Формируем рабочие строки для экрана
     lines.forEach(function(line) {
         var res = line.split(delimiter);
-        var cells = [];
-        if (chosenIndices) {
-            cells = chosenIndices.map(function(idx) { return res[idx] !== undefined ? res[idx] : ""; });
-        } else {
-            cells = res;
-        }
+        var cells = chosenIndices ? chosenIndices.map(function(idx) { return res[idx] !== undefined ? res[idx] : ""; }) : res;
         if (cells.length > 0 && cells.some(function(c) { return c !== ""; })) cleanRows.push(cells);
     });
+
+    // Если файл открывается впервые, эталоном заголовков будут ВСЕ доступные чекбоксы из rawCSVLines
+    // Если пересобирается через синюю кнопку — у нас есть сохраненный массив в grid
+    var fullHeadersList = [];
+    var chks = document.querySelectorAll('#checkboxesGrid input[type="checkbox"]');
+    if (chks && chks.length > 0) {
+        chks.forEach(function(chk) { fullHeadersList.push(chk.getAttribute('data-header-name')); });
+    } else {
+        fullHeadersList = headers.concat();
+    }
     
     var newTab = {
-        id: tabId, name: fileName, tableHeaders: headers, globalRows: cleanRows, currentFilteredRows: cleanRows.concat(),
-        currentPage: 1, pageSize: 50, globalSearchQuery: "", columnFilters: []
+        id: tabId,
+        name: fileName,
+        tableHeaders: headers,
+        originalHeaders: fullHeadersList, // Жесткий неприкосновенный эталон ВСЕХ колонок файла
+        rawLines: lines.concat(), 
+        delimiter: delimiter,
+        globalRows: cleanRows,
+        currentFilteredRows: cleanRows.concat(),
+        currentPage: 1,
+        pageSize: 50,
+        globalSearchQuery: "",
+        columnFilters: []
     };
     
     tabs.push(newTab);
-    saveTabToDB(newTab); // <-- ДОБАВИТЬ ЭТУ СТРОКУ
+    saveTabToDB(newTab);
     activateTab(tabId);
 }
+
 
 function getActiveTab() {
     return tabs.find(function(t) { return t.id === activeTabId; }) || null;
 }
 
 function activateTab(tabId) {
-    activeTabId = tabId; var currentTab = getActiveTab(); if (!currentTab) return;
+    localStorage.setItem('saved_active_tab_id', tabId);
+    activeTabId = tabId; 
+    var currentTab = getActiveTab(); 
+    if (!currentTab) return;
     
     document.getElementById('globalSearchInput').value = currentTab.globalSearchQuery;
     document.getElementById('pageSizeSelect').value = currentTab.pageSize === currentTab.globalRows.length ? 'all' : currentTab.pageSize;
@@ -1327,6 +1213,13 @@ function activateTab(tabId) {
     if (document.getElementById('pageSizeWrapper')) document.getElementById('pageSizeWrapper').style.display = 'block';
     if (document.querySelector('.table-wrapper')) document.querySelector('.table-wrapper').style.display = 'block';
     
+    var panel = document.getElementById('columnChooserPanel');
+    if (panel && panel.style.display === 'block') {
+        panel.style.display = 'none';
+        var tColBtn = document.getElementById('toggleColumnsBtn');
+        if (tColBtn) tColBtn.click(); // Автообновление чекбоксов на лету под новую вкладку
+    }
+    
     renderTabsUI(); generateSearchFields(); renderTableStructure(); renderTableData();
 }
 
@@ -1335,8 +1228,8 @@ function closeTab(tabId, e) {
     var index = tabs.findIndex(function(t) { return t.id === tabId; }); if (index === -1) return;
     
     tabs.splice(index, 1);
-    deleteTabFromDB(tabId); // <-- ДОБАВИТЬ ЭТУ СТРОКУ
-
+    deleteTabFromDB(tabId);
+    
     if (tabs.length === 0) {
         activeTabId = null;
         document.getElementById('tabsContainer').innerHTML = ''; document.getElementById('tableHead').innerHTML = '';
@@ -1347,7 +1240,7 @@ function closeTab(tabId, e) {
         document.getElementById('toggleColumnsBtn').disabled = true; document.getElementById('globalSearchInput').disabled = true;
         document.getElementById('globalSearchInput').value = ''; document.getElementById('pageSizeWrapper').style.display = 'none';
         document.querySelector('.table-wrapper').style.display = 'none';
-        // document.getElementById('fileStatus').innerHTML = "Все вкладки закрыты. Выберите файл для начала работы.";
+        document.getElementById('fileStatus').innerHTML = "Все вкладки закрыты. Нажмите «➕ Новый файл» для начала работы.";
     } else if (activeTabId === tabId) {
         var nextActiveIndex = index > 0 ? index - 1 : 0; activateTab(tabs[nextActiveIndex].id);
     } else {
@@ -1371,7 +1264,7 @@ function renderTabsUI() {
         btn.appendChild(cross); container.appendChild(btn);
     });
     var activeTab = getActiveTab();
-    // if (activeTab) document.getElementById('fileStatus').innerHTML = "Активный файл: <strong>" + activeTab.name + "</strong>";
+    if (activeTab) document.getElementById('fileStatus').innerHTML = "Активный файл: <strong>" + activeTab.name + "</strong>";
 }
 
 function generateSearchFields() {
@@ -1391,24 +1284,33 @@ function generateSearchFields() {
     });
 }
 
-document.getElementById('globalSearchInput').addEventListener('input', function() {
-    clearTimeout(searchTimeout); searchTimeout = setTimeout(function() { runCombinedSearch(); }, 350); 
-});
+var gSearch = document.getElementById('globalSearchInput');
+if (gSearch) {
+    gSearch.addEventListener('input', function() {
+        clearTimeout(searchTimeout); searchTimeout = setTimeout(function() { runCombinedSearch(); }, 350); 
+    });
+}
 
-document.getElementById('clearFiltersBtn').addEventListener('click', function() {
-    var currentTab = getActiveTab(); if (!currentTab) return;
-    document.getElementById('globalSearchInput').value = ""; 
-    document.querySelectorAll('#searchContainer input').forEach(function(input) { input.value = ""; });
-    currentTab.globalSearchQuery = ""; currentTab.columnFilters = []; currentTab.currentPage = 1; 
-    currentTab.currentFilteredRows = currentTab.globalRows.concat(); 
-    renderTableStructure(); renderTableData();
-});
+var cFiltersBtn = document.getElementById('clearFiltersBtn');
+if (cFiltersBtn) {
+    cFiltersBtn.addEventListener('click', function() {
+        var currentTab = getActiveTab(); if (!currentTab) return;
+        document.getElementById('globalSearchInput').value = ""; 
+        document.querySelectorAll('#searchContainer input').forEach(function(input) { input.value = ""; });
+        currentTab.globalSearchQuery = ""; currentTab.columnFilters = []; currentTab.currentPage = 1; 
+        currentTab.currentFilteredRows = currentTab.globalRows.concat(); 
+        renderTableStructure(); renderTableData();
+    });
+}
 
-document.getElementById('pageSizeSelect').addEventListener('change', function() {
-    var currentTab = getActiveTab(); if (!currentTab) return;
-    currentTab.pageSize = this.value === 'all' ? currentTab.globalRows.length : parseInt(this.value); 
-    currentTab.currentPage = 1; renderTableData();
-});
+var pSizeSelect = document.getElementById('pageSizeSelect');
+if (pSizeSelect) {
+    pSizeSelect.addEventListener('change', function() {
+        var currentTab = getActiveTab(); if (!currentTab) return;
+        currentTab.pageSize = this.value === 'all' ? currentTab.globalRows.length : parseInt(this.value); 
+        currentTab.currentPage = 1; renderTableData();
+    });
+}
 
 function runCombinedSearch() {
     var currentTab = getActiveTab(); if (!currentTab) return;
@@ -1455,7 +1357,8 @@ function renderTableStructure() {
             currentTab.tableHeaders.splice(idx, 1);
             currentTab.globalRows = currentTab.globalRows.map(function(cells) { var n = cells.concat(); n.splice(idx, 1); return n; });
             currentTab.currentFilteredRows = currentTab.currentFilteredRows.map(function(cells) { var n = cells.concat(); n.splice(idx, 1); return n; });
-            saveTabToDB(currentTab); // <-- ДОБАВИТЬ ЭТУ СТРОКУ
+            
+            saveTabToDB(currentTab);
             generateSearchFields(); renderTableStructure(); renderTableData();
         });
         t.appendChild(closeBtn); t.setAttribute('draggable', 'true'); t.setAttribute('data-index', idx);
@@ -1470,7 +1373,8 @@ function renderTableStructure() {
                 currentTab.tableHeaders = m(currentTab.tableHeaders, dragSrcIndex, targetIndex);
                 currentTab.globalRows = currentTab.globalRows.map(function(cells) { return m(cells, dragSrcIndex, targetIndex); });
                 currentTab.currentFilteredRows = currentTab.currentFilteredRows.map(function(cells) { return m(cells, dragSrcIndex, targetIndex); });
-                saveTabToDB(currentTab); // запоминание
+                
+                saveTabToDB(currentTab);
                 generateSearchFields(); renderTableStructure(); renderTableData();
             }
         });
@@ -1513,7 +1417,7 @@ function renderTableData() {
 
     setupPagination();
     var duration = (performance.now() - startTime).toFixed(1);
-    document.getElementById('counter').innerHTML = " <strong>" + currentTab.currentFilteredRows.length + "</strong> |  <strong>" + duration + " мс</strong>";
+    document.getElementById('counter').innerHTML = "Количество строк: <strong>" + currentTab.currentFilteredRows.length + "</strong> | Фильтр ПК: <strong>" + duration + " мс</strong>";
 }
 
 function setupPagination() {
@@ -1536,17 +1440,90 @@ function createPageBtn(p, container) {
     b.addEventListener('click', function() { currentTab.currentPage = p; renderTableData(); document.querySelector('.table-wrapper').scrollTop = 0; }); container.appendChild(b);
 }
 
-document.getElementById('toggleFiltersBtn').addEventListener('click', function() {
-    var container = document.getElementById('searchContainer'); container.style.display = (container.style.display === 'none' || !container.style.display) ? 'grid' : 'none';
-});
+var applyBtn = document.getElementById('applyColumnsBtn');
+if (applyBtn) {
+    applyBtn.addEventListener('click', function() {
+        var startTime = performance.now(); var fileName = this.getAttribute('data-pending-filename'); var currentTab = getActiveTab();
+        var limitBox = document.getElementById('limitBox'); if (limitBox) { limitBox.style.backgroundColor = ''; limitBox.style.borderColor = ''; limitBox.style.color = ''; }
 
-document.getElementById('toggleColumnsBtn').addEventListener('click', function() {
-    // Гарантируем, что синяя кнопка поймет, что это редактирование текущей таблицы, а не новый файл
-    document.getElementById('applyColumnsBtn').removeAttribute('data-pending-filename');
-    
-    var panel = document.getElementById('columnChooserPanel'); 
-    panel.style.display = (panel.style.display === 'none' || !panel.style.display) ? 'block' : 'none';
-});
+        var chosenIndices = [], chosenHeaders = [];
+        document.querySelectorAll('#checkboxesGrid input[type="checkbox"]').forEach(function(chk) {
+            if (chk.checked) { chosenIndices.push(parseInt(chk.getAttribute('data-raw-index'))); chosenHeaders.push(chk.getAttribute('data-header-name')); }
+        });
+        if (chosenIndices.length === 0) { alert("Выберите хотя бы один столбец!"); return; }
+        document.getElementById('columnChooserPanel').style.display = 'none';
+        
+        if (fileName) {
+            createNewTab(fileName, chosenHeaders, rawCSVLines, rawDelimiter, chosenIndices); this.removeAttribute('data-pending-filename');
+        } else if (currentTab) {
+            var cleanRows = []; var srcLines = currentTab.rawLines; var srcDelimiter = currentTab.delimiter || rawDelimiter;
+            srcLines.forEach(function(line) {
+                var res = line.split(srcDelimiter); var cells = chosenIndices.map(function(idx) { return res[idx] !== undefined ? res[idx] : ""; });
+                if (cells.length > 0 && cells.some(function(c) { return c !== ""; })) cleanRows.push(cells);
+            });
+            currentTab.tableHeaders = chosenHeaders; currentTab.globalRows = cleanRows; currentTab.currentFilteredRows = cleanRows.concat(); currentTab.currentPage = 1;
+            saveTabToDB(currentTab); generateSearchFields(); renderTableStructure(); renderTableData();
+        }
+        var duration = (performance.now() - startTime).toFixed(1);
+        if (currentTab) document.getElementById('counter').innerHTML = "Количество строк: <strong>" + currentTab.currentFilteredRows.length + "</strong> | Фильтр ПК: <strong>" + duration + " мс</strong>";
+    });
+}
+
+var toggleFiltersBtn = document.getElementById('toggleFiltersBtn');
+if (toggleFiltersBtn) {
+    toggleFiltersBtn.addEventListener('click', function() {
+        var container = document.getElementById('searchContainer'); container.style.display = (container.style.display === 'none' || !container.style.display) ? 'grid' : 'none';
+    });
+}
+
+var toggleColumnsBtn = document.getElementById('toggleColumnsBtn');
+if (toggleColumnsBtn) {
+    toggleColumnsBtn.addEventListener('click', function() {
+        var applyColumnsBtn = document.getElementById('applyColumnsBtn'); 
+        if (applyColumnsBtn) applyColumnsBtn.removeAttribute('data-pending-filename');
+        
+        var panel = document.getElementById('columnChooserPanel');
+        var currentTab = getActiveTab();
+        
+        if ((panel.style.display === 'none' || !panel.style.display) && currentTab) {
+            var grid = document.getElementById('checkboxesGrid'); grid.innerHTML = ''; 
+            var oldMaster = document.getElementById('masterCheckboxWrapper'); if (oldMaster) oldMaster.remove();
+            
+            var masterWrapper = document.createElement('div'); masterWrapper.id = 'masterCheckboxWrapper';
+            masterWrapper.style.cssText = 'border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;';
+            var masterLabel = document.createElement('label'); masterLabel.className = 'column-checkbox-label';
+            masterLabel.style.cssText = 'display: flex; align-items: center; font-weight: 700; cursor: pointer;';
+            var masterChk = document.createElement('input'); masterChk.type = 'checkbox'; masterChk.id = 'masterColumnsSelector';
+            
+            // Берем эталон заголовков из памяти вкладки
+            var origHeaders = currentTab.originalHeaders || currentTab.tableHeaders;
+            masterChk.checked = currentTab.tableHeaders.length === origHeaders.length; 
+
+            masterChk.addEventListener('change', function() {
+                var isChecked = this.checked;
+                document.querySelectorAll('#checkboxesGrid input[type="checkbox"]').forEach(function(chk) { chk.checked = isChecked; });
+            });
+            masterLabel.appendChild(masterChk); masterLabel.appendChild(document.createTextNode(' Выбрать все колонки файла'));
+            masterWrapper.appendChild(masterLabel); grid.parentNode.insertBefore(masterWrapper, grid);
+            
+            // Строим сетку строго по полному списку оригинальных заголовков
+            origHeaders.forEach(function(headerName, idx) {
+                var label = document.createElement('label'); label.className = 'column-checkbox-label';
+                var chk = document.createElement('input'); chk.type = 'checkbox'; chk.setAttribute('data-raw-index', idx);
+                chk.setAttribute('data-header-name', headerName);
+                
+                // Галочка стоит, если эта колонка сейчас выведена на экран
+                chk.checked = currentTab.tableHeaders.includes(headerName);
+                
+                label.appendChild(chk); label.appendChild(document.createTextNode(headerName));
+                grid.appendChild(label);
+            });
+            panel.style.display = 'block';
+        } else { 
+            panel.style.display = 'none'; 
+        }
+    });
+}
 
 
 var isCtrlPressed = false;
@@ -1574,6 +1551,49 @@ function showToast(message) {
     setTimeout(function() { toast.classList.remove('show'); setTimeout(function() { toast.remove(); }, 200); }, 2200);
 }
 
+var themeMenu = document.getElementById('themeContextMenu'); var touchTimeout = null;
+if (themeToggleBtn && themeMenu) {
+    // --- ОЖИВЛЯЕМ ОБЫЧНЫЙ БЫСТРЫЙ КЛИК ПО КНОПКЕ ТЕМ ---
+    themeToggleBtn.addEventListener('click', function(e) {
+        // Если контекстное меню открыто, обычный клик его просто закрывает
+        if (themeMenu.style.display === 'block') {
+            themeMenu.style.display = 'none';
+            return;
+        }
+        
+        var current = document.documentElement.getAttribute('data-theme') || 'light';
+        var next = 'light';
+        
+        // Циклический перебор всех 10 тем оформления
+        if (current === 'light') next = 'dark';
+        else if (current === 'dark') next = 'matrix';
+        else if (current === 'matrix') next = 'aero';
+        else if (current === 'aero') next = 'cozy-home';
+        else if (current === 'cozy-home') next = 'lemon-tea';
+        else if (current === 'lemon-tea') next = 'savanna';
+        else if (current === 'savanna') next = 'sage';
+        else if (current === 'sage') next = 'snow-forest';
+        else if (current === 'snow-forest') next = 'ocean';
+        else if (current === 'ocean') next = 'light';
+        
+        applyTheme(next);
+        localStorage.setItem('saved_table_theme', next);
+    });
+
+    // --- ОСТАЛЬНЫЕ СОБЫТИЯ КОНТЕКСТНОГО МЕНЮ (ВАШ ОРИГИНАЛЬНЫЙ КОД) ---
+    themeToggleBtn.addEventListener('contextmenu', function(e) { e.preventDefault(); showThemeMenu(e.clientX, e.clientY); });
+    themeToggleBtn.addEventListener('touchstart', function(e) { if (e.touches.length === 0) return; var touch = e.touches; var posX = touch.clientX; var posY = touch.clientY; clearTimeout(touchTimeout); touchTimeout = setTimeout(function() { showThemeMenu(posX, posY); }, 500); });
+    themeToggleBtn.addEventListener('touchend', function() { clearTimeout(touchTimeout); }); themeToggleBtn.addEventListener('touchmove', function() { clearTimeout(touchTimeout); });
+    
+    function showThemeMenu(x, y) { themeMenu.style.display = 'block'; var windowWidth = window.innerWidth; var offsetRight = windowWidth - x; themeMenu.style.left = 'auto'; themeMenu.style.right = offsetRight + 'px'; themeMenu.style.top = (y + 10) + 'px'; }
+    
+    document.querySelectorAll('.context-menu-item').forEach(function(item) {
+        item.addEventListener('click', function() { var selectedTheme = this.getAttribute('data-theme'); applyTheme(selectedTheme); localStorage.setItem('saved_table_theme', selectedTheme); themeMenu.style.display = 'none'; });
+        item.addEventListener('mouseenter', function() { this.style.background = 'var(--bg-filebox)'; }); item.addEventListener('mouseleave', function() { this.style.background = 'transparent'; });
+    });
+
+    document.addEventListener('click', function(e) { if (!themeToggleBtn.contains(e.target) && !themeMenu.contains(e.target)) themeMenu.style.display = 'none'; });
+}
 
 
 
