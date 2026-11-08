@@ -1651,6 +1651,59 @@ if (googleCloudBtn) {
     });
 }
 
+// ==========================================================================
+// 8. СЕТЕВАЯ ЗАГРУЗКА ИЗ ЯНДЕКС.ДИСКА ПРЯМО В СИСТЕМУ ВКЛАДОК
+// ==========================================================================
+var yandexCloudBtn = document.getElementById('yandexCloudBtn');
+if (yandexCloudBtn) {
+    yandexCloudBtn.addEventListener('click', function() {
+        var userLink = prompt("Пожалуйста, введите ссылку 'Поделиться' на ваш CSV-файл из Яндекс Диска:");
+        if (!userLink) return;
+
+        document.getElementById('fileStatus').innerHTML = "Подключение к Яндекс.Диску...";
+
+        // 1. Отправляем запрос к официальному публичному API Яндекса для получения прямой ссылки
+        var apiUrl = "https://yandex.net" + encodeURIComponent(userLink);
+        
+        // Генерируем красивое имя для будущей вкладки на основе случайного ID
+        var randomId = Math.floor(1000 + Math.random() * 9000);
+        var fileName = "Yandex_" + randomId + ".csv";
+
+        fetch(apiUrl)
+            .then(function(res) { 
+                if (!res.ok) throw new Error("Файл не найден в облаке или к нему закрыт общий доступ");
+                return res.json(); 
+            })
+            .then(function(json) {
+                // 2. Скачиваем сам бинарный поток данных по полученному адресу json.href
+                return fetch(json.href);
+            })
+            .then(function(response) { 
+                if (!response.ok) throw new Error("Не удалось загрузить данные с серверов Яндекса");
+                return response.arrayBuffer(); 
+            })
+            .then(function(buffer) {
+                // 3. Автоопределение кодировки (Windows-1251 или UTF-8) для защиты от "кракозябр"
+                var decoder = new TextDecoder('windows-1251');
+                var text = decoder.decode(buffer);
+                
+                if (text.includes(String.fromCharCode(65533))) {
+                    var utfDecoder = new TextDecoder('utf-8');
+                    text = utfDecoder.decode(buffer);
+                }
+                
+                // 4. Передаем чистый текст в вашу готовую систему вкладок и чекбоксов
+                processCSVData(text, fileName);
+                document.getElementById('fileStatus').innerHTML = "Файл успешно загружен из <strong>Яндекс.Диска</strong>";
+            })
+            .catch(function(error) {
+                console.error(error);
+                alert("Ошибка загрузки Яндекс.Диска: " + error.message + "\n\n⚠️ НАПОМИНАНИЕ: На локальном компьютере (file:///) этот запрос блокируется политикой CORS браузера. На GitHub Pages всё заработает автоматически!");
+                document.getElementById('fileStatus').innerHTML = "<span style='color:#ef4444;'>Блокировка CORS (требуется GitHub Pages)</span>";
+            });
+    });
+}
+
 
 </script>
 
