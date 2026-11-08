@@ -749,74 +749,31 @@ body > .container {
 </head>
 <body>
 
-<div class="container">
-    <div class="header-row">
+<!-- ВЕРХНЯЯ ПАНЕЛЬ: Кнопка смены тем мигрировала в крайнюю правую часть -->
+<div id="futureFeaturePanel" style="background-color: var(--bg-main); border: 1px dashed var(--border-color); border-radius: 8px; padding: 10px 15px; margin-bottom: 15px; min-height: 54px; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box;">
     
-    <div style="display: flex; align-items: center; gap: 10px;">
-    <h2></h2>
-    <!-- Поле ввода лимита столбцов (с поддержкой динамической смены цвета) -->
-<div id="limitBox" style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-muted); background: var(--bg-filebox); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-filebox); transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;">
-    Лимит: <input type="number" id="columnLimitInput" value="5" min="1" style="width: 45px; padding: 2px 4px; border: 1px solid var(--border-filebox); border-radius: 4px; background: var(--input-bg); color: var(--text-main); font-weight: bold; text-align: center;" />
+    <!-- Левая часть с прямым CDN-аватаром -->
+    <div id="authorBlock" style="display: flex; align-items: center; gap: 10px;">
+        <!-- УЛЬТИМАТИВНЫЙ АВАТАР: Пробивает любую защиту локального ПК и выводит ваше настоящее фото профиля -->
+<img src="https://avatars.githubusercontent.com/u/353467492" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-color); box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-shrink: 0;" />
+
+        <span style="font-family: monospace; font-size: 14px; font-weight: 700; color: var(--text-color); letter-spacing: 0.5px;">
+            
+        </span>
+    </div>
+    
+    <!-- Кнопка переключения тем -->
+    <button id="themeToggleBtn" class="toggle-filters-btn" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 34px !important; height: 34px !important; padding: 0 !important; min-width: 34px !important; line-height: 0 !important; cursor: pointer; margin-left: auto;" title="Смена темы оформления (ЛКМ - по кругу, ПКМ/Зажатие - меню)">☀️</button>
+
 </div>
 
-    </div>
 
-
-    
-    <!-- НОВОЕ: Объединяем правые элементы в один неразрывный ряд -->
-    <div class="header-controls" style="display: flex; align-items: center; gap: 12px;">
-    
-<div style="display: flex; margin-bottom: 15px; align-items: center;">
-    <!-- Аккуратный текстовый статус в цвет темы -->
-    <div id="fileStatus" style="font-size: 13px; font-weight: 600; color: var(--text-muted);">
-        
-        </div>
-
-    <!-- Защита логики: скрытый инпут обязательно должен остаться в разметке страницы! -->
+<!-- Сохраняем скрытый инпут, не обрывая контейнер страницы -->
+<div style="margin-bottom: 5px;">
     <input type="file" id="csvFile" accept=".csv" style="display: none;" />
 </div>
 
-
-
-<!-- Контекстное меню быстрого выбора темы -->
-<div id="themeContextMenu" class="context-menu" style="display: none; position: absolute; z-index: 10000; background: var(--bg-container); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 6px 0;">
-    <div class="context-menu-item" data-theme="light" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">☀️ Светлая</div>
-    <div class="context-menu-item" data-theme="dark" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">🌙 Темная</div>
-    <div class="context-menu-item" data-theme="matrix" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">🌲 Хвойная</div>
-    <div class="context-menu-item" data-theme="aero" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">🧊 Аэро</div>
-    <div class="context-menu-item" data-theme="cozy-home" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">🏠 Уютный дом</div>
-    <div class="context-menu-item" data-theme="lemon-tea" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">☕ Чай с лимоном</div>
-    <div class="context-menu-item" data-theme="savanna" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">⛰️ Горная саванна</div>
-    <div class="context-menu-item" data-theme="sage" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">🌿 Шалфей и хвоя</div>
-    <div class="context-menu-item" data-theme="snow-forest" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">❄️ Заснеженный лес</div>
-    <div class="context-menu-item" data-theme="ocean" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">🌊 Глубокий океан</div>
-</div>
-
-
-
-
-
-    <div class="theme-switcher-wrapper" style="position: relative; display: flex; align-items: center; gap: 8px;">
-    <div id="themeMenuPanel" class="theme-menu-panel">
-        <!-- Оригинальные темы оформления -->
-        <button class="theme-menu-item" data-theme="light" title="Светлая">☀️</button>
-        <button class="theme-menu-item" data-theme="dark" title="Ночная">🌙</button>
-        <button class="theme-menu-item" data-theme="matrix" title="Хвойная">🌲</button>
-        <button class="theme-menu-item" data-theme="aero" title="Аэро">🧊</button>
-        
-        <!-- Новые высококонтрастные темы из палитр -->
-        <button class="theme-menu-item" data-theme="cozy-home" title="Уютный дом">🏠</button>
-        <button class="theme-menu-item" data-theme="lemon-tea" title="Чай с лимоном">☕</button>
-        <button class="theme-menu-item" data-theme="savanna" title="Горная саванна">⛰️</button>
-        <button class="theme-menu-item" data-theme="sage" title="Шалфей и хвоя">🌿</button>
-        <button class="theme-menu-item" data-theme="snow-forest" title="Заснеженный лес">❄️</button>
-        <button class="theme-menu-item" data-theme="ocean" title="Глубокий океан">🌊</button>
-    </div>
-    <button id="themeToggleBtn" class="theme-toggle-btn" title="Клик — круг, Зажатие — меню">🌙</button>
-</div>
-
-    </div>
-</div>
+<div class="container">
 
 
     <!-- Поисковый узел: Кнопки фильтрации и сброса теперь слева от ввода -->
@@ -824,7 +781,7 @@ body > .container {
 <div class="search-bar-wrapper">
     <button id="toggleFiltersBtn" class="toggle-filters-btn" disabled title="Показать/скрыть фильтры колонок">🔍</button>
     <button id="clearFiltersBtn" class="toggle-filters-btn" disabled title="Очистить все фильтры и поиск">❌</button>
-    <input type="text" id="globalSearchInput" class="global-search" placeholder="Глобальный поиск (знак % для нескольких слов)..." disabled>
+    <input type="text" id="globalSearchInput" class="global-search" placeholder="Глобальный поиск (% - разделитель, %% - пустой блок)..." disabled>
 </div>
 
 <!-- 2. НОВЫЙ БЛОК: Строка вкладок для переключения между таблицами -->
@@ -861,26 +818,16 @@ body > .container {
 
     <div id="searchContainer" class="search-grid" style="display: none;"></div>
     
-<!-- Скрытая панель выбора столбцов (появляется если превышен лимит) -->
-<div id="columnChooserPanel" style="display: none; padding: 10px; background: var(--bg-filebox); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 15px;">
-    <!-- Лишний текст заголовка h3 удален -->
-    <div id="checkboxesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 15px;"></div>
-    <button id="applyColumnsBtn" class="vk-cloud-btn" style="padding: 8px 20px;">Применить выбор и загрузить таблицу</button>
-</div>
-
-
-
-
-
-
-
-<!-- 2. Панель чекбоксов (Теперь она встает строго НИЖЕ шестерёнки, но ВЫШЕ самой таблицы) -->
-<div id="columnChooserPanel" class="container" style="display: none; margin-top: 15px; margin-bottom: 15px;">
-    <div id="checkboxesGrid" class="search-grid" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));"></div>
-    <div style="text-align: right; margin-top: 15px;">
-        <button id="applyColumnsBtn" class="vk-cloud-btn" style="background-color: var(--accent-color);">Применить выбор и загрузить таблицу</button>
+<!-- 2. ЕДИНСТВЕННАЯ ПАНЕЛЬ ВЫБОРА СТОЛБЦОВ (СТРОГО ОДИН ЭКЗЕМПЛЯР БЕЗ ДУБЛИКАТОВ) -->
+<div id="columnChooserPanel" style="display: none; margin-top: 15px; margin-bottom: 15px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-filebox);">
+    <div id="limitBox" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px; font-weight: 600; margin-bottom: 15px; transition: all 0.2s;">
+        Внимание: В файле много колонок. Выберите те, которые необходимо вывести на экран.
     </div>
+    
+    <!-- Жестко прописываем компактную сетку прямо в стиль тега, чтобы она никогда не разваливалась -->
+    <div id="checkboxesGrid" style="display: grid !important; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)) !important; gap: 12px !important; margin-top: 15px !important;"></div>
 </div>
+
 
 <!-- 3. Сама таблица с данными -->
 <div class="table-wrapper" style="display: none;">
@@ -890,13 +837,36 @@ body > .container {
     </table>
 </div>
 
+</div>
+</div>
+
+<!-- === НАЧАЛО ВСТАВКИ === -->
+<!-- 1. ИСПРАВЛЕННАЯ ПАНЕЛЬ ШЕСТЕРЁНКИ (СТРОГО ОДИН ЭКЗЕМПЛЯР БЕЗ ДУБЛИКАТОВ) -->
+<!-- Очищенная панель шестерёнки без лишних синих кнопок -->
+<div id="columnChooserPanel" style="display: none; margin-top: 15px; margin-bottom: 15px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-filebox);">
+    <div id="limitBox" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px; font-weight: 600; margin-bottom: 15px; transition: all 0.2s;">
+        Внимание: В файле много колонок. Выберите те, которые необходимо вывести на экран.
+    </div>
+    <!-- Исправленная строка №870: Жестко прописываем сетку чекбоксов в инлайн-стиль -->
+<div id="checkboxesGrid" style="display: grid !important; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)) !important; gap: 12px !important; margin-top: 15px !important;"></div>
+
+</div>
 
 
+<!-- 2. КОНТЕКСТНОЕ МЕНЮ ТЕМ (СТРОГО ОДИН ЭКЗЕМПЛЯР В РЕЖИМЕ FIXED) -->
+<div id="themeContextMenu" class="context-menu" style="display: none; position: fixed; z-index: 10000; background: var(--bg-container); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 6px 0;">
+    <div class="context-menu-item" data-theme="light" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">☀️ Светлая</div>
+    <div class="context-menu-item" data-theme="dark" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">🌙 Темная</div>
+    <div class="context-menu-item" data-theme="matrix" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">🌲 Хвойная</div>
+    <div class="context-menu-item" data-theme="aero" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">🧊 Аэро</div>
+    <div class="context-menu-item" data-theme="cozy-home" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">🏠 Уютный дом</div>
+    <div class="context-menu-item" data-theme="lemon-tea" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">☕ Чай с лимоном</div>
+    <div class="context-menu-item" data-theme="savanna" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">⛰️ Горная саванна</div>
+    <div class="context-menu-item" data-theme="sage" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">🌿 Шалфей и хвоя</div>
+    <div class="context-menu-item" data-theme="snow-forest" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">❄️ Заснеженный лес</div>
+    <div class="context-menu-item" data-theme="ocean" style="padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 600;">🌊 Глубокий океан</div>
+</div>
 
-    <div class="table-wrapper">
-        <table id="dataTable"> <thead id="tableHead"></thead> <tbody id="tableBody"></tbody> </table> </div>
-
-   
 
 <script>
 
@@ -969,9 +939,12 @@ function restoreTabsFromDB() {
 }
 
 
-// 1. Восстановление сохранённой темы оформления при старте
-var savedTheme = localStorage.getItem('saved_table_theme') || 'light';
+// ==========================================================================
+// ЧАСТЬ 2: ИСПРАВЛЕННАЯ ИНИЦИАЛИЗАЦИЯ ТЕМЫ ОФОРМЛЕНИЯ
+// ==========================================================================
+// Фикс: Объявляем кнопку ТУТ, в самом начале, чтобы она была доступна функции applyTheme
 var themeToggleBtn = document.getElementById('themeToggleBtn');
+var savedTheme = localStorage.getItem('saved_table_theme') || 'light';
 
 function applyTheme(t) {
     if (t === 'light') { 
@@ -979,6 +952,7 @@ function applyTheme(t) {
         if (themeToggleBtn) themeToggleBtn.textContent = '☀️'; 
     } else { 
         document.documentElement.setAttribute('data-theme', t); 
+        // Безопасная проверка: меняем иконку только если кнопка уже прочитана браузером
         if (themeToggleBtn) {
             if (t === 'dark') themeToggleBtn.textContent = '🌙'; 
             if (t === 'matrix') themeToggleBtn.textContent = '🌲'; 
@@ -992,9 +966,10 @@ function applyTheme(t) {
         }
     }
 }
+// Запускаем применение сохранённой темы из памяти ПК
 applyTheme(savedTheme);
 
-// 2. Восстановление сохранённого лимита столбцов
+// Восстановление сохранённого лимита столбцов
 var savedLimit = localStorage.getItem('saved_column_limit') || '4';
 var limitInput = document.getElementById('columnLimitInput');
 if (limitInput) limitInput.value = savedLimit;
@@ -1004,6 +979,7 @@ if (limitInput) {
         localStorage.setItem('saved_column_limit', this.value);
     });
 }
+
 
 // 3. Отслеживание выбора файлов и кнопка "+ Новый файл"
 var fileInput = document.getElementById('csvFile');
@@ -1069,28 +1045,60 @@ function processCSVData(text, fileName) {
     rawDelimiter = delimiter;
     
     var allHeaders = parseCSVLine(firstLine, delimiter);
-    var limit = parseInt(document.getElementById('columnLimitInput').value) || 4;
+    var limit = parseInt(localStorage.getItem('saved_column_limit') || '4');
     
     document.getElementById('columnChooserPanel').style.display = 'none';
     var grid = document.getElementById('checkboxesGrid'); grid.innerHTML = '';
     
     var oldMaster = document.getElementById('masterCheckboxWrapper'); if (oldMaster) oldMaster.remove();
     
-    var masterWrapper = document.createElement('div'); masterWrapper.id = 'masterCheckboxWrapper';
-    masterWrapper.style.cssText = 'border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;';
-    var masterLabel = document.createElement('label'); masterLabel.className = 'column-checkbox-label';
-    masterLabel.style.cssText = 'display: flex; align-items: center; font-weight: 700; cursor: pointer;';
-    var masterChk = document.createElement('input'); masterChk.type = 'checkbox'; masterChk.id = 'masterColumnsSelector';
+    // 1. Строим Мастер-строку: Чекбокс и Лимит плотно друг за другом
+    var masterWrapper = document.createElement('div');
+    masterWrapper.id = 'masterCheckboxWrapper';
+    masterWrapper.style.cssText = 'border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 15px; display: flex; align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 25px;';
+    
+    var masterLabel = document.createElement('label'); 
+    masterLabel.className = 'column-checkbox-label';
+    masterLabel.style.cssText = 'display: flex; align-items: center; font-weight: 700; cursor: pointer; margin: 0;';
+
+    var masterChk = document.createElement('input'); 
+    masterChk.type = 'checkbox'; 
+    masterChk.id = 'masterColumnsSelector';
     masterChk.checked = (allHeaders.length <= limit); 
 
     masterChk.addEventListener('change', function() {
         var isChecked = this.checked;
         document.querySelectorAll('#checkboxesGrid input[type="checkbox"]').forEach(function(chk) { chk.checked = isChecked; });
     });
-    masterLabel.appendChild(masterChk); masterLabel.appendChild(document.createTextNode(' Выбрать все колонки файла'));
-    masterWrapper.appendChild(masterLabel); grid.parentNode.insertBefore(masterWrapper, grid);
+
+    masterLabel.appendChild(masterChk); 
+    masterLabel.appendChild(document.createTextNode(' Выбрать все колонки файла'));
+    masterWrapper.appendChild(masterLabel);
     
-        // 2. Строим чекбоксы для самих колонок файлов (ФИКС: Новый файл ВСЕГДА открывается со всеми чекбоксами!)
+    // Встраиваем Инпут лимита
+    var isExceeded = allHeaders.length > limit;
+    var inputBg = isExceeded ? '#fee2e2' : 'var(--bg-container)';
+    var inputBorder = isExceeded ? '#f87171' : 'var(--border-color)';
+    var inputColor = isExceeded ? '#ef4444' : 'var(--text-color)';
+
+    var inlineLimitWrapper = document.createElement('div');
+    inlineLimitWrapper.style.cssText = 'display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-color);';
+    inlineLimitWrapper.innerHTML = '<span>Лимит:</span>' +
+        '<input type="number" id="columnLimitInput" min="1" max="100" value="' + limit + '" style="width: 50px; padding: 4px 6px; border: 1px solid ' + inputBorder + '; border-radius: 4px; background-color: ' + inputBg + '; color: ' + inputColor + '; font-weight: bold; text-align: center;" />';
+    
+    masterWrapper.appendChild(inlineLimitWrapper);
+    grid.parentNode.insertBefore(masterWrapper, grid);
+    
+    setTimeout(function() {
+        var inp = document.getElementById('columnLimitInput');
+        if (inp) {
+            inp.addEventListener('input', function() { 
+                localStorage.setItem('saved_column_limit', this.value); 
+            });
+        }
+    }, 10);
+    
+    // Генерируем чекбоксы колонок
     allHeaders.forEach(function(headerName, idx) {
         var label = document.createElement('label'); 
         label.className = 'column-checkbox-label';
@@ -1102,7 +1110,6 @@ function processCSVData(text, fileName) {
         var cleanName = headerName || ("Колонка " + (idx + 1));
         chk.setAttribute('data-header-name', cleanName);
         
-        // Новый файл еще не создан в массиве tabs, поэтому строим чекбоксы строго по правилу лимита
         if (idx < limit || allHeaders.length <= limit) {
             chk.checked = true; 
         } else {
@@ -1114,17 +1121,30 @@ function processCSVData(text, fileName) {
         grid.appendChild(label);
     });
 
-    
-    document.getElementById('applyColumnsBtn').setAttribute('data-pending-filename', fileName);
+    // ОЧЕНЬ ВАЖНО: Вешаем маркер ожидающего файла на саму шестерёнку
+    toggleColumnsBtn.setAttribute('data-pending-filename', fileName);
 
     if (allHeaders.length > limit) {
         var limitBox = document.getElementById('limitBox');
-        if (limitBox) { limitBox.style.backgroundColor = '#fee2e2'; limitBox.style.borderColor = '#f87171'; limitBox.style.color = '#ef4444'; }
+        if (limitBox) { 
+            limitBox.style.display = 'block';
+            limitBox.style.backgroundColor = '#fee2e2'; 
+            limitBox.style.borderColor = '#f87171'; 
+            limitBox.style.color = '#ef4444'; 
+        }
         document.getElementById('columnChooserPanel').style.display = 'block';
         return; 
     }
+    
+    // Если превышения лимита нет, файл открывается мгновенно без вывода панели
+    toggleColumnsBtn.removeAttribute('data-pending-filename');
     createNewTab(fileName, allHeaders, lines, delimiter, null);
 }
+
+
+
+
+
 
 function createNewTab(fileName, headers, lines, delimiter, chosenIndices) {
     var tabId = "tab_" + Date.now();
@@ -1216,7 +1236,7 @@ function closeTab(tabId, e) {
         document.getElementById('toggleColumnsBtn').disabled = true; document.getElementById('globalSearchInput').disabled = true;
         document.getElementById('globalSearchInput').value = ''; document.getElementById('pageSizeWrapper').style.display = 'none';
         document.querySelector('.table-wrapper').style.display = 'none';
-        document.getElementById('fileStatus').innerHTML = "Все вкладки закрыты. Нажмите «➕ Новый файл» для начала работы.";
+        //document.getElementById('fileStatus').innerHTML = "Все вкладки закрыты. Нажмите «➕ Новый файл» для начала работы.";
     } else if (activeTabId === tabId) {
         var nextActiveIndex = index > 0 ? index - 1 : 0; activateTab(tabs[nextActiveIndex].id);
     } else {
@@ -1302,19 +1322,44 @@ function runCombinedSearch() {
 
     currentTab.currentFilteredRows = currentTab.globalRows.filter(function(cells) {
         var mG = true;
+        
         if (gQ) {
-            var searchWords = gQ.split('%').map(function(w) { return w.trim(); }).filter(function(w) { return w !== ""; });
+            // --- НАЧАЛО ПРАВКИ: Логика умного поиска пустых ячеек через %% ---
+            var requireEmptyCell = false;
+            var workingQuery = gQ;
+            
+            // Если запрос начинается со сдвоенного %%, включаем проверку на пустоту
+            if (workingQuery.indexOf('%%') === 0) {
+                requireEmptyCell = true;
+                workingQuery = workingQuery.substring(2); // Отрезаем %% для дальнейшего поиска слов
+            }
+            
+            // 1. Проверяем условие пустой ячейки (если флаг активен)
+            if (requireEmptyCell) {
+                var hasEmpty = cells.some(function(c) { 
+                    return String(c || '').trim() === ""; 
+                });
+                if (!hasEmpty) return false; // Если пустых ячеек в строке нет — отсеиваем её
+            }
+            
+            // 2. Стандартный поиск остальных слов через разделитель %
+            var searchWords = workingQuery.split('%').map(function(w) { return w.trim(); }).filter(function(w) { return w !== ""; });
             mG = searchWords.every(function(word) {
                 return cells.some(function(c) { return String(c || '').toLowerCase().includes(word); });
             });
+            // --- КОНЕЦ ПРАВКИ ---
         }
+        
         var mC = activeFilters.every(function(f) {
             var cV = ''; cells.forEach(function(c, i) { if (i === f.idx) cV = String(c).toLowerCase(); }); return cV.includes(f.q);
         });
         return mG && mC;
     });
-    currentTab.currentPage = 1; renderTableData();
+    
+    currentTab.currentPage = 1; 
+    renderTableData();
 }
+
 
 function renderTableStructure() {
     var currentTab = getActiveTab(); if (!currentTab) return;
@@ -1455,51 +1500,123 @@ if (toggleFiltersBtn) {
 var toggleColumnsBtn = document.getElementById('toggleColumnsBtn');
 if (toggleColumnsBtn) {
     toggleColumnsBtn.addEventListener('click', function() {
-        var applyColumnsBtn = document.getElementById('applyColumnsBtn'); 
-        if (applyColumnsBtn) applyColumnsBtn.removeAttribute('data-pending-filename');
-        
         var panel = document.getElementById('columnChooserPanel');
         var currentTab = getActiveTab();
+        var pendingFileName = this.getAttribute('data-pending-filename'); // Проверяем, ждет ли новый файл
         
-        if ((panel.style.display === 'none' || !panel.style.display) && currentTab) {
-            var grid = document.getElementById('checkboxesGrid'); grid.innerHTML = ''; 
-            var oldMaster = document.getElementById('masterCheckboxWrapper'); if (oldMaster) oldMaster.remove();
-            
-            var masterWrapper = document.createElement('div'); masterWrapper.id = 'masterCheckboxWrapper';
-            masterWrapper.style.cssText = 'border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;';
-            var masterLabel = document.createElement('label'); masterLabel.className = 'column-checkbox-label';
-            masterLabel.style.cssText = 'display: flex; align-items: center; font-weight: 700; cursor: pointer;';
-            var masterChk = document.createElement('input'); masterChk.type = 'checkbox'; masterChk.id = 'masterColumnsSelector';
-            
-            // Берем эталон заголовков из памяти вкладки
-            var origHeaders = currentTab.originalHeaders || currentTab.tableHeaders;
-            masterChk.checked = currentTab.tableHeaders.length === origHeaders.length; 
+        // РЕЖИМ А: Панель была закрыта — открываем её для настройки
+        if (panel.style.display === 'none' || !panel.style.display) {
+            // Если нового файла нет, значит мы редактируем старый — строим сетку по нему
+            if (!pendingFileName && currentTab) {
+                var grid = document.getElementById('checkboxesGrid'); grid.innerHTML = ''; 
+                var oldMaster = document.getElementById('masterCheckboxWrapper'); if (oldMaster) oldMaster.remove();
+                
+                var masterWrapper = document.createElement('div'); 
+                masterWrapper.id = 'masterCheckboxWrapper';
+                masterWrapper.style.cssText = 'border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 15px; display: flex; align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 25px;';
+                
+                var masterLabel = document.createElement('label'); 
+                masterLabel.className = 'column-checkbox-label';
+                masterLabel.style.cssText = 'display: flex; align-items: center; font-weight: 700; cursor: pointer; margin: 0;';
+                
+                var masterChk = document.createElement('input'); 
+                masterChk.type = 'checkbox'; 
+                masterChk.id = 'masterColumnsSelector';
+                
+                var origHeaders = currentTab.originalHeaders || currentTab.tableHeaders;
+                masterChk.checked = currentTab.tableHeaders.length === origHeaders.length; 
 
-            masterChk.addEventListener('change', function() {
-                var isChecked = this.checked;
-                document.querySelectorAll('#checkboxesGrid input[type="checkbox"]').forEach(function(chk) { chk.checked = isChecked; });
-            });
-            masterLabel.appendChild(masterChk); masterLabel.appendChild(document.createTextNode(' Выбрать все колонки файла'));
-            masterWrapper.appendChild(masterLabel); grid.parentNode.insertBefore(masterWrapper, grid);
-            
-            // Строим сетку строго по полному списку оригинальных заголовков
-            origHeaders.forEach(function(headerName, idx) {
-                var label = document.createElement('label'); label.className = 'column-checkbox-label';
-                var chk = document.createElement('input'); chk.type = 'checkbox'; chk.setAttribute('data-raw-index', idx);
-                chk.setAttribute('data-header-name', headerName);
+                masterChk.addEventListener('change', function() {
+                    var isChecked = this.checked;
+                    document.querySelectorAll('#checkboxesGrid input[type="checkbox"]').forEach(function(chk) { chk.checked = isChecked; });
+                });
+                masterLabel.appendChild(masterChk); 
+                masterLabel.appendChild(document.createTextNode(' Выбрать все колонки файла'));
+                masterWrapper.appendChild(masterLabel);
                 
-                // Галочка стоит, если эта колонка сейчас выведена на экран
-                chk.checked = currentTab.tableHeaders.includes(headerName);
+                var currentLimit = localStorage.getItem('saved_column_limit') || '4';
+                var limitNum = parseInt(currentLimit);
+                var isExceeded = origHeaders.length > limitNum;
+                var inputBg = isExceeded ? '#fee2e2' : 'var(--bg-container)';
+                var inputBorder = isExceeded ? '#f87171' : 'var(--border-color)';
+                var inputColor = isExceeded ? '#ef4444' : 'var(--text-color)';
+
+                var inlineLimitWrapper = document.createElement('div');
+                inlineLimitWrapper.style.cssText = 'display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-color);';
+                inlineLimitWrapper.innerHTML = '<span>Лимит:</span>' +
+                    '<input type="number" id="columnLimitInput" min="1" max="100" value="' + currentLimit + '" style="width: 50px; padding: 4px 6px; border: 1px solid ' + inputBorder + '; border-radius: 4px; background-color: ' + inputBg + '; color: ' + inputColor + '; font-weight: bold; text-align: center;" />';
                 
-                label.appendChild(chk); label.appendChild(document.createTextNode(headerName));
-                grid.appendChild(label);
-            });
+                masterWrapper.appendChild(inlineLimitWrapper);
+                grid.parentNode.insertBefore(masterWrapper, grid);
+                
+                setTimeout(function() {
+                    var inp = document.getElementById('columnLimitInput');
+                    if (inp) inp.addEventListener('input', function() { localStorage.setItem('saved_column_limit', this.value); });
+                }, 10);
+                
+                origHeaders.forEach(function(headerName, idx) {
+                    var label = document.createElement('label'); label.className = 'column-checkbox-label';
+                    var chk = document.createElement('input'); chk.type = 'checkbox'; chk.setAttribute('data-raw-index', idx);
+                    chk.setAttribute('data-header-name', headerName); chk.checked = currentTab.tableHeaders.includes(headerName);
+                    label.appendChild(chk); label.appendChild(document.createTextNode(headerName)); grid.appendChild(label);
+                });
+                
+                var limitBox = document.getElementById('limitBox');
+                if (limitBox) limitBox.style.display = 'none';
+            }
             panel.style.display = 'block';
+            
         } else { 
-            panel.style.display = 'none'; 
+            // РЕЖИМ Б: Панель закрывается — запускаем автосохранение
+            var startTime = performance.now();
+            
+            var chosenIndices = [], chosenHeaders = [];
+            document.querySelectorAll('#checkboxesGrid input[type="checkbox"]').forEach(function(chk) {
+                if (chk.checked) { 
+                    chosenIndices.push(parseInt(chk.getAttribute('data-raw-index'))); 
+                    chosenHeaders.push(chk.getAttribute('data-header-name')); 
+                }
+            });
+            
+            if (chosenIndices.length === 0) { 
+                alert("Выберите хотя бы один столбец перед закрытием панели!"); 
+                return; 
+            }
+            
+            panel.style.display = 'none';
+            
+            if (pendingFileName) {
+                // Блок Б.1: Это был импорт нового файла — собираем новую вкладку
+                this.removeAttribute('data-pending-filename'); // Очищаем маркер
+                createNewTab(pendingFileName, chosenHeaders, rawCSVLines, rawDelimiter, chosenIndices);
+            } else if (currentTab) {
+                // Блок Б.2: Это было редактирование открытой таблицы — пересобираем её на лету
+                var cleanRows = []; var srcLines = currentTab.rawLines; var srcDelimiter = currentTab.delimiter || rawDelimiter;
+                srcLines.forEach(function(line) {
+                    var res = line.split(srcDelimiter); var cells = chosenIndices.map(function(idx) { return res[idx] !== undefined ? res[idx] : ""; });
+                    if (cells.length > 0 && cells.some(function(c) { return c !== ""; })) cleanRows.push(cells);
+                });
+                
+                currentTab.tableHeaders = chosenHeaders; 
+                currentTab.globalRows = cleanRows; 
+                currentTab.currentFilteredRows = cleanRows.concat(); 
+                currentTab.currentPage = 1;
+                
+                saveTabToDB(currentTab); 
+                generateSearchFields(); 
+                renderTableStructure(); 
+                renderTableData();
+                
+                var duration = (performance.now() - startTime).toFixed(1);
+                document.getElementById('counter').innerHTML = " <strong>" + currentTab.currentFilteredRows.length + "</strong> |  <strong>" + duration + " мс</strong>";
+            }
         }
     });
 }
+
+
+
+
 
 
 var isCtrlPressed = false;
@@ -1529,9 +1646,9 @@ function showToast(message) {
 
 var themeMenu = document.getElementById('themeContextMenu'); var touchTimeout = null;
 if (themeToggleBtn && themeMenu) {
-    // --- ОЖИВЛЯЕМ ОБЫЧНЫЙ БЫСТРЫЙ КЛИК ПО КНОПКЕ ТЕМ ---
+    
+    // 1. ОБЫЧНЫЙ БЫСТРЫЙ КЛИК (ПЕРЕБОР 10 ТЕМ ПО КРУГУ)
     themeToggleBtn.addEventListener('click', function(e) {
-        // Если контекстное меню открыто, обычный клик его просто закрывает
         if (themeMenu.style.display === 'block') {
             themeMenu.style.display = 'none';
             return;
@@ -1540,7 +1657,6 @@ if (themeToggleBtn && themeMenu) {
         var current = document.documentElement.getAttribute('data-theme') || 'light';
         var next = 'light';
         
-        // Циклический перебор всех 10 тем оформления
         if (current === 'light') next = 'dark';
         else if (current === 'dark') next = 'matrix';
         else if (current === 'matrix') next = 'aero';
@@ -1556,20 +1672,69 @@ if (themeToggleBtn && themeMenu) {
         localStorage.setItem('saved_table_theme', next);
     });
 
-    // --- ОСТАЛЬНЫЕ СОБЫТИЯ КОНТЕКСТНОГО МЕНЮ (ВАШ ОРИГИНАЛЬНЫЙ КОД) ---
-    themeToggleBtn.addEventListener('contextmenu', function(e) { e.preventDefault(); showThemeMenu(e.clientX, e.clientY); });
-    themeToggleBtn.addEventListener('touchstart', function(e) { if (e.touches.length === 0) return; var touch = e.touches; var posX = touch.clientX; var posY = touch.clientY; clearTimeout(touchTimeout); touchTimeout = setTimeout(function() { showThemeMenu(posX, posY); }, 500); });
-    themeToggleBtn.addEventListener('touchend', function() { clearTimeout(touchTimeout); }); themeToggleBtn.addEventListener('touchmove', function() { clearTimeout(touchTimeout); });
-    
-    function showThemeMenu(x, y) { themeMenu.style.display = 'block'; var windowWidth = window.innerWidth; var offsetRight = windowWidth - x; themeMenu.style.left = 'auto'; themeMenu.style.right = offsetRight + 'px'; themeMenu.style.top = (y + 10) + 'px'; }
-    
-    document.querySelectorAll('.context-menu-item').forEach(function(item) {
-        item.addEventListener('click', function() { var selectedTheme = this.getAttribute('data-theme'); applyTheme(selectedTheme); localStorage.setItem('saved_table_theme', selectedTheme); themeMenu.style.display = 'none'; });
-        item.addEventListener('mouseenter', function() { this.style.background = 'var(--bg-filebox)'; }); item.addEventListener('mouseleave', function() { this.style.background = 'transparent'; });
+        // 2. ПРАВЫЙ КЛИК МЫШИ (ПКМ) — НЕУЯЗВИМЫЙ ВАРИАНТ КОРРЕКТИРОВКИ
+    themeToggleBtn.addEventListener('contextmenu', function(e) { 
+        e.preventDefault(); 
+        
+        var targetMenu = document.getElementById('themeContextMenu');
+        if (!targetMenu) return;
+        
+        targetMenu.style.display = 'block';
+        
+        var windowWidth = window.innerWidth;
+        // Берём координаты клика прямо из события мыши e.clientX
+        var offsetRight = windowWidth - e.clientX;
+        
+        targetMenu.style.left = 'auto';
+        targetMenu.style.right = (offsetRight - 10) + 'px'; // Небольшой эстетичный сдвиг влево
+        targetMenu.style.top = (e.clientY + window.scrollY + 10) + 'px'; // Чуть ниже курсора
     });
 
-    document.addEventListener('click', function(e) { if (!themeToggleBtn.contains(e.target) && !themeMenu.contains(e.target)) themeMenu.style.display = 'none'; });
+    // 3. ДОЛГОЕ ЗАЖАТИЕ НА МОБИЛЬНЫХ УСТРОЙСТВАХ
+    themeToggleBtn.addEventListener('touchstart', function(e) { 
+        if (e.touches.length === 0) return; 
+        clearTimeout(touchTimeout); 
+        
+        touchTimeout = setTimeout(function() { 
+            var targetMenu = document.getElementById('themeContextMenu');
+            if (!targetMenu) return;
+            
+            targetMenu.style.display = 'block';
+            
+            var rect = themeToggleBtn.getBoundingClientRect();
+            var windowWidth = window.innerWidth;
+            var offsetRight = windowWidth - (rect.left + rect.width);
+            
+            targetMenu.style.left = 'auto';
+            targetMenu.style.right = offsetRight + 'px';
+            targetMenu.style.top = (rect.top + rect.height + window.scrollY + 6) + 'px';
+        }, 500); 
+    });
+
+
+    themeToggleBtn.addEventListener('touchend', function() { clearTimeout(touchTimeout); }); 
+    themeToggleBtn.addEventListener('touchmove', function() { clearTimeout(touchTimeout); });
+
+    // 4. КЛИКИ ПО ПУНКТАМ ВНУТРИ ВЫПАДАЮЩЕГО МЕНЮ ТЕМ
+    document.querySelectorAll('.context-menu-item').forEach(function(item) {
+        item.addEventListener('click', function() { 
+            var selectedTheme = this.getAttribute('data-theme'); 
+            applyTheme(selectedTheme); 
+            localStorage.setItem('saved_table_theme', selectedTheme); 
+            themeMenu.style.display = 'none'; 
+        });
+        item.addEventListener('mouseenter', function() { this.style.background = 'var(--bg-filebox)'; }); 
+        item.addEventListener('mouseleave', function() { this.style.background = 'transparent'; });
+    });
+
+    // 5. СКРЫТИЕ МЕНЮ ПРИ КЛИКЕ В ЛЮБУЮ ДРУГУЮ ТОЧКУ ЭКРАНА
+    document.addEventListener('click', function(e) { 
+        if (!themeToggleBtn.contains(e.target) && !themeMenu.contains(e.target)) {
+            themeMenu.style.display = 'none'; 
+        }
+    });
 }
+
 
 
 </script>
