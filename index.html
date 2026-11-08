@@ -1607,21 +1607,25 @@ if (googleCloudBtn) {
         document.getElementById('fileStatus').innerHTML = "Подключение к Google Диску...";
 
         // 1. Извлекаем уникальный ID файла из стандартной ссылки Гугла
+                // 1. Извлекаем уникальный ID файла из стандартной ссылки Гугла
         var match = userLink.match(/\/d\/([a-zA-Z0-9-_]+)/);
         if (!match) {
             alert("Не удалось распознать формат ссылки Google Drive. Убедитесь, что скопировали ссылку 'Поделиться' (Режим: 'Все, у кого есть ссылка - Читатель').");
             document.getElementById('fileStatus').innerHTML = "<span style='color:#ef4444;'>Ошибка формата ссылки</span>";
             return;
         }
-        var fileId = match[1]; // Исправлено: берём точный ID из регулярного выражения
+        var fileId = match[1];
         
-        // Пересобираем ссылку в формат прямого скачивания (Direct Download)
-        var directUrl = "https://google.com" + fileId;
+        // --- НАЧАЛО ПРАВКИ: Прямая ссылка через открытый сервер Google (БЕЗ ПРОКСИ И БЕЗ CORS!) ---
+        var directUrl = "https://google.com" + fileId + "&export=download";
+        // --- КОНЕЦ ПРАВКИ ---
+
         var fileName = "Google_Drive_" + fileId.substring(0, 6) + ".csv"; 
 
-        // 2. Запускаем скачивание файла напрямую в оперативную память ПК
+        // 2. Запускаем скачивание напрямую (CORS пропустит этот адрес на GitHub Pages)
         fetch(directUrl)
             .then(function(response) {
+
                 if (!response.ok) throw new Error("Не удалось загрузить файл. Проверьте, что в Google Диске открыт доступ 'Всем, у кого есть ссылка'");
                 return response.arrayBuffer();
             })
