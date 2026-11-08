@@ -1595,6 +1595,57 @@ if (themeToggleBtn && themeMenu) {
     document.addEventListener('click', function(e) { if (!themeToggleBtn.contains(e.target) && !themeMenu.contains(e.target)) themeMenu.style.display = 'none'; });
 }
 
+// ==========================================================================
+// 7. СЕТЕВАЯ ЗАГРУЗКА ИЗ GOOGLE ДИСКА ПРЯМО В СИСТЕМУ ВКЛАДОК
+// ==========================================================================
+var googleCloudBtn = document.getElementById('googleCloudBtn');
+if (googleCloudBtn) {
+    googleCloudBtn.addEventListener('click', function() {
+        var userLink = prompt("Пожалуйста, введите ссылку 'Поделиться' на ваш CSV-файл из Google Диска:");
+        if (!userLink) return;
+
+        document.getElementById('fileStatus').innerHTML = "Подключение к Google Диску...";
+
+        // 1. Извлекаем уникальный ID файла из стандартной ссылки Гугла
+        var match = userLink.match(/\/d\/([a-zA-Z0-9-_]+)/);
+        if (!match) {
+            alert("Не удалось распознать формат ссылки Google Drive. Убедитесь, что скопировали ссылку 'Поделиться' (Режим: 'Все, у кого есть ссылка - Читатель').");
+            document.getElementById('fileStatus').innerHTML = "<span style='color:#ef4444;'>Ошибка формата ссылки</span>";
+            return;
+        }
+        var fileId = match[1]; // Исправлено: берём точный ID из регулярного выражения
+        
+        // Пересобираем ссылку в формат прямого скачивания (Direct Download)
+        var directUrl = "https://google.com" + fileId;
+        var fileName = "Google_Drive_" + fileId.substring(0, 6) + ".csv"; 
+
+        // 2. Запускаем скачивание файла напрямую в оперативную память ПК
+        fetch(directUrl)
+            .then(function(response) {
+                if (!response.ok) throw new Error("Не удалось загрузить файл. Проверьте, что в Google Диске открыт доступ 'Всем, у кого есть ссылка'");
+                return response.arrayBuffer();
+            })
+            .then(function(buffer) {
+                // Автоопределение кодировки и передача текста в систему парсинга
+                var decoder = new TextDecoder('windows-1251');
+                var text = decoder.decode(buffer);
+                
+                if (text.includes(String.fromCharCode(65533))) {
+                    var utfDecoder = new TextDecoder('utf-8');
+                    text = utfDecoder.decode(buffer);
+                }
+                
+                // Передаем текст в вашу готовую функцию processCSVData
+                processCSVData(text, fileName);
+                document.getElementById('fileStatus').innerHTML = "Файл успешно全局 загружен из <strong>Google Диска</strong>";
+            })
+            .catch(function(error) {
+                console.error(error);
+                alert("Ошибка загрузки: " + error.message + "\n\n⚠️ НАПОМИНАНИЕ: Если вы запускаете файл локально с компьютера (file:///...), браузер блокирует скачивание из облака из-за политики CORS. На GitHub Pages всё заработает автоматически!");
+                document.getElementById('fileStatus').innerHTML = "<span style='color:#ef4444;'>Блокировка CORS (требуется хостинг)</span>";
+            });
+    });
+}
 
 
 </script>
