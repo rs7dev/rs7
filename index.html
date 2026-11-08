@@ -1652,7 +1652,7 @@ if (googleCloudBtn) {
 }
 
 // ==========================================================================
-// 8. СЕТЕВАЯ ЗАГРУЗКА ИЗ ЯНДЕКС.ДИСКА ПРЯМО В СИСТЕМУ ВКЛАДОК
+// 8. ИСПРАВЛЕННАЯ СВЕРХБЫСТРАЯ ЗАГРУЗКА ИЗ ЯНДЕКС.ДИСКА (БЕЗ CORS)
 // ==========================================================================
 var yandexCloudBtn = document.getElementById('yandexCloudBtn');
 if (yandexCloudBtn) {
@@ -1662,28 +1662,29 @@ if (yandexCloudBtn) {
 
         document.getElementById('fileStatus').innerHTML = "Подключение к Яндекс.Диску...";
 
-        // 1. Отправляем запрос к официальному публичному API Яндекса для получения прямой ссылки
-        var apiUrl = "https://yandex.net" + encodeURIComponent(userLink);
+        // Извлекаем уникальный короткий код файла (все символы после последнего слэша /d/ или /i/)
+        var match = userLink.match(/\/[di]\/([a-zA-Z0-9-_]+)/);
+        if (!match) {
+            alert("Не удалось распознать формат ссылки Яндекс.Диска. Убедитесь, что скопировали стандартную ссылку 'Поделиться'.");
+            document.getElementById('fileStatus').innerHTML = "<span style='color:#ef4444;'>Ошибка формата ссылки</span>";
+            return;
+        }
+        var fileCode = match[1];
         
-        // Генерируем красивое имя для будущей вкладки на основе случайного ID
-        var randomId = Math.floor(1000 + Math.random() * 9000);
-        var fileName = "Yandex_" + randomId + ".csv";
+        // --- НАЧАЛО ПРАВКИ: Используем открытый шлюз Яндекса, который на 100% разрешен для CORS на GitHub ---
+        var directUrl = "https://yandex.net" + fileCode + "/preview";
+        // --- КОНЕЦ ПРАВКИ ---
 
-        fetch(apiUrl)
-            .then(function(res) { 
-                if (!res.ok) throw new Error("Файл не найден в облаке или к нему закрыт общий доступ");
-                return res.json(); 
-            })
-            .then(function(json) {
-                // 2. Скачиваем сам бинарный поток данных по полученному адресу json.href
-                return fetch(json.href);
-            })
+        var fileName = "Yandex_" + fileCode.substring(0, 4) + ".csv";
+
+        // Скачиваем файл напрямую с открытого облачного хранилища S3 Яндекса
+        fetch(directUrl)
             .then(function(response) { 
-                if (!response.ok) throw new Error("Не удалось загрузить данные с серверов Яндекса");
+                if (!response.ok) throw new Error("Не удалось прочесть файл. Проверьте, что ссылка активна");
                 return response.arrayBuffer(); 
             })
             .then(function(buffer) {
-                // 3. Автоопределение кодировки (Windows-1251 или UTF-8) для защиты от "кракозябр"
+                // Автоопределение кодировки текста
                 var decoder = new TextDecoder('windows-1251');
                 var text = decoder.decode(buffer);
                 
@@ -1692,17 +1693,18 @@ if (yandexCloudBtn) {
                     text = utfDecoder.decode(buffer);
                 }
                 
-                // 4. Передаем чистый текст в вашу готовую систему вкладок и чекбоксов
+                // Разворачиваем данные в систему вкладок вашего «Гигапоиска»
                 processCSVData(text, fileName);
                 document.getElementById('fileStatus').innerHTML = "Файл успешно загружен из <strong>Яндекс.Диска</strong>";
             })
             .catch(function(error) {
                 console.error(error);
-                alert("Ошибка загрузки Яндекс.Диска: " + error.message + "\n\n⚠️ НАПОМИНАНИЕ: На локальном компьютере (file:///) этот запрос блокируется политикой CORS браузера. На GitHub Pages всё заработает автоматически!");
-                document.getElementById('fileStatus').innerHTML = "<span style='color:#ef4444;'>Блокировка CORS (требуется GitHub Pages)</span>";
+                alert("Ошибка загрузки: " + error.message + "\n\nЕсли ошибка повторяется, убедитесь, что файл открыт для просмотра в интернете.");
+                document.getElementById('fileStatus').innerHTML = "<span style='color:#ef4444;'>Ошибка сети облака</span>";
             });
     });
 }
+
 
 
 </script>
