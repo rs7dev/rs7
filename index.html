@@ -247,7 +247,42 @@
         text-transform: uppercase; 
         letter-spacing: 0.5px; 
         white-space: nowrap;
+        
+        text-align: center;
+        position: relative; /* Важно для позиционирования крестика */
+        padding-right: 30px; /* Оставляем место справа, чтобы текст не налезал на крестик */
     }
+
+    /* Стиль для крестика закрытия столбца */
+    .col-close-btn {
+        position: absolute;
+        right: 8px; /* Отступ от правого края */
+        top: 50%; /* Сдвигаем на 50% вниз */
+        transform: translateY(-50%); /* И поднимаем ровно на половину его высоты (идеальное центрирование) */
+        
+        width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        line-height: 1;
+        color: var(--text-muted);
+        transition: all 0.15s ease;
+        font-weight: bold;
+    }
+    
+    /* При наведении делаем крестик красным */
+    .col-close-btn:hover {
+        background: rgba(255, 0, 0, 0.1);
+        color: #ef4444;
+    }
+    
+    /* Для контрастной темы */
+    [data-theme="contrast"] .col-close-btn { color: #FFFFFF; }
+    [data-theme="contrast"] .col-close-btn:hover { background: #FF0000; color: #000000; }
 
     th:last-child { border-right: none; }
     
@@ -913,9 +948,16 @@ function renderTableStructure() {
     var row = document.createElement('tr'); var dragSrcIndex = null; 
 
     currentTab.tableHeaders.forEach(function(h, idx) { 
-        var t = document.createElement('th'); var titleSpan = document.createElement('span'); titleSpan.textContent = h || ("Колонка " + (idx + 1)); t.appendChild(titleSpan);
-        var closeBtn = document.createElement('span'); closeBtn.textContent = ' ×'; closeBtn.style.cssText = 'cursor:pointer; margin-left:8px; color:var(--text-muted); font-weight:bold;';
+        var t = document.createElement('th'); 
+        var titleSpan = document.createElement('span'); 
+        titleSpan.textContent = h || ("Колонка " + (idx + 1)); 
+        t.appendChild(titleSpan);
         
+        var closeBtn = document.createElement('span'); 
+        closeBtn.textContent = '×'; 
+        closeBtn.className = 'col-close-btn';
+        closeBtn.title = 'Скрыть этот столбец';
+
         closeBtn.addEventListener('click', function(e) {
             e.stopPropagation(); var currentHeaderName = currentTab.tableHeaders[idx];
             var relatedCheckbox = document.querySelector('#checkboxesGrid input[type="checkbox"][data-header-name="' + currentHeaderName + '"]');
