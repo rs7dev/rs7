@@ -186,11 +186,13 @@
     }
     .compact-page-btn:hover:not(:disabled) { border-color: var(--accent-color); color: var(--accent-color); }
         /* Фикс активной страницы в контрастной теме (черный фон, желтый текст) */
-    [data-theme="contrast"] .compact-page-btn.active {
-        background-color: #000000 !important; /* Черный фон */
-        color: #FFFF00 !important;            /* Желтый текст */
-        border: 2px solid #FFFF00 !important; /* Желтая рамка */
+    .compact-page-btn.active { 
+        background: var(--bg-th) !important; /* Цвет шапки таблицы */
+        border-color: var(--border-color) !important; /* Цвет границ шапки */
+        color: var(--text-title) !important; /* Контрастный текст (как заголовки) */
         font-weight: 800 !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Легкая тень */
+        transform: scale(1.05); /* Чуть увеличиваем */
     }
     .compact-page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
@@ -364,6 +366,198 @@
     [data-theme="ocean"] #tabsContainer button.active-tab { color: #07121A !important; }
     [data-theme="savanna"] #tabsContainer button.active-tab { color: #1A1810 !important; }
     [data-theme="contrast"] #tabsContainer button.active-tab { color: #FFFF00 !important; border-top: 2px solid #FFFF00 !important; }
+
+    /* Эффект при перетаскивании файла (Drag & Drop) */
+    #emptyState.drag-active {
+        border-color: var(--accent-color) !important;
+        background-color: var(--bg-filebox) !important;
+        transform: scale(1.02);
+    }
+    #emptyStateOpenBtn:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+    }
+
+        /* Фикс цвета текста для пустого состояния во всех темах */
+    #emptyState h2 {
+        color: var(--text-main) !important; /* Используем основной цвет текста */
+    }
+    #emptyState p {
+        color: var(--text-muted) !important; /* Используем приглушенный цвет */
+    }
+    
+    /* В темных темах (Ночной город, Высокий контраст) возвращаем белый цвет */
+    [data-theme="cozy-home"] #emptyState h2,
+    [data-theme="contrast"] #emptyState h2 {
+        color: #FFFFFF !important;
+    }
+    [data-theme="cozy-home"] #emptyState p,
+    [data-theme="contrast"] #emptyState p {
+        color: #CCCCCC !important;
+    }
+
+        /* ==========================================================================
+       ПУСТОЕ СОСТОЯНИЕ (Empty State)
+       ========================================================================== */
+    #emptyState {
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center; 
+        min-height: 400px; 
+        border: 2px dashed var(--border-color); 
+        border-radius: var(--radius-main); 
+        background: var(--bg-container); 
+        text-align: center; 
+        padding: 20px; 
+        margin-top: 15px; 
+        transition: all 0.2s ease;
+    }
+
+    /* Эффект при перетаскивании файла (Drag & Drop) */
+    #emptyState.drag-active {
+        border-color: var(--accent-color) !important;
+        background-color: var(--bg-filebox) !important;
+        transform: scale(1.02);
+    }
+
+    .empty-icon {
+        font-size: 56px; 
+        margin-bottom: 15px; 
+        opacity: 0.7;
+    }
+
+    /* ЗАГОЛОВОК: Базовый цвет (темный для светлых тем) */
+    #emptyState h2 {
+        margin: 0 0 10px 0; 
+        color: #0f172a; /* Темный цвет */
+        font-size: 22px;
+    }
+
+    /* ОПИСАНИЕ */
+    #emptyState p {
+        margin: 0 0 25px 0; 
+        color: var(--text-muted); 
+        font-size: 15px; 
+        max-width: 400px; 
+        line-height: 1.5;
+    }
+
+    /* КНОПКА: Как активная вкладка */
+    #emptyStateOpenBtn {
+        display: inline-flex; 
+        align-items: center; 
+        justify-content: center; 
+        padding: 0 24px; 
+        height: 46px; 
+        font-size: 15px; 
+        font-weight: 600; 
+        background: var(--bg-container); 
+        color: var(--text-main); 
+        border: 1px solid var(--border-color);
+        border-top: 3px solid var(--accent-color);
+        cursor: pointer; 
+        border-radius: 8px; 
+        transition: all 0.15s ease; 
+        box-shadow: var(--shadow-sm);
+    }
+
+    #emptyStateOpenBtn:hover {
+        border-color: var(--accent-color);
+        color: var(--accent-color);
+        background: var(--bg-filebox);
+        transform: translateY(-1px);
+    }
+
+    /* ==========================================================================
+       ФИКСЫ ДЛЯ ТЕМНЫХ ТЕМ (Возвращаем белый цвет)
+       ========================================================================== */
+    [data-theme="dark"] #emptyState h2,
+    [data-theme="cozy-home"] #emptyState h2,
+    [data-theme="contrast"] #emptyState h2 {
+        color: #FFFFFF !important;
+    }
+
+    /* Для тем, где акцент темный, текст кнопки делаем светлым */
+    [data-theme="dark"] #emptyStateOpenBtn,
+    [data-theme="cozy-home"] #emptyStateOpenBtn {
+        color: #FFFFFF;
+    }
+
+    /* Для тем, где акцент светлый, текст кнопки делаем темным */
+    [data-theme="ocean"] #emptyStateOpenBtn,
+    [data-theme="savanna"] #emptyStateOpenBtn,
+    [data-theme="contrast"] #emptyStateOpenBtn {
+        color: #1A1810;
+    }
+    
+    /* В контрастной теме кнопку делаем ярко-желтой */
+    [data-theme="contrast"] #emptyStateOpenBtn {
+        background: var(--accent-color);
+        color: #000000 !important;
+        border: none;
+    }
+
+        /* ==========================================================================
+       КНОПКА "ПРИМЕНИТЬ" (выглядит как кнопка "+")
+       ========================================================================== */
+    .apply-btn {
+        background: var(--bg-filebox) !important; 
+        border: 1px solid var(--border-filebox) !important;
+        height: 34px;
+        padding: 0 16px !important;
+        font-size: 13px !important;
+        font-family: Arial, sans-serif !important;
+        font-weight: 600 !important;
+        border-radius: 6px; /* Чуть скругленные углы */
+        color: var(--text-main) !important; 
+        cursor: pointer; 
+        transition: all 0.15s ease; 
+        display: inline-flex; 
+        align-items: center;
+        justify-content: center; 
+        margin-left: 5px; /* Отступ от чекбокса */
+    }
+
+        /* ==========================================================================
+       ИДЕАЛЬНЫЙ КОНТРАСТ ДЛЯ АКТИВНОЙ СТРАНИЦЫ ПАГИНАТОРА
+       ========================================================================== */
+    .compact-page-btn.active { 
+        /* По умолчанию (Светлая, Темная, Ночной город) используем цвет шапки */
+        background: var(--bg-th) !important; 
+        border-color: var(--border-color) !important; 
+        color: var(--text-title) !important; 
+        font-weight: 800 !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15); 
+        transform: scale(1.05); 
+    }
+
+    /* 1. ИСПРАВЛЕНИЕ ДЛЯ ОКЕАНА */
+    /* Светло-голубой фон шапки и темно-синий текст */
+    [data-theme="ocean"] .compact-page-btn.active {
+        background: #90B9D3 !important; 
+        color: #04547E !important;      
+        border-color: #04547E !important;
+    }
+
+    /* 2. ИСПРАВЛЕНИЕ ДЛЯ САВАННЫ */
+    /* Песочный фон шапки и коричневый текст */
+    [data-theme="savanna"] .compact-page-btn.active {
+        background: #F4C28A !important; 
+        color: #A47A58 !important;      
+        border-color: #A47A58 !important;
+    }
+
+    /* 3. ИСПРАВЛЕНИЕ ДЛЯ ВЫСОКОГО КОНТРАСТА */
+    /* Ярко-желтая кнопка с черным текстом */
+    [data-theme="contrast"] .compact-page-btn.active {
+        background: #FFFF00 !important; 
+        color: #000000 !important; 
+        border: 2px solid #FFFF00 !important;
+    }
+    
+   
+
 </style>
 
 <body>
@@ -416,9 +610,17 @@
     
     <div id="columnChooserPanel" style="display: none; background: var(--bg-container); border: 1px solid var(--border-color); border-radius: var(--radius-main); padding: 20px; box-shadow: var(--shadow-md); margin-bottom: 15px;">
         <div id="limitBox" style="display: none; padding: 12px 16px; background: #fee2e2; border: 1px solid #f87171; border-radius: 8px; color: #b91c1c; font-size: 14px; font-weight: 600; margin-bottom: 15px;">
-            Внимание: В файле много колонок. Выберите те, которые необходимо вывести на экран.
+            Внимание: В файле много колонок. Можно выбрать те, которые необходимо вывести на экран.
         </div>
         <div id="checkboxesGrid" style="display: grid !important; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important; gap: 12px !important;"></div>
+    </div>
+
+                <!-- ЗАГЛУШКА ДЛЯ ПУСТОГО СОСТОЯНИЯ -->
+    <div id="emptyState">
+      <div class="empty-icon">🗂️</div>
+      <!-- Уменьшаем размер до 18 пикселей (по умолчанию у h2 около 24px) -->
+      <h2 style="font-size: 16px;">Перетащите CSV-файл прямо в это окно или нажмите кнопку ниже, чтобы начать работу.</h2>
+      <button id="emptyStateOpenBtn">➕ Открыть файл</button>
     </div>
 
     <!-- САМА ТАБЛИЦА -->
@@ -612,8 +814,9 @@ function processCSVData(text, fileName) {
     
     var masterWrapper = document.createElement('div');
     masterWrapper.id = 'masterCheckboxWrapper';
-    masterWrapper.style.cssText = 'border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 15px; display: flex; align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 25px;';
+    masterWrapper.style.cssText = 'border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 15px; display: flex; align-items: center; flex-wrap: wrap; gap: 15px;';
     
+    // 1. Чекбокс "Выбрать все"
     var masterLabel = document.createElement('label'); 
     masterLabel.className = 'column-checkbox-label';
     masterLabel.style.cssText = 'display: flex; align-items: center; font-weight: 700; cursor: pointer; margin: 0;';
@@ -632,13 +835,23 @@ function processCSVData(text, fileName) {
     masterLabel.appendChild(document.createTextNode(' Выбрать все колонки файла'));
     masterWrapper.appendChild(masterLabel);
     
+    // 2. Кнопка "Применить" сразу после чекбокса
+    var applyBtn = document.createElement('button');
+    applyBtn.textContent = 'Применить';
+    applyBtn.className = 'apply-btn'; // <-- Даем новый класс
+    applyBtn.addEventListener('click', function() {
+        document.getElementById('toggleColumnsBtn').click();
+    });
+    masterWrapper.appendChild(applyBtn);
+
+    // 3. Лимит (прижат вправо через margin-left: auto)
     var isExceeded = allHeaders.length > limit;
     var inputBg = isExceeded ? '#fee2e2' : 'var(--bg-container)';
     var inputBorder = isExceeded ? '#f87171' : 'var(--border-color)';
     var inputColor = isExceeded ? '#ef4444' : 'var(--text-main)';
 
     var inlineLimitWrapper = document.createElement('div');
-    inlineLimitWrapper.style.cssText = 'display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-main);';
+    inlineLimitWrapper.style.cssText = 'display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-main); margin-left: auto;';
     inlineLimitWrapper.innerHTML = '<span>Лимит:</span>' +
         '<input type="number" id="columnLimitInput" min="1" max="100" value="' + limit + '" style="width: 50px; padding: 4px 6px; border: 1px solid ' + inputBorder + '; border-radius: 4px; background-color: ' + inputBg + '; color: ' + inputColor + '; font-weight: bold; text-align: center;" />';
     
@@ -1167,8 +1380,9 @@ if (toggleColumnsBtn) {
                 
                 var masterWrapper = document.createElement('div'); 
                 masterWrapper.id = 'masterCheckboxWrapper';
-                masterWrapper.style.cssText = 'border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 15px; display: flex; align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 25px;';
+                masterWrapper.style.cssText = 'border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 15px; display: flex; align-items: center; flex-wrap: wrap; gap: 15px;';
                 
+                // 1. Чекбокс
                 var masterLabel = document.createElement('label'); 
                 masterLabel.className = 'column-checkbox-label';
                 masterLabel.style.cssText = 'display: flex; align-items: center; font-weight: 700; cursor: pointer; margin: 0;';
@@ -1188,6 +1402,16 @@ if (toggleColumnsBtn) {
                 masterLabel.appendChild(document.createTextNode(' Выбрать все колонки файла'));
                 masterWrapper.appendChild(masterLabel);
                 
+                // 2. Кнопка Применить
+                    var applyBtn = document.createElement('button');
+                     applyBtn.textContent = 'Применить';
+                     applyBtn.className = 'apply-btn'; // <-- Даем новый класс
+                     applyBtn.addEventListener('click', function() {
+                     document.getElementById('toggleColumnsBtn').click();
+                    });
+                masterWrapper.appendChild(applyBtn);
+
+                // 3. Лимит (вправо)
                 var currentLimit = localStorage.getItem('saved_column_limit') || '4';
                 var limitNum = parseInt(currentLimit);
                 var isExceeded = origHeaders.length > limitNum;
@@ -1196,7 +1420,7 @@ if (toggleColumnsBtn) {
                 var inputColor = isExceeded ? '#ef4444' : 'var(--text-main)';
 
                 var inlineLimitWrapper = document.createElement('div');
-                inlineLimitWrapper.style.cssText = 'display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-main);';
+                inlineLimitWrapper.style.cssText = 'display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-main); margin-left: auto;';
                 inlineLimitWrapper.innerHTML = '<span>Лимит:</span>' +
                     '<input type="number" id="columnLimitInput" min="1" max="100" value="' + currentLimit + '" style="width: 50px; padding: 4px 6px; border: 1px solid ' + inputBorder + '; border-radius: 4px; background-color: ' + inputBg + '; color: ' + inputColor + '; font-weight: bold; text-align: center;" />';
                 
@@ -1375,6 +1599,71 @@ if (themeToggleBtn && themeMenu) {
         if (!themeToggleBtn.contains(e.target) && !themeMenu.contains(e.target)) { themeMenu.style.display = 'none'; }
     });
 }
+
+// ==========================================================================
+// ПУСТОЕ СОСТОЯНИЕ (Empty State) И DRAG & DROP
+// ==========================================================================
+var emptyState = document.getElementById('emptyState');
+var emptyStateOpenBtn = document.getElementById('emptyStateOpenBtn');
+
+// 1. Кнопка "Открыть" внутри заглушки
+if (emptyStateOpenBtn) {
+    emptyStateOpenBtn.addEventListener('click', function() {
+        document.getElementById('csvFile').click();
+    });
+}
+
+// 2. Функция управления видимостью
+function toggleEmptyState() {
+    if (!emptyState) return;
+    if (tabs.length === 0) {
+        emptyState.style.display = 'flex';
+        document.querySelector('.table-wrapper').style.display = 'none';
+    } else {
+        emptyState.style.display = 'none';
+        document.querySelector('.table-wrapper').style.display = 'block';
+    }
+}
+
+// Оборачиваем функции, чтобы заглушка появлялась/исчезала при открытии/закрытии вкладок
+var originalFinishTabActivation = finishTabActivation;
+finishTabActivation = function(tab) {
+    originalFinishTabActivation(tab);
+    toggleEmptyState();
+};
+
+var originalCloseTab = closeTab;
+closeTab = function(tabId, e) {
+    originalCloseTab(tabId, e);
+    toggleEmptyState();
+};
+
+// 3. Обработка Drag & Drop (перетаскивание файла в окно)
+window.addEventListener('dragover', function(e) {
+    e.preventDefault(); // Разрешаем сброс
+    if (emptyState && tabs.length === 0) {
+        emptyState.classList.add('drag-active');
+    }
+});
+
+window.addEventListener('dragleave', function(e) {
+    if (e.relatedTarget === null) { // Если мышь ушла за пределы браузера
+        if (emptyState) emptyState.classList.remove('drag-active');
+    }
+});
+
+window.addEventListener('drop', function(e) {
+    e.preventDefault();
+    if (emptyState) emptyState.classList.remove('drag-active');
+    
+    var files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+        handleNewFileSelection(files[0]);
+    }
+});
+
+// Инициализация при загрузке страницы
+toggleEmptyState();
 
 </script>
 
