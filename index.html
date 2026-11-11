@@ -555,6 +555,21 @@
         color: #000000 !important; 
         border: 2px solid #FFFF00 !important;
     }
+
+     /* ==========================================================================
+       КРЕСТИК ЗАКРЫТИЯ ВКЛАДКИ
+       ========================================================================== */
+    .tab-close-btn {
+        /* Наследуем цвет текста от самой вкладки */
+        color: inherit !important; 
+        transition: none !important; /* Убираем плавность, чтобы цвет не менялся */
+    }
+    
+    /* Убираем красный цвет при наведении */
+    .tab-close-btn:hover {
+        color: inherit !important;
+        background: transparent !important;
+    }
     
    
 
@@ -1024,7 +1039,8 @@ function renderTabsUI() {
         btn.addEventListener('click', function() { activateTab(tab.id); });
         
         var cross = document.createElement('span'); cross.textContent = '×';
-        cross.style.cssText = 'position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-weight: bold; color: var(--text-muted); cursor: pointer; font-size: 14px;';
+        cross.className = 'tab-close-btn'; /* <-- Даем класс для стилизации */
+        cross.style.cssText = 'position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-weight: bold; cursor: pointer; font-size: 14px;';
         cross.addEventListener('click', function(e) { closeTab(tab.id, e); });
         
         btn.appendChild(cross); container.appendChild(btn);
