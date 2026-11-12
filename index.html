@@ -8,7 +8,7 @@
 
 <style>
     /* ==========================================================================
-       ПЕРЕМЕННЫЕ И ТЕМЫ (Оставлены 6 лучших тем)
+       ПЕРЕМЕННЫЕ И ТЕМЫ
        ========================================================================== */
     :root {
         --bg-body: #f8fafc; --bg-container: #ffffff; --text-main: #334155; --text-title: #0f172a;
@@ -55,14 +55,13 @@
     }
     [data-theme="savanna"] th { background-color: #F4C28A !important; color: #A47A58 !important; }
 
-    /* НОВАЯ ТЕМА: Высокий контраст (High Contrast) */
     [data-theme="contrast"] { background-color: #000000 !important; }
     [data-theme="contrast"] body { background-color: #000000 !important; color: #FFFFFF !important; }
     [data-theme="contrast"], [data-theme="contrast"] body {
         --bg-body: #000000; --bg-container: #121212; --text-main: #FFFFFF; --text-title: #FFFFFF;
         --text-muted: #CCCCCC; --border-color: #555555; --bg-filebox: #222222; --border-filebox: #777777;
         --bg-th: #333333; --bg-hover-tr: #444444; --bg-copy-btn: #222222; --input-bg: #000000;
-        --input-disabled: #222222; --accent-color: #FFFF00; /* Ярко-желтый акцент */
+        --input-disabled: #222222; --accent-color: #FFFF00;
     }
     [data-theme="contrast"] .container { background: #121212 !important; border: 2px solid #555 !important; }
     [data-theme="contrast"] th { background-color: #333 !important; color: #FFF !important; border-bottom: 2px solid #FFF !important; }
@@ -78,7 +77,7 @@
     body { 
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
         margin: 0; padding: 20px; background-color: var(--bg-body); color: var(--text-main); 
-        transition: background-color 0.2s ease, color 0.2s ease; -webkit-font-smoothing: antialiased; 
+        transition: background-color 0.1s ease, color 0.1s ease; -webkit-font-smoothing: antialiased; 
         display: flex; flex-direction: column; align-items: center; gap: 15px; min-height: 100vh;
     }
     .container { 
@@ -87,22 +86,16 @@
     }
 
     /* ==========================================================================
-       ШАПКА (ЛОГОТИП, СТАТИСТИКА, ТЕМА)
+       ШАПКА
        ========================================================================== */
     #futureFeaturePanel {
         max-width: 95%; margin: 0 auto; width: 100%; background: var(--bg-container);
         border: 1px solid var(--border-color); border-radius: var(--radius-main);
         padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow-sm);
     }
-    
     #authorBlock { display: flex; align-items: center; flex-shrink: 0; }
     #authorBlock img { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border-color); object-fit: cover; }
-
-    #headerStats { 
-        font-size: 14px; color: var(--text-main); font-weight: 600; 
-        display: flex; align-items: center; gap: 5px; margin-left: 20px; 
-    }
-
+    #headerStats { font-size: 14px; color: var(--text-main); font-weight: 600; display: flex; align-items: center; gap: 5px; margin-left: 20px; }
     .header-btn { 
         display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px;
         padding: 0; font-size: 20px; background-color: var(--bg-filebox); color: var(--text-main); 
@@ -118,18 +111,13 @@
         background: var(--bg-container); border: 1px solid var(--border-color);
         border-radius: var(--radius-main); padding: 10px; box-shadow: var(--shadow-sm);
     }
-    
     .action-btn { 
         display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px;
         padding: 0; font-size: 16px; background-color: var(--bg-filebox); color: var(--text-main); 
-        border: 1px solid var(--border-filebox); border-radius: 8px; cursor: pointer; transition: all 0.15s ease; 
-        flex-shrink: 0;
+        border: 1px solid var(--border-filebox); border-radius: 8px; cursor: pointer; transition: all 0.15s ease; flex-shrink: 0;
     }
-    .action-btn:hover:not(:disabled) { 
-        background-color: var(--bg-container); border-color: var(--accent-color); color: var(--accent-color); 
-    }
+    .action-btn:hover:not(:disabled) { background-color: var(--bg-container); border-color: var(--accent-color); color: var(--accent-color); }
     .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
     .global-search { 
         flex: 1; padding: 0 16px; border: 1px solid var(--border-filebox); border-radius: 8px; 
         font-size: 15px; outline: none; background-color: var(--input-bg); color: var(--text-main); 
@@ -141,12 +129,8 @@
     /* ==========================================================================
        ВКЛАДКИ И ПАГИНАЦИЯ
        ========================================================================== */
-    #tabsWrapper { 
-        display: flex; align-items: flex-end; gap: 8px; margin-bottom: -1px; 
-        padding: 0 5px; min-height: 24px; margin-top: 5px; width: 100%; 
-    }
+    #tabsWrapper { display: flex; align-items: flex-end; gap: 8px; margin-bottom: -1px; padding: 0 5px; min-height: 24px; margin-top: 5px; width: 100%; }
     #tabsContainer { display: flex; gap: 4px; flex-wrap: wrap; }
-    
     #tabsContainer button { 
         padding: 8px 32px 8px 16px !important; font-size: 13px !important; font-weight: 600 !important; 
         background: var(--bg-filebox) !important; border: 1px solid var(--border-color) !important; 
@@ -159,11 +143,7 @@
         border-left: 1px solid var(--border-color) !important; border-right: 1px solid var(--border-color) !important;
         color: var(--text-title) !important; z-index: 2;
     }
-    #tabsContainer button span {
-        position: absolute; right: 6px; top: 50%; transform: translateY(-50%); 
-        font-weight: bold; color: var(--text-muted); cursor: pointer; font-size: 14px;
-    }
-
+    #tabsContainer button span { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-weight: bold; color: var(--text-muted); cursor: pointer; font-size: 14px; }
     #addTabBtn {
         background: var(--bg-filebox) !important; border: 1px solid var(--border-filebox) !important;
         border-bottom: none !important; border-radius: 8px 8px 0 0 !important; height: 34px;
@@ -185,37 +165,18 @@
         justify-content: center; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; padding: 0 4px;
     }
     .compact-page-btn:hover:not(:disabled) { border-color: var(--accent-color); color: var(--accent-color); }
-        /* Фикс активной страницы в контрастной теме (черный фон, желтый текст) */
     .compact-page-btn.active { 
-        background: var(--bg-th) !important; /* Цвет шапки таблицы */
-        border-color: var(--border-color) !important; /* Цвет границ шапки */
-        color: var(--text-title) !important; /* Контрастный текст (как заголовки) */
-        font-weight: 800 !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Легкая тень */
-        transform: scale(1.05); /* Чуть увеличиваем */
+        background: var(--bg-th) !important; border-color: var(--border-color) !important; 
+        color: var(--text-title) !important; font-weight: 800 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transform: scale(1.05); 
     }
     .compact-page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
     #pageSizeWrapper { display: flex; align-items: center; margin-left: 10px; padding-bottom: 6px; }
-    #pageSizeSelect {
-        padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-filebox);
-        background: var(--input-bg); color: var(--text-main); font-weight: 600; cursor: pointer; outline: none; font-size: 13px;
-    }
+    #pageSizeSelect { padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-filebox); background: var(--input-bg); color: var(--text-main); font-weight: 600; cursor: pointer; outline: none; font-size: 13px; }
     #pageSizeSelect:focus { border-color: var(--accent-color); }
 
     /* ==========================================================================
-       ПАНЕЛИ (Фильтры и Чекбоксы) 
+       ПАНЕЛИ
        ========================================================================== */
-    .search-grid, #columnChooserPanel {
-        background: var(--bg-container); border: 1px solid var(--border-color); border-radius: var(--radius-main);
-        padding: 20px; box-shadow: var(--shadow-md); margin-bottom: 15px;
-    }
-    .search-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; }
-    .search-field label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 6px; display: block; }
-    .search-field input { width: 100%; padding: 10px; border: 1px solid var(--border-filebox); border-radius: 6px; font-size: 14px; background: var(--input-bg); color: var(--text-main); }
-    .search-field input:focus { border-color: var(--accent-color); outline: none; }
-
-    #columnChooserPanel { display: none; }
     #limitBox { padding: 12px 16px; background: #fee2e2; border: 1px solid #f87171; border-radius: 8px; color: #b91c1c; font-size: 14px; font-weight: 600; margin-bottom: 15px; }
     [data-theme="dark"] #limitBox, [data-theme="cozy-home"] #limitBox { background: #451a1a; border-color: #991b1b; color: #fca5a5; }
     [data-theme="contrast"] #limitBox { background: #000; border: 2px solid #FF0000; color: #FF0000; }
@@ -232,71 +193,27 @@
         overflow-x: auto; border: 1px solid var(--border-color); border-radius: var(--radius-main); 
         max-height: calc(100vh - 250px); min-height: 300px; background: var(--bg-container);
         box-shadow: var(--shadow-sm); display: flex; flex-direction: column;
+        scrollbar-width: thin; scrollbar-color: var(--border-color) var(--bg-container);
     }
     table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
-
     th { 
-        background-color: var(--bg-th) !important; 
-        padding: 10px 20px; 
-        font-weight: 600; 
-        color: var(--text-muted); 
-        border: 1px solid var(--border-color); 
-        border-bottom: 2px solid var(--border-color); 
-        position: sticky; 
-        top: 0; 
-        z-index: 5; 
-        font-size: 13px; 
-        text-transform: uppercase; 
-        letter-spacing: 0.5px; 
-        white-space: nowrap;
-        
-        text-align: center;
-        position: relative; /* Важно для позиционирования крестика */
-        padding-right: 30px; /* Оставляем место справа, чтобы текст не налезал на крестик */
+        background-color: var(--bg-th) !important; padding: 10px 20px; font-weight: 600; color: var(--text-muted); 
+        border: 1px solid var(--border-color); border-bottom: 2px solid var(--border-color); position: sticky; 
+        top: 0; z-index: 5; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;
+        text-align: center; padding-right: 30px;
     }
-
-    /* Стиль для крестика закрытия столбца */
     .col-close-btn {
-        position: absolute;
-        right: 8px; /* Отступ от правого края */
-        top: 50%; /* Сдвигаем на 50% вниз */
-        transform: translateY(-50%); /* И поднимаем ровно на половину его высоты (идеальное центрирование) */
-        
-        width: 18px;
-        height: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 16px;
-        line-height: 1;
-        color: var(--text-muted);
-        transition: all 0.15s ease;
-        font-weight: bold;
+        position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+        width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;
+        border-radius: 4px; cursor: pointer; font-size: 16px; line-height: 1; color: var(--text-muted);
+        transition: all 0.15s ease; font-weight: bold;
     }
-    
-    /* При наведении делаем крестик красным */
-    .col-close-btn:hover {
-        background: rgba(255, 0, 0, 0.1);
-        color: #ef4444;
-    }
-    
-    /* Для контрастной темы */
+    .col-close-btn:hover { background: rgba(255, 0, 0, 0.1); color: #ef4444; }
     [data-theme="contrast"] .col-close-btn { color: #FFFFFF; }
     [data-theme="contrast"] .col-close-btn:hover { background: #FF0000; color: #000000; }
 
     th:last-child { border-right: none; }
-    
-    td { 
-        padding: 12px 24px; 
-        padding-right: 55px; 
-        border: 1px solid var(--border-color); 
-        position: relative; 
-        line-height: 1.4; 
-        /* word-break: break-word; */
-    }
-    
+    td { padding: 12px 24px; padding-right: 55px; border: 1px solid var(--border-color); position: relative; line-height: 1.4; }
     td:last-child { border-right: none; }
     tr:last-child td { border-bottom: none; }
     tbody tr:hover td { background-color: var(--bg-hover-tr) !important; }
@@ -312,8 +229,7 @@
     .copy-btn { 
         position: absolute; right: 6px; top: 50%; transform: translateY(-50%); opacity: 0; 
         background: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; 
-        cursor: pointer; padding: 4px 6px; font-size: 12px; color: var(--text-muted); 
-        transition: all 0.15s ease; box-shadow: var(--shadow-sm);
+        cursor: pointer; padding: 4px 6px; font-size: 12px; color: var(--text-muted); transition: all 0.15s ease; box-shadow: var(--shadow-sm);
     }
     td:hover .copy-btn { opacity: 1; }
     .copy-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
@@ -347,254 +263,185 @@
     }
     .toast-notification.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+    ::-webkit-scrollbar { width: 14px; height: 14px; }
+    ::-webkit-scrollbar-track { background: var(--bg-container); border-radius: 8px; }
+    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 8px; border: 4px solid var(--bg-container); }
     ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-    /* ==========================================================================
-       ФИКС ЦВЕТА ВКЛАДОК ДЛЯ ВСЕХ ТЕМ
-       ========================================================================== */
-    /* Неактивные вкладки (приглушенный цвет) */
+    /* ФИКС ЦВЕТА ВКЛАДОК */
     [data-theme="cozy-home"] #tabsContainer button:not(.active-tab) { color: #84A4C4 !important; }
     [data-theme="ocean"] #tabsContainer button:not(.active-tab) { color: #04709E !important; }
     [data-theme="savanna"] #tabsContainer button:not(.active-tab) { color: #4B4230 !important; }
     [data-theme="contrast"] #tabsContainer button:not(.active-tab) { color: #CCCCCC !important; }
-
-    /* Активные вкладки (яркий, контрастный цвет) */
     [data-theme="cozy-home"] #tabsContainer button.active-tab { color: #FFFFFF !important; }
     [data-theme="ocean"] #tabsContainer button.active-tab { color: #07121A !important; }
     [data-theme="savanna"] #tabsContainer button.active-tab { color: #1A1810 !important; }
     [data-theme="contrast"] #tabsContainer button.active-tab { color: #FFFF00 !important; border-top: 2px solid #FFFF00 !important; }
 
-    /* Эффект при перетаскивании файла (Drag & Drop) */
-    #emptyState.drag-active {
-        border-color: var(--accent-color) !important;
-        background-color: var(--bg-filebox) !important;
-        transform: scale(1.02);
-    }
-    #emptyStateOpenBtn:hover {
-        filter: brightness(1.1);
-        transform: translateY(-1px);
-    }
-
-        /* Фикс цвета текста для пустого состояния во всех темах */
-    #emptyState h2 {
-        color: var(--text-main) !important; /* Используем основной цвет текста */
-    }
-    #emptyState p {
-        color: var(--text-muted) !important; /* Используем приглушенный цвет */
-    }
-    
-    /* В темных темах (Ночной город, Высокий контраст) возвращаем белый цвет */
-    [data-theme="cozy-home"] #emptyState h2,
-    [data-theme="contrast"] #emptyState h2 {
-        color: #FFFFFF !important;
-    }
-    [data-theme="cozy-home"] #emptyState p,
-    [data-theme="contrast"] #emptyState p {
-        color: #CCCCCC !important;
-    }
-
-        /* ==========================================================================
-       ПУСТОЕ СОСТОЯНИЕ (Empty State)
-       ========================================================================== */
+    /* ПУСТОЕ СОСТОЯНИЕ */
     #emptyState {
-        display: flex; 
-        flex-direction: column; 
-        align-items: center; 
-        justify-content: center; 
-        min-height: 400px; 
-        border: 2px dashed var(--border-color); 
-        border-radius: var(--radius-main); 
-        background: var(--bg-container); 
-        text-align: center; 
-        padding: 20px; 
-        margin-top: 15px; 
-        transition: all 0.2s ease;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px;
+        border: 2px dashed var(--border-color); border-radius: var(--radius-main); background: var(--bg-container);
+        text-align: center; padding: 20px; margin-top: 15px; transition: all 0.2s ease;
     }
-
-    /* Эффект при перетаскивании файла (Drag & Drop) */
-    #emptyState.drag-active {
-        border-color: var(--accent-color) !important;
-        background-color: var(--bg-filebox) !important;
-        transform: scale(1.02);
-    }
-
-    .empty-icon {
-        font-size: 56px; 
-        margin-bottom: 15px; 
-        opacity: 0.7;
-    }
-
-    /* ЗАГОЛОВОК: Базовый цвет (темный для светлых тем) */
-    #emptyState h2 {
-        margin: 0 0 10px 0; 
-        color: #0f172a; /* Темный цвет */
-        font-size: 22px;
-    }
-
-    /* ОПИСАНИЕ */
-    #emptyState p {
-        margin: 0 0 25px 0; 
-        color: var(--text-muted); 
-        font-size: 15px; 
-        max-width: 400px; 
-        line-height: 1.5;
-    }
-
-    /* КНОПКА: Как активная вкладка */
+    #emptyState.drag-active { border-color: var(--accent-color) !important; background-color: var(--bg-filebox) !important; transform: scale(1.02); }
+    .empty-icon { font-size: 56px; margin-bottom: 15px; opacity: 0.7; }
+    #emptyState h2 { margin: 0 0 10px 0; color: var(--text-main) !important; font-size: 22px; }
+    #emptyState p { margin: 0 0 25px 0; color: var(--text-muted); font-size: 15px; max-width: 400px; line-height: 1.5; }
     #emptyStateOpenBtn {
-        display: inline-flex; 
-        align-items: center; 
-        justify-content: center; 
-        padding: 0 24px; 
-        height: 46px; 
-        font-size: 15px; 
-        font-weight: 600; 
-        background: var(--bg-container); 
-        color: var(--text-main); 
-        border: 1px solid var(--border-color);
-        border-top: 3px solid var(--accent-color);
-        cursor: pointer; 
-        border-radius: 8px; 
-        transition: all 0.15s ease; 
-        box-shadow: var(--shadow-sm);
+        display: inline-flex; align-items: center; justify-content: center; padding: 0 24px; height: 46px;
+        font-size: 15px; font-weight: 600; background: var(--bg-container); color: var(--text-main);
+        border: 1px solid var(--border-color); border-top: 3px solid var(--accent-color);
+        cursor: pointer; border-radius: 8px; transition: all 0.15s ease; box-shadow: var(--shadow-sm);
     }
+    #emptyStateOpenBtn:hover { border-color: var(--accent-color); color: var(--accent-color); background: var(--bg-filebox); transform: translateY(-1px); }
+    [data-theme="cozy-home"] #emptyState h2, [data-theme="contrast"] #emptyState h2 { color: #FFFFFF !important; }
+    [data-theme="cozy-home"] #emptyState p, [data-theme="contrast"] #emptyState p { color: #CCCCCC !important; }
+    [data-theme="dark"] #emptyStateOpenBtn, [data-theme="cozy-home"] #emptyStateOpenBtn { color: #FFFFFF; }
+    [data-theme="ocean"] #emptyStateOpenBtn, [data-theme="savanna"] #emptyStateOpenBtn, [data-theme="contrast"] #emptyStateOpenBtn { color: #1A1810; }
+    [data-theme="contrast"] #emptyStateOpenBtn { background: var(--accent-color); color: #000000 !important; border: none; }
 
-    #emptyStateOpenBtn:hover {
-        border-color: var(--accent-color);
-        color: var(--accent-color);
-        background: var(--bg-filebox);
-        transform: translateY(-1px);
-    }
-
-    /* ==========================================================================
-       ФИКСЫ ДЛЯ ТЕМНЫХ ТЕМ (Возвращаем белый цвет)
-       ========================================================================== */
-    [data-theme="dark"] #emptyState h2,
-    [data-theme="cozy-home"] #emptyState h2,
-    [data-theme="contrast"] #emptyState h2 {
-        color: #FFFFFF !important;
-    }
-
-    /* Для тем, где акцент темный, текст кнопки делаем светлым */
-    [data-theme="dark"] #emptyStateOpenBtn,
-    [data-theme="cozy-home"] #emptyStateOpenBtn {
-        color: #FFFFFF;
-    }
-
-    /* Для тем, где акцент светлый, текст кнопки делаем темным */
-    [data-theme="ocean"] #emptyStateOpenBtn,
-    [data-theme="savanna"] #emptyStateOpenBtn,
-    [data-theme="contrast"] #emptyStateOpenBtn {
-        color: #1A1810;
-    }
-    
-    /* В контрастной теме кнопку делаем ярко-желтой */
-    [data-theme="contrast"] #emptyStateOpenBtn {
-        background: var(--accent-color);
-        color: #000000 !important;
-        border: none;
-    }
-
-        /* ==========================================================================
-       КНОПКА "ПРИМЕНИТЬ" (выглядит как кнопка "+")
-       ========================================================================== */
     .apply-btn {
-        background: var(--bg-filebox) !important; 
-        border: 1px solid var(--border-filebox) !important;
-        height: 34px;
-        padding: 0 16px !important;
-        font-size: 13px !important;
-        font-family: Arial, sans-serif !important;
-        font-weight: 600 !important;
-        border-radius: 6px; /* Чуть скругленные углы */
-        color: var(--text-main) !important; 
-        cursor: pointer; 
-        transition: all 0.15s ease; 
-        display: inline-flex; 
-        align-items: center;
-        justify-content: center; 
-        margin-left: 5px; /* Отступ от чекбокса */
+        background: var(--bg-filebox) !important; border: 1px solid var(--border-filebox) !important;
+        height: 34px; padding: 0 16px !important; font-size: 13px !important; font-family: Arial, sans-serif !important;
+        font-weight: 600 !important; border-radius: 6px; color: var(--text-main) !important; cursor: pointer; 
+        transition: all 0.15s ease; display: inline-flex; align-items: center; justify-content: center; margin-left: 5px;
     }
+
+    .tab-close-btn { color: inherit !important; transition: none !important; }
+    .tab-close-btn:hover { color: inherit !important; background: transparent !important; }
+
+    [data-theme="dark"] #emptySearchState h2, [data-theme="cozy-home"] #emptySearchState h2, [data-theme="contrast"] #emptySearchState h2 { color: #FFFFFF !important; }
+    [data-theme="contrast"] #emptySearchState { border-color: #555 !important; }
+
+    /* АНИМАЦИЯ ВСПЫШКИ */
+    @keyframes searchFlash { 0% { border-color: var(--border-filebox); box-shadow: none; } 50% { border-color: var(--accent-color); box-shadow: 0 0 0 6px rgba(59,130,246,0.3); } 100% { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); } }
+    [data-theme="dark"] @keyframes searchFlash { 0% { border-color: var(--border-filebox); box-shadow: none; } 50% { border-color: #60a5fa; box-shadow: 0 0 0 6px rgba(96,165,250,0.3); } 100% { border-color: #60a5fa; box-shadow: 0 0 0 3px rgba(96,165,250,0.15); } }
+    [data-theme="cozy-home"] @keyframes searchFlash { 0% { border-color: var(--border-filebox); box-shadow: none; } 50% { border-color: #C49C4C; box-shadow: 0 0 0 6px rgba(196,156,76,0.4); } 100% { border-color: #C49C4C; box-shadow: 0 0 0 3px rgba(196,156,76,0.2); } }
+    [data-theme="ocean"] @keyframes searchFlash { 0% { border-color: var(--border-filebox); box-shadow: none; } 50% { border-color: #04709E; box-shadow: 0 0 0 6px rgba(4,112,158,0.3); } 100% { border-color: #04709E; box-shadow: 0 0 0 3px rgba(4,112,158,0.15); } }
+    [data-theme="savanna"] @keyframes searchFlash { 0% { border-color: var(--border-filebox); box-shadow: none; } 50% { border-color: #3D3814; box-shadow: 0 0 0 6px rgba(61,56,20,0.3); } 100% { border-color: #3D3814; box-shadow: 0 0 0 3px rgba(61,56,20,0.15); } }
+    [data-theme="contrast"] @keyframes searchFlash { 0% { border-color: var(--border-filebox); box-shadow: none; } 50% { border-color: #FFFF00; box-shadow: 0 0 0 6px rgba(255,255,0,0.4); } 100% { border-color: #FFFF00; box-shadow: 0 0 0 3px rgba(255,255,0,0.2); } }
+    .flash-active { animation: searchFlash 0.4s ease-out forwards; }
+
+    @keyframes loadingPulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+    .loading-text { color: var(--accent-color) !important; animation: loadingPulse 1.2s ease-in-out infinite; font-weight: 700; }
 
         /* ==========================================================================
-       ИДЕАЛЬНЫЙ КОНТРАСТ ДЛЯ АКТИВНОЙ СТРАНИЦЫ ПАГИНАТОРА
+       ПАНЕЛИ: СКРЫТИЕ И ПОКАЗ
        ========================================================================== */
-    .compact-page-btn.active { 
-        /* По умолчанию (Светлая, Темная, Ночной город) используем цвет шапки */
-        background: var(--bg-th) !important; 
-        border-color: var(--border-color) !important; 
-        color: var(--text-title) !important; 
-        font-weight: 800 !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.15); 
-        transform: scale(1.05); 
-    }
-
-    /* 1. ИСПРАВЛЕНИЕ ДЛЯ ОКЕАНА */
-    /* Светло-голубой фон шапки и темно-синий текст */
-    [data-theme="ocean"] .compact-page-btn.active {
-        background: #90B9D3 !important; 
-        color: #04547E !important;      
-        border-color: #04547E !important;
-    }
-
-    /* 2. ИСПРАВЛЕНИЕ ДЛЯ САВАННЫ */
-    /* Песочный фон шапки и коричневый текст */
-    [data-theme="savanna"] .compact-page-btn.active {
-        background: #F4C28A !important; 
-        color: #A47A58 !important;      
-        border-color: #A47A58 !important;
-    }
-
-    /* 3. ИСПРАВЛЕНИЕ ДЛЯ ВЫСОКОГО КОНТРАСТА */
-    /* Ярко-желтая кнопка с черным текстом */
-    [data-theme="contrast"] .compact-page-btn.active {
-        background: #FFFF00 !important; 
-        color: #000000 !important; 
-        border: 2px solid #FFFF00 !important;
-    }
-
-     /* ==========================================================================
-       КРЕСТИК ЗАКРЫТИЯ ВКЛАДКИ
-       ========================================================================== */
-    .tab-close-btn {
-        /* Наследуем цвет текста от самой вкладки */
-        color: inherit !important; 
-        transition: none !important; /* Убираем плавность, чтобы цвет не менялся */
+    
+    /* Панель фильтров: скрытое состояние */
+    #searchContainer {
+        display: none;
+        padding: 20px;
+        background: var(--bg-container);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-main);
+        box-shadow: var(--shadow-md);
+        margin-bottom: 15px;
     }
     
-    /* Убираем красный цвет при наведении */
-    .tab-close-btn:hover {
-        color: inherit !important;
-        background: transparent !important;
+    /* Панель фильтров: открытое состояние (сетка) */
+    #searchContainer[style*="grid"] {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important;
+        gap: 15px !important;
+    }
+
+    /* Внутренние элементы фильтров */
+    .search-field {
+        display: flex;
+        flex-direction: column;
     }
     
-   
+    .search-field label { 
+        font-size: 12px; 
+        font-weight: 700; 
+        text-transform: uppercase; 
+        letter-spacing: 0.5px; 
+        color: var(--text-muted); 
+        margin-bottom: 6px; 
+        display: block; 
+        white-space: normal; 
+    }
+    
+    .search-field input { 
+        width: 100%; 
+        padding: 10px; 
+        border: 1px solid var(--border-filebox); 
+        border-radius: 6px; 
+        font-size: 14px; 
+        background: var(--input-bg); 
+        color: var(--text-main); 
+        box-sizing: border-box;
+    }
+    
+    .search-field input:focus { 
+        border-color: var(--accent-color); 
+        outline: none; 
+    }
+
+    /* Стили для самих полей ввода (возвращаем как было) */
+    .search-field {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .search-field label { 
+        font-size: 12px; 
+        font-weight: 700; 
+        text-transform: uppercase; 
+        letter-spacing: 0.5px; 
+        color: var(--text-muted); 
+        margin-bottom: 6px; 
+        display: block; 
+        white-space: normal; /* Чтобы длинные названия колонок переносились */
+    }
+    
+    .search-field input { 
+        width: 100%; 
+        padding: 10px; 
+        border: 1px solid var(--border-filebox); 
+        border-radius: 6px; 
+        font-size: 14px; 
+        background: var(--input-bg); 
+        color: var(--text-main); 
+        box-sizing: border-box;
+    }
+    
+    .search-field input:focus { 
+        border-color: var(--accent-color); 
+        outline: none; 
+    }
+
+    /* Панель чекбоксов (без анимации, через display) */
+    #columnChooserPanel {
+        display: none;
+        padding: 20px;
+        background: var(--bg-container);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-main);
+        box-shadow: var(--shadow-md);
+        margin-bottom: 15px;
+    }
 
 </style>
 
 <body>
 
-<!-- НОВАЯ ШАПКА: Логотип, Статистика, Тема -->
+<!-- ШАПКА -->
 <div id="futureFeaturePanel">
     <div id="authorBlock">
         <img src="https://avatars.githubusercontent.com/u/353467492" alt="Avatar" />
     </div>
-    
     <div id="headerStats" class="counter"></div>
-    
-    <button id="themeToggleBtn" class="header-btn" title="Смена темы оформления (ЛКМ - по кругу, ПКМ/Зажатие - меню)">☀️</button>
+    <button id="themeToggleBtn" class="header-btn" title="Смена темы">☀️</button>
 </div>
 
-<!-- Скрытый инпут -->
 <input type="file" id="csvFile" accept=".csv" style="display: none;" />
 
-<!-- ОСНОВНОЙ КОНТЕЙНЕР -->
 <div class="container">
     
-    <!-- ПАНЕЛЬ ИНСТРУМЕНТОВ: Шестеренка, Фильтры, Поиск, Сброс -->
     <div class="search-bar-wrapper">
         <button id="toggleColumnsBtn" class="action-btn" disabled title="Выбор столбцов и колонок">⚙️</button>
         <button id="toggleFiltersBtn" class="action-btn" disabled title="Показать/скрыть фильтры колонок">🔍</button>
@@ -602,13 +449,10 @@
         <button id="clearFiltersBtn" class="action-btn" disabled title="Очистить все фильтры и поиск">❌</button>
     </div>
 
-    <!-- СТРОКА ВКЛАДОК И ПАГИНАЦИИ -->
     <div id="tabsWrapper">
         <div id="tabsContainer"></div>
         <button id="addTabBtn" title="Открыть новый файл">+</button>
-        
         <div id="compactPagination"></div>
-
         <div id="pageSizeWrapper" style="display: none;">
             <select id="pageSizeSelect">
                 <option value="20" selected>20</option>
@@ -620,25 +464,27 @@
         </div>
     </div>
 
-    <!-- СКРЫТЫЕ ПАНЕЛИ -->
-    <div id="searchContainer" class="search-grid" style="display: none;"></div>
+    <!-- Панель фильтров -->
+    <div id="searchContainer" class="search-grid"></div>
     
-    <div id="columnChooserPanel" style="display: none; background: var(--bg-container); border: 1px solid var(--border-color); border-radius: var(--radius-main); padding: 20px; box-shadow: var(--shadow-md); margin-bottom: 15px;">
-        <div id="limitBox" style="display: none; padding: 12px 16px; background: #fee2e2; border: 1px solid #f87171; border-radius: 8px; color: #b91c1c; font-size: 14px; font-weight: 600; margin-bottom: 15px;">
-            Внимание: В файле много колонок. Можно выбрать те, которые необходимо вывести на экран.
-        </div>
-        <div id="checkboxesGrid" style="display: grid !important; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important; gap: 12px !important;"></div>
+    <!-- Панель чекбоксов -->
+    <div id="columnChooserPanel">
+        <div id="limitBox" style="display: none;">Внимание: В файле много колонок. Можно выбрать те, которые необходимо вывести на экран.</div>
+        <div id="checkboxesGrid"></div>
     </div>
 
-                <!-- ЗАГЛУШКА ДЛЯ ПУСТОГО СОСТОЯНИЯ -->
     <div id="emptyState">
       <div class="empty-icon">🗂️</div>
-      <!-- Уменьшаем размер до 18 пикселей (по умолчанию у h2 около 24px) -->
       <h2 style="font-size: 16px;">Перетащите CSV-файл прямо в это окно или нажмите кнопку ниже, чтобы начать работу.</h2>
       <button id="emptyStateOpenBtn">➕ Открыть файл</button>
     </div>
 
-    <!-- САМА ТАБЛИЦА -->
+    <div id="emptySearchState" style="display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; border: 2px dashed var(--border-color); border-radius: var(--radius-main); background: var(--bg-container); text-align: center; padding: 20px; margin-top: 15px; transition: all 0.2s ease;">
+        <div style="font-size: 56px; margin-bottom: 15px; opacity: 0.7;">🔍</div>
+        <h2 style="margin: 0 0 10px 0; color: var(--text-main); font-size: 16px;">Ничего не найдено. <br>По вашему запросу не нашлось ни одной строки. <br>Попробуйте изменить условия поиска или сбросить фильтры.<br></h2>
+        <button id="emptySearchResetBtn" style="display: inline-flex; align-items: center; justify-content: center; padding: 0 24px; height: 46px; font-size: 15px; font-weight: 600; background: var(--bg-container); color: var(--text-main); border: 1px solid var(--border-color); border-top: 3px solid var(--accent-color); cursor: pointer; border-radius: 8px; transition: all 0.15s ease; box-shadow: var(--shadow-sm);">❌ Сбросить поиск</button>
+    </div>
+
     <div class="table-wrapper" style="display: none;">
         <table id="dataTable">
             <thead id="tableHead"></thead>
@@ -647,7 +493,6 @@
     </div>
 </div>
 
-<!-- КОНТЕКСТНОЕ МЕНЮ -->
 <div id="themeContextMenu" class="context-menu" style="display: none;">
     <div class="context-menu-item" data-theme="light">☀️ Светлая</div>
     <div class="context-menu-item" data-theme="dark">🌙 Темная</div>
@@ -658,12 +503,10 @@
 </div>
 
 <script>
-// 1. Центральное хранилище вкладок и настройки активного экрана
 var tabs = []; 
 var activeTabId = null;
 var searchTimeout = null; 
 var currentSearchToken = 0; 
-
 var rawCSVLines = []; 
 var rawDelimiter = ';';
 
@@ -673,38 +516,26 @@ function getDataSizeMB(data) {
     return ((str.length * 2) / (1024 * 1024)).toFixed(2);
 }
 
-// 2. Инициализация IndexedDB
 var db = null;
 var request = indexedDB.open("GigaSearchDB", 1);
-
 request.onupgradeneeded = function(e) {
     var database = e.target.result;
     if (!database.objectStoreNames.contains("saved_tabs")) {
         database.createObjectStore("saved_tabs", { keyPath: "id" });
     }
 };
-
-request.onsuccess = function(e) {
-    db = e.target.result;
-    restoreTabsFromDB(); 
-};
-
-request.onerror = function(e) {
-    console.error("Ошибка IndexedDB:", e.target.error);
-};
+request.onsuccess = function(e) { db = e.target.result; restoreTabsFromDB(); };
+request.onerror = function(e) { console.error("Ошибка IndexedDB:", e.target.error); };
 
 function saveTabToDB(tab) {
     if (!db) return;
     var tx = db.transaction("saved_tabs", "readwrite");
-    var store = tx.objectStore("saved_tabs");
-    store.put(tab);
+    tx.objectStore("saved_tabs").put(tab);
 }
-
 function deleteTabFromDB(tabId) {
     if (!db) return;
     var tx = db.transaction("saved_tabs", "readwrite");
-    var store = tx.objectStore("saved_tabs");
-    store.delete(tabId);
+    tx.objectStore("saved_tabs").delete(tabId);
 }
 
 function restoreTabsFromDB() {
@@ -712,19 +543,15 @@ function restoreTabsFromDB() {
     var tx = db.transaction("saved_tabs", "readonly");
     var store = tx.objectStore("saved_tabs");
     var requestAll = store.getAll();
-    
     requestAll.onsuccess = function(e) {
         var savedTabs = e.target.result;
         if (savedTabs && savedTabs.length > 0) {
             var filtersWereReset = false;
             tabs = savedTabs.map(function(t) {
                 if (t.globalSearchQuery || (t.columnFilters && t.columnFilters.length > 0)) {
-                    t.globalSearchQuery = "";
-                    t.columnFilters = [];
-                    t.currentPage = 1;
+                    t.globalSearchQuery = ""; t.columnFilters = []; t.currentPage = 1;
                     if (t.globalRows) { t.currentFilteredRows = t.globalRows.concat(); } else { t.currentFilteredRows = []; }
-                    saveTabToDB(t);
-                    filtersWereReset = true;
+                    saveTabToDB(t); filtersWereReset = true;
                 }
                 return t;
             });
@@ -736,7 +563,6 @@ function restoreTabsFromDB() {
     };
 }
 
-// 3. ТЕМЫ
 var themeToggleBtn = document.getElementById('themeToggleBtn');
 var savedTheme = localStorage.getItem('saved_table_theme') || 'light';
 
@@ -757,11 +583,6 @@ function applyTheme(t) {
 }
 applyTheme(savedTheme);
 
-var savedLimit = localStorage.getItem('saved_column_limit') || '4';
-var limitInput = document.getElementById('columnLimitInput');
-if (limitInput) limitInput.value = savedLimit;
-
-// 4. ФАЙЛЫ
 var fileInput = document.getElementById('csvFile');
 if (fileInput) {
     fileInput.addEventListener('change', function(e) {
@@ -781,9 +602,12 @@ if (addTabBtn) {
 function handleNewFileSelection(file) {
     var name = file.name;
     if (name.endsWith('.xlsx') || name.endsWith('.xls')) {
-        alert("Формат Excel (.xlsx) временно недоступен без локального сервера.\nПожалуйста, сохраните таблицу в Excel как 'CSV (разделитель - запятая)'.");
+        alert("Формат Excel (.xlsx) временно недоступен.");
         return;
     }
+    var headerStats = document.getElementById('headerStats');
+    if (headerStats) headerStats.innerHTML = '<span class="loading-text">⏳ Чтение файла...</span>';
+
     var reader = new FileReader();
     reader.onload = function(evt) {
         var text = evt.target.result;
@@ -822,7 +646,8 @@ function processCSVData(text, fileName) {
     var allHeaders = parseCSVLine(firstLine, delimiter);
     var limit = parseInt(localStorage.getItem('saved_column_limit') || '4');
     
-    document.getElementById('columnChooserPanel').style.display = 'none';
+    var panel = document.getElementById('columnChooserPanel');
+    panel.style.display = 'none';
     var grid = document.getElementById('checkboxesGrid'); grid.innerHTML = '';
     
     var oldMaster = document.getElementById('masterCheckboxWrapper'); if (oldMaster) oldMaster.remove();
@@ -831,7 +656,6 @@ function processCSVData(text, fileName) {
     masterWrapper.id = 'masterCheckboxWrapper';
     masterWrapper.style.cssText = 'border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 15px; display: flex; align-items: center; flex-wrap: wrap; gap: 15px;';
     
-    // 1. Чекбокс "Выбрать все"
     var masterLabel = document.createElement('label'); 
     masterLabel.className = 'column-checkbox-label';
     masterLabel.style.cssText = 'display: flex; align-items: center; font-weight: 700; cursor: pointer; margin: 0;';
@@ -850,16 +674,12 @@ function processCSVData(text, fileName) {
     masterLabel.appendChild(document.createTextNode(' Выбрать все колонки файла'));
     masterWrapper.appendChild(masterLabel);
     
-    // 2. Кнопка "Применить" сразу после чекбокса
     var applyBtn = document.createElement('button');
     applyBtn.textContent = 'Применить';
-    applyBtn.className = 'apply-btn'; // <-- Даем новый класс
-    applyBtn.addEventListener('click', function() {
-        document.getElementById('toggleColumnsBtn').click();
-    });
+    applyBtn.className = 'apply-btn'; 
+    applyBtn.addEventListener('click', function() { document.getElementById('toggleColumnsBtn').click(); });
     masterWrapper.appendChild(applyBtn);
 
-    // 3. Лимит (прижат вправо через margin-left: auto)
     var isExceeded = allHeaders.length > limit;
     var inputBg = isExceeded ? '#fee2e2' : 'var(--bg-container)';
     var inputBorder = isExceeded ? '#f87171' : 'var(--border-color)';
@@ -985,9 +805,16 @@ function finishTabActivation(currentTab) {
     if (document.querySelector('.table-wrapper')) document.querySelector('.table-wrapper').style.display = 'block';
     
     var panel = document.getElementById('columnChooserPanel');
-    if (panel && panel.style.display === 'block') { panel.style.display = 'none'; }
+    if (panel) { panel.style.display = 'none'; }
     
     renderTabsUI(); generateSearchFields(); renderTableStructure(); renderTableData();
+
+    if (document.querySelector('.loading-text')) {
+        var currentTab = getActiveTab();
+        if (currentTab) {
+            document.getElementById('headerStats').innerHTML = " <strong>" + currentTab.currentFilteredRows.length + "</strong> | <strong>— мс</strong> | <span style='color:var(--accent-color); font-weight:700;'>RAM: " + getDataSizeMB(currentTab.globalRows) + " МБ</span>";
+        }
+    }
 }
 
 function closeTab(tabId, e) {
@@ -1039,7 +866,7 @@ function renderTabsUI() {
         btn.addEventListener('click', function() { activateTab(tab.id); });
         
         var cross = document.createElement('span'); cross.textContent = '×';
-        cross.className = 'tab-close-btn'; /* <-- Даем класс для стилизации */
+        cross.className = 'tab-close-btn';
         cross.style.cssText = 'position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-weight: bold; cursor: pointer; font-size: 14px;';
         cross.addEventListener('click', function(e) { closeTab(tab.id, e); });
         
@@ -1049,7 +876,7 @@ function renderTabsUI() {
 
 function generateSearchFields() {
     var currentTab = getActiveTab(); if (!currentTab) return;
-    var container = document.getElementById('searchContainer'); container.innerHTML = ''; container.style.display = 'none';
+    var container = document.getElementById('searchContainer'); container.innerHTML = '';
     
     currentTab.tableHeaders.forEach(function(h, idx) {
         var d = document.createElement('div'); d.className = 'search-field';
@@ -1378,7 +1205,12 @@ function setupPagination() {
 var toggleFiltersBtn = document.getElementById('toggleFiltersBtn');
 if (toggleFiltersBtn) {
     toggleFiltersBtn.addEventListener('click', function() {
-        var container = document.getElementById('searchContainer'); container.style.display = (container.style.display === 'none' || !container.style.display) ? 'grid' : 'none';
+        var container = document.getElementById('searchContainer');
+        if (container.style.display === 'none' || !container.style.display) {
+            container.style.display = 'grid';
+        } else {
+            container.style.display = 'none';
+        }
     });
 }
 
@@ -1398,7 +1230,6 @@ if (toggleColumnsBtn) {
                 masterWrapper.id = 'masterCheckboxWrapper';
                 masterWrapper.style.cssText = 'border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 15px; display: flex; align-items: center; flex-wrap: wrap; gap: 15px;';
                 
-                // 1. Чекбокс
                 var masterLabel = document.createElement('label'); 
                 masterLabel.className = 'column-checkbox-label';
                 masterLabel.style.cssText = 'display: flex; align-items: center; font-weight: 700; cursor: pointer; margin: 0;';
@@ -1418,16 +1249,12 @@ if (toggleColumnsBtn) {
                 masterLabel.appendChild(document.createTextNode(' Выбрать все колонки файла'));
                 masterWrapper.appendChild(masterLabel);
                 
-                // 2. Кнопка Применить
-                    var applyBtn = document.createElement('button');
-                     applyBtn.textContent = 'Применить';
-                     applyBtn.className = 'apply-btn'; // <-- Даем новый класс
-                     applyBtn.addEventListener('click', function() {
-                     document.getElementById('toggleColumnsBtn').click();
-                    });
+                var applyBtn = document.createElement('button');
+                applyBtn.textContent = 'Применить';
+                applyBtn.className = 'apply-btn';
+                applyBtn.addEventListener('click', function() { document.getElementById('toggleColumnsBtn').click(); });
                 masterWrapper.appendChild(applyBtn);
 
-                // 3. Лимит (вправо)
                 var currentLimit = localStorage.getItem('saved_column_limit') || '4';
                 var limitNum = parseInt(currentLimit);
                 var isExceeded = origHeaders.length > limitNum;
@@ -1462,6 +1289,9 @@ if (toggleColumnsBtn) {
             
         } else { 
             var startTime = performance.now();
+            var headerStats = document.getElementById('headerStats');
+            if (headerStats) headerStats.innerHTML = '<span class="loading-text">⏳ Обновление...</span>';
+
             var chosenIndices = [], chosenHeaders = [];
             document.querySelectorAll('#checkboxesGrid input[type="checkbox"]').forEach(function(chk) {
                 if (chk.checked) { 
@@ -1622,14 +1452,12 @@ if (themeToggleBtn && themeMenu) {
 var emptyState = document.getElementById('emptyState');
 var emptyStateOpenBtn = document.getElementById('emptyStateOpenBtn');
 
-// 1. Кнопка "Открыть" внутри заглушки
 if (emptyStateOpenBtn) {
     emptyStateOpenBtn.addEventListener('click', function() {
         document.getElementById('csvFile').click();
     });
 }
 
-// 2. Функция управления видимостью
 function toggleEmptyState() {
     if (!emptyState) return;
     if (tabs.length === 0) {
@@ -1641,7 +1469,6 @@ function toggleEmptyState() {
     }
 }
 
-// Оборачиваем функции, чтобы заглушка появлялась/исчезала при открытии/закрытии вкладок
 var originalFinishTabActivation = finishTabActivation;
 finishTabActivation = function(tab) {
     originalFinishTabActivation(tab);
@@ -1654,16 +1481,15 @@ closeTab = function(tabId, e) {
     toggleEmptyState();
 };
 
-// 3. Обработка Drag & Drop (перетаскивание файла в окно)
 window.addEventListener('dragover', function(e) {
-    e.preventDefault(); // Разрешаем сброс
+    e.preventDefault();
     if (emptyState && tabs.length === 0) {
         emptyState.classList.add('drag-active');
     }
 });
 
 window.addEventListener('dragleave', function(e) {
-    if (e.relatedTarget === null) { // Если мышь ушла за пределы браузера
+    if (e.relatedTarget === null) {
         if (emptyState) emptyState.classList.remove('drag-active');
     }
 });
@@ -1671,17 +1497,82 @@ window.addEventListener('dragleave', function(e) {
 window.addEventListener('drop', function(e) {
     e.preventDefault();
     if (emptyState) emptyState.classList.remove('drag-active');
-    
     var files = e.dataTransfer.files;
     if (files && files.length > 0) {
         handleNewFileSelection(files[0]);
     }
 });
 
-// Инициализация при загрузке страницы
 toggleEmptyState();
 
-</script>
+// ==========================================================================
+// ЗАГЛУШКА ДЛЯ ПУСТОГО РЕЗУЛЬТАТА ПОИСКА (Empty Search State)
+// ==========================================================================
+var emptySearchState = document.getElementById('emptySearchState');
+var emptySearchResetBtn = document.getElementById('emptySearchResetBtn');
 
+if (emptySearchResetBtn) {
+    emptySearchResetBtn.addEventListener('click', function() {
+        document.getElementById('clearFiltersBtn').click();
+    });
+}
+
+function toggleEmptySearchState() {
+    if (!emptySearchState) return;
+    var currentTab = getActiveTab();
+    if (currentTab && currentTab.currentFilteredRows.length === 0 && tabs.length > 0) {
+        emptySearchState.style.display = 'flex';
+        document.querySelector('.table-wrapper').style.display = 'none';
+    } else {
+        emptySearchState.style.display = 'none';
+        if (tabs.length > 0) {
+            document.querySelector('.table-wrapper').style.display = 'block';
+        }
+    }
+}
+
+var originalRenderTableData = renderTableData;
+renderTableData = function() {
+    originalRenderTableData();
+    toggleEmptySearchState();
+};
+
+// ==========================================================================
+// ГОРЯЧИЕ КЛАВИШИ (Ctrl+F)
+// ==========================================================================
+window.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.code === 'KeyF') {
+        e.preventDefault(); 
+        var searchInput = document.getElementById('globalSearchInput');
+        if (searchInput) {
+            searchInput.focus(); 
+            searchInput.select(); 
+            searchInput.classList.remove('flash-active');
+            void searchInput.offsetWidth;
+            searchInput.classList.add('flash-active');
+            setTimeout(function() { searchInput.classList.remove('flash-active'); }, 400);
+        }
+    }
+});
+
+// ==========================================================================
+// ОЧИСТКА ПОИСКА ПО КЛАВИШЕ ESC
+// ==========================================================================
+window.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' || e.key === 'Esc') {
+        var globalInput = document.getElementById('globalSearchInput');
+        var searchContainer = document.getElementById('searchContainer');
+        var hasSearch = (globalInput && globalInput.value.trim() !== '') || 
+                        (searchContainer && searchContainer.querySelector('input[value]:not([value=""])'));
+        if (hasSearch) {
+            document.getElementById('clearFiltersBtn').click();
+            if (globalInput && document.activeElement === globalInput) {
+                globalInput.focus();
+            }
+        }
+    }
+});
+
+</script>
 </body>
 </html>
