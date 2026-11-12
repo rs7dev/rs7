@@ -445,7 +445,7 @@
     <div class="search-bar-wrapper">
         <button id="toggleColumnsBtn" class="action-btn" disabled title="Выбор столбцов и колонок">⚙️</button>
         <button id="toggleFiltersBtn" class="action-btn" disabled title="Показать/скрыть фильтры колонок">🔍</button>
-        <input type="text" id="globalSearchInput" class="global-search" placeholder="Глобальный поиск (% - разделитель, %% - пустой блок)..." disabled>
+        <input type="text" id="globalSearchInput" class="global-search" placeholder="Глобальный поиск (%% в начале - пустой блок)..." disabled>
         <button id="clearFiltersBtn" class="action-btn" disabled title="Очистить все фильтры и поиск">❌</button>
     </div>
 
@@ -943,7 +943,10 @@ function runCombinedSearch() {
         requireEmptyCell = true;
         workingQuery = workingQuery.substring(2);
     }
-    var searchWords = workingQuery ? workingQuery.split('%').map(function(w) { return w.trim(); }).filter(function(w) { return w !== ""; }) : [];
+    // Разделяем по % или по пробелу
+    var searchWords = workingQuery
+        ? workingQuery.split(/[%\s]+/).map(function(w) { return w.trim(); }).filter(function(w) { return w !== ""; })
+        : [];
 
     var newFilteredRows = [];
     var totalRows = currentTab.globalRows.length;
@@ -1063,7 +1066,7 @@ function renderTableData() {
     var highlightRegexesByColumn = {};
     function buildRegexes(searchStr) {
         if (!searchStr) return null;
-        var words = searchStr.split('%').map(function(w) { return w.trim(); }).filter(function(w) { return w !== ""; });
+        var words = searchStr.split(/[%\s]+/).map(function(w) { return w.trim(); }).filter(function(w) { return w !== ""; });
         if (words.length === 0) return null;
         return words.map(function(word) {
             var safeStr = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
