@@ -2019,6 +2019,19 @@ function getStratifiedSampleIndices(totalRows) {
 function recalculateColumnWidths(tab) {
     if (!tab || !Array.isArray(tab.tableHeaders) || tab.tableHeaders.length === 0) return [];
 
+    // --- НАЧАЛО КЭШИРОВАНИЯ ---
+    // Создаем "слепок" (сигнатуру) текущего состояния таблицы.
+    // Если заголовки, их порядок, или ширина ручных столбцов не менялись — пересчет не нужен.
+    var cacheKey = tab.tableHeaders.join('|') + 
+                   '::' + (tab.pivotColumns || []).join(',') + 
+                   '::' + JSON.stringify(tab.pinnedColWidths || {}) + 
+                   '::' + (tab.globalRows ? tab.globalRows.length : 0);
+
+    if (tab._lastWidthCacheKey === cacheKey && Array.isArray(tab.colWidths)) {
+        return tab.colWidths; // Возвращаем старые ширины мгновенно (0 мс)
+    }
+    // --- КОНЕЦ КЭШИРОВАНИЯ ---
+
     var headers = tab.tableHeaders;
     var rows = tab.globalRows || [];
     var sampleIndices = getStratifiedSampleIndices(rows.length);
@@ -2155,21 +2168,39 @@ function recalculateColumnWidths(tab) {
                 }
             }
         } else if (richIdealSum < richAvailableW) {
-            // Избыток места на широком экране: отдаём ВЕСЬ остаток ширины в пользу длинных текстовых столбцов (снимая потолок 480px!)
+            // Избыток места: распределяем бонус пропорционально ширинам ВСЕХ нефиксированных столбцов
             var bonusSpace = richAvailableW - richIdealSum;
             var distributed = 0;
-            for (var b = 0; b < richIndices.length; b++) {
-                var bIdx = richIndices[b];
-                var share = (b === richIndices.length - 1)
-                    ? (bonusSpace - distributed)
-                    : Math.floor(bonusSpace * (textWeights[bIdx] / totalWeight));
-                idealWidths[bIdx] += share;
-                distributed += share;
+            
+            // Считаем общую сумму текущих ширин богатых столбцов для пропорции
+            var sumRichWidths = 0;
+            for (var rw = 0; rw < richIndices.length; rw++) {
+                sumRichWidths += idealWidths[richIndices[rw]];
+            }
+            
+            if (sumRichWidths > 0) {
+                for (var b = 0; b < richIndices.length; b++) {
+                    var bIdx = richIndices[b];
+                    // Пропорционально их текущей ширине (а не весу textWeights, который может быть 0)
+                    var ratio = idealWidths[bIdx] / sumRichWidths;
+                    var share = (b === richIndices.length - 1)
+                        ? (bonusSpace - distributed)
+                        : Math.floor(bonusSpace * ratio);
+                    idealWidths[bIdx] += share;
+                    distributed += share;
+                }
+            } else {
+                // Если все ширины нулевые (крайний случай) — делим поровну
+                var eqShare = Math.floor(bonusSpace / richIndices.length);
+                for (var eq = 0; eq < richIndices.length; eq++) {
+                    idealWidths[richIndices[eq]] += eqShare;
+                }
             }
         }
     }
 
     tab.colWidths = idealWidths;
+    tab._lastWidthCacheKey = cacheKey; // <-- Запоминаем слепок для следующего раза
     return idealWidths;
 }
 
@@ -2214,7 +2245,7 @@ function applyColumnWidthsToTable(tab) {
 // ==========================================================================
 // ОСНОВНОЙ РЕНДЕР ТАБЛИЦЫ
 // ==========================================================================
-function renderTableStructure() {
+function renderTableStructure(skipWidthRecalc) {
 
     var currentTab = getActiveTab();
     var thead = document.querySelector('#dataTable thead');
@@ -2549,8 +2580,10 @@ function renderTableStructure() {
     });
     thead.appendChild(tr);
 
-    recalculateColumnWidths(currentTab);
-    applyColumnWidthsToTable(currentTab);
+    if (!skipWidthRecalc) {        
+        recalculateColumnWidths(currentTab);        
+        applyColumnWidthsToTable(currentTab);        
+    }
     var tableEl = document.getElementById('dataTable');
     if (tableEl && thead) tableEl.style.setProperty('--thead-h', thead.offsetHeight + 'px');
 }
@@ -2586,7 +2619,7 @@ function renderTableData() {
     }
 
     // Всегда обновляем шапку и добавляем левую колонку чекбоксов (36px в обычном режиме, шире в своде)
-    renderTableStructure();
+    renderTableStructure(true); // <-- передаем true, чтобы не пересчитывать ширины при листании/поиске
     var chkColWidthPx = (activePivots.length > 0 ? (52 + (activePivots.length - 1) * 18) : 36) + 'px';
     if (tableEl) tableEl.style.setProperty('--pivot-chk-col-w', chkColWidthPx);
 
@@ -3173,72 +3206,152 @@ function renderPivotTable(rows, headers, activePivots) {
 
         if (Array.isArray(node.children[0])) {
             var totalRows = node.children.length;
-            var initialLimit = Math.min(LEAF_BATCH_SIZE, totalRows);
+            var PER_PAGE = 10; // Лимит строк на один лепесток
+            var totalPages = Math.ceil(totalRows / PER_PAGE);
             
-            for (var rIdx = 0; rIdx < initialLimit; rIdx++) {
+            // Читаем текущую страницу лепестка из памяти (по умолчанию первая)
+            var currentPage = node._page || 1;
+            var startIdx = (currentPage - 1) * PER_PAGE;
+            var endIdx = Math.min(startIdx + PER_PAGE, totalRows);
+
+            // 1. Рисуем строки текущей страницы
+            for (var rIdx = startIdx; rIdx < endIdx; rIdx++) {
                 var rowEl = createLeafRowElement(node.children[rIdx], nodePath, rIdx);
                 if (insertBeforeEl) container.insertBefore(rowEl, insertBeforeEl);
                 else container.appendChild(rowEl);
             }
 
-            if (totalRows > initialLimit) {
-                var renderedCount = initialLimit;
-                var moreTr = document.createElement('tr');
-                moreTr.setAttribute('data-path', nodePath + '/more_btn');
-                moreTr.style.backgroundColor = 'var(--pivot-bg)';
+            // 2. Рисуем строку с пагинатором (если страниц больше одной)
+            if (totalPages > 1) {
+                var pgTr = document.createElement('tr');
+                pgTr.setAttribute('data-path', nodePath + '/paginator');
+                pgTr.style.backgroundColor = 'var(--pivot-bg)';
 
                 var guideTd = document.createElement('td');
-                guideTd.className = 'tree-branch-guide';
-                moreTr.appendChild(guideTd);
+                guideTd.className = 'tree-branch-guide chk-col-cell';
+                pgTr.appendChild(guideTd);
 
                 var btnTd = document.createElement('td');
                 btnTd.colSpan = totalCols - 1;
-                btnTd.style.padding = '6px 12px';
+                btnTd.style.padding = '6px 0';
 
-                var nextBtn = document.createElement('button');
-                nextBtn.className = 'action-btn';
-                nextBtn.style.cssText = 'font-size: 11px; padding: 3px 10px; margin-right: 8px;';
-                
-                var allBtn = document.createElement('button');
-                allBtn.className = 'action-btn';
-                allBtn.style.cssText = 'font-size: 11px; padding: 3px 10px;';
+                var wrapperEl = document.querySelector('.table-wrapper');
+                var visibleW = (wrapperEl && wrapperEl.clientWidth > 100) ? wrapperEl.clientWidth : (window.innerWidth - 280);
 
-                function updateMoreButtonsText() {
-                    var rem = totalRows - renderedCount;
-                    nextBtn.textContent = 'Показать ещё ' + Math.min(LEAF_BATCH_SIZE, rem) + ' (осталось ' + rem + ')';
-                    allBtn.textContent = 'Показать все (' + totalRows + ')';
+                var btnWrap = document.createElement('div');
+                btnWrap.className = 'pivot-leaf-paginator-wrap';
+                btnWrap.style.cssText = 'position: sticky; left: var(--pivot-chk-col-w, 52px); width: calc(' + visibleW + 'px - var(--pivot-chk-col-w, 52px)); display: flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: nowrap; white-space: nowrap; box-sizing: border-box;';
+
+
+
+                // Кнопка "Назад"
+                var prevBtn = document.createElement('button');
+                prevBtn.className = 'compact-page-btn';
+                prevBtn.style.cssText = 'white-space: nowrap; flex-shrink: 0;';
+                prevBtn.innerHTML = '‹';
+                prevBtn.disabled = (currentPage === 1);
+                prevBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    node._page = currentPage - 1;
+                    rebuildLeafPage();
+                });
+                btnWrap.appendChild(prevBtn);
+
+                // Кнопки страниц (1, 2, ..., 12)
+                var pagesToShow = [];
+                if (totalPages <= 5) {
+                    for (var p = 1; p <= totalPages; p++) pagesToShow.push(p);
+                } else {
+                    pagesToShow.push(1);
+                    if (currentPage > 3) pagesToShow.push('...');
+                    var startP = Math.max(2, currentPage - 1);
+                    var endP = Math.min(totalPages - 1, currentPage + 1);
+                    for (var p = startP; p <= endP; p++) pagesToShow.push(p);
+                    if (currentPage < totalPages - 2) pagesToShow.push('...');
+                    pagesToShow.push(totalPages);
                 }
-                updateMoreButtonsText();
 
+                pagesToShow.forEach(function(p) {
+                    if (p === '...') {
+                        var dots = document.createElement('span');
+                        dots.textContent = '...';
+                        dots.style.cssText = 'opacity: 0.5; padding: 0 4px; white-space: nowrap; flex-shrink: 0;';
+                        btnWrap.appendChild(dots);
+                    } else {
+                        var pgBtn = document.createElement('button');
+                        pgBtn.className = 'compact-page-btn';
+                        pgBtn.style.cssText = 'white-space: nowrap; flex-shrink: 0; min-width: 26px; padding: 2px 6px;';
+                        pgBtn.textContent = p;
+                        if (p === currentPage) {
+                            pgBtn.style.backgroundColor = 'var(--btn-primary-bg)';
+                            pgBtn.style.color = 'var(--btn-primary-text)';
+                            pgBtn.style.fontWeight = 'bold';
+                        }
+                        pgBtn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            node._page = p;
+                            rebuildLeafPage();
+                        });
+                        btnWrap.appendChild(pgBtn);
+                    }
+                });
+
+                // Кнопка "Вперед"
+                var nextBtn = document.createElement('button');
+                nextBtn.className = 'compact-page-btn';
+                nextBtn.style.cssText = 'white-space: nowrap; flex-shrink: 0;';
+                nextBtn.innerHTML = '›';
+                nextBtn.disabled = (currentPage === totalPages);
                 nextBtn.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    var nextLimit = Math.min(renderedCount + LEAF_BATCH_SIZE, totalRows);
-                    var batchFrag = document.createDocumentFragment();
-                    for (var i = renderedCount; i < nextLimit; i++) {
-                        batchFrag.appendChild(createLeafRowElement(node.children[i], nodePath, i));
-                    }
-                    moreTr.parentNode.insertBefore(batchFrag, moreTr); // Вставляем ПЕРЕД кнопкой
-                    renderedCount = nextLimit;
-                    if (renderedCount >= totalRows) moreTr.remove();
-                    else updateMoreButtonsText();
+                    node._page = currentPage + 1;
+                    rebuildLeafPage();
                 });
+                btnWrap.appendChild(nextBtn);
 
-                allBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    var allFrag = document.createDocumentFragment();
-                    for (var i = renderedCount; i < totalRows; i++) {
-                        allFrag.appendChild(createLeafRowElement(node.children[i], nodePath, i));
+                btnTd.appendChild(btnWrap);
+                pgTr.appendChild(btnTd);
+                if (insertBeforeEl) container.insertBefore(pgTr, insertBeforeEl);
+                else container.appendChild(pgTr);
+
+                // Функция для перерисовки ТОЛЬКО этого лепестка при переключении страницы без прыжков скролла
+                function rebuildLeafPage() {
+                    var wrapper = document.querySelector('.table-wrapper');
+                    var oldTop = pgTr.getBoundingClientRect().top;
+                    var escapedPath = nodePath.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+                    var parentGroupTr = tbody.querySelector('tr[data-group-node="1"][data-path="' + escapedPath + '"]');
+                    var anchorEl = pgTr.nextSibling;
+
+                    // Собираем старые элементы, но удаляем их ПОСЛЕ вставки новых, чтобы таблица не сжималась
+                    var oldElements = [pgTr];
+                    var prevRow = pgTr.previousElementSibling;
+                    while (prevRow && (prevRow.getAttribute('data-path') || '').indexOf(nodePath + '/row_') === 0) {
+                        oldElements.push(prevRow);
+                        prevRow = prevRow.previousElementSibling;
                     }
-                    moreTr.parentNode.insertBefore(allFrag, moreTr);
-                    moreTr.remove();
-                });
 
-                btnTd.appendChild(nextBtn);
-                btnTd.appendChild(allBtn);
-                moreTr.appendChild(btnTd);
-                
-                if (insertBeforeEl) container.insertBefore(moreTr, insertBeforeEl);
-                else container.appendChild(moreTr);
+                    var newFrag = document.createDocumentFragment();
+                    appendNodeChildren(node, nodePath, newFrag, null);
+                    if (parentGroupTr) {
+                        tbody.insertBefore(newFrag, parentGroupTr.nextSibling);
+                    } else {
+                        tbody.insertBefore(newFrag, anchorEl);
+                    }
+
+                    for (var i = 0; i < oldElements.length; i++) {
+                        oldElements[i].remove();
+                    }
+
+                    updateAllSelectionVisuals();
+                    updatePivotStickyCSS();
+
+                    // Возвращаем пагинатор на ту же вертикальную координату экрана под курсором
+                    var newPgTr = tbody.querySelector('tr[data-path="' + escapedPath + '/paginator"]');
+                    if (wrapper && newPgTr) {
+                        var newTop = newPgTr.getBoundingClientRect().top;
+                        wrapper.scrollTop += (newTop - oldTop);
+                    }
+                }
             }
         } else {
             for (var c = 0; c < node.children.length; c++) {
@@ -3375,17 +3488,19 @@ function renderPivotTable(rows, headers, activePivots) {
 
             var batchToken = window._pivotRenderToken;
 
-            if (expandedSet.size > 0) {
+                        if (expandedSet.size > 0) {
                 setTimeout(function() {
                     if (batchToken !== window._pivotRenderToken) return;
 
                     var tbodyEl = document.getElementById('tableBody');
                     if (!tbodyEl) return;
+                    
                     var groupTrs = Array.from(tbodyEl.querySelectorAll('tr[data-group-node="1"][data-expanded="true"]'));
 
                     var pageSize = currentTab.pageSize || 50;
                     var MAX_INITIAL = Math.min(Math.max(50, Math.floor(pageSize / 2)), 200);
                     var LEAF_BATCH = Math.min(pageSize, 100);
+                    var GROUPS_PER_FRAME = 5; // <-- НОВОЕ: 5 групп за 1 кадр
 
                     function findNode(nodes, targetPath, parentPath) {
                         for (var i = 0; i < nodes.length; i++) {
@@ -3401,84 +3516,92 @@ function renderPivotTable(rows, headers, activePivots) {
                     }
 
                     var groupIndex = 0;
+
                     function renderGroupBatch() {
                         if (batchToken !== window._pivotRenderToken) return;
                         if (groupIndex >= groupTrs.length) { updatePivotStickyCSS(); return; }
 
-                        var tr = groupTrs[groupIndex];
-                        if (!tr.parentNode) { groupIndex++; requestAnimationFrame(renderGroupBatch); return; }
+                        var tableEl = document.getElementById('dataTable');
+                        if (tableEl) tableEl.style.tableLayout = 'fixed'; // <-- ЖЕСТКО фиксируем ширину (браузер не будет пересчитывать её каждую вставку)
 
-                        var path = tr.getAttribute('data-path');
-                        var node = findNode(tree, path, 'root');
+                        var masterFrag = document.createDocumentFragment();
+                        var groupsProcessed = 0;
 
-                        // Проверяем, что это конечная листовая группа со строками данных
-                        if (node && node.isLeafGroup && Array.isArray(node.children) && node.children.length > 0) {
-                            var insertTarget = tr.nextElementSibling;
-
-                            // ЖЕЛЕЗНАЯ ЗАЩИТА ОТ ДУБЛЕЙ: если следующая строка уже является строкой этой группы — пропускаем!
-                            if (insertTarget && insertTarget.getAttribute('data-path') && insertTarget.getAttribute('data-path').indexOf(path + '/') === 0) {
+                        while (groupIndex < groupTrs.length && groupsProcessed < GROUPS_PER_FRAME) {
+                            var tr = groupTrs[groupIndex];
+                            
+                            if (!tr.parentNode) {
                                 groupIndex++;
-                                requestAnimationFrame(renderGroupBatch);
-                                return;
+                                continue;
                             }
 
-                            var limit = Math.min(LEAF_BATCH, node.children.length, MAX_INITIAL);
-                            var lazyFrag = document.createDocumentFragment();
-                            for (var k = 0; k < limit; k++) {
-                                lazyFrag.appendChild(createLeafRowElement(node.children[k], path, k));
-                            }
-                            if (insertTarget) tbodyEl.insertBefore(lazyFrag, insertTarget);
-                            else tbodyEl.appendChild(lazyFrag);
+                            var path = tr.getAttribute('data-path');
+                            var node = findNode(tree, path, 'root');
 
-                            if (node.children.length > limit) {
-                                (function(nodeChildren, nodePath, startCount, targetBefore) {
-                                    var renderedCount = startCount;
+                            if (node && node.isLeafGroup && Array.isArray(node.children) && node.children.length > 0) {
+                                var limit = Math.min(LEAF_BATCH, node.children.length, MAX_INITIAL);
+                                
+                                for (var k = 0; k < limit; k++) {
+                                    masterFrag.appendChild(createLeafRowElement(node.children[k], path, k));
+                                }
+
+                                if (node.children.length > limit) {
                                     var moreTr = document.createElement('tr');
-                                    moreTr.setAttribute('data-path', nodePath + '/more_btn');
+                                    moreTr.setAttribute('data-path', path + '/more_btn');
                                     moreTr.style.backgroundColor = 'var(--pivot-bg)';
+                                    
+                                    var guideTd = document.createElement('td'); guideTd.className = 'tree-branch-guide'; moreTr.appendChild(guideTd);
+                                    var btnTd = document.createElement('td'); btnTd.colSpan = totalCols - 1; btnTd.style.padding = '6px 12px';
+                                    
+                                    (function(nodeChildren, nodePath, startCount) {
+                                        var renderedCount = startCount;
+                                        var moreBtn = document.createElement('button');
+                                        moreBtn.className = 'action-btn';
+                                        moreBtn.style.cssText = 'font-size: 11px; padding: 3px 10px;';
+                                        var rem = nodeChildren.length - renderedCount;
+                                        moreBtn.textContent = 'Показать ещё ' + Math.min(LEAF_BATCH, rem) + ' (осталось ' + rem + ')';
 
-                                    var guideTd = document.createElement('td');
-                                    guideTd.className = 'tree-branch-guide';
-                                    moreTr.appendChild(guideTd);
+                                        moreBtn.addEventListener('click', function(e) {
+                                            e.stopPropagation();
+                                            var nextLimit = Math.min(renderedCount + LEAF_BATCH, nodeChildren.length);
+                                            var batchFrag = document.createDocumentFragment();
+                                            for (var i = renderedCount; i < nextLimit; i++) {
+                                                batchFrag.appendChild(createLeafRowElement(nodeChildren[i], nodePath, i));
+                                            }
+                                            moreTr.parentNode.insertBefore(batchFrag, moreTr);
+                                            renderedCount = nextLimit;
+                                            if (renderedCount >= nodeChildren.length) {
+                                                moreTr.remove();
+                                            } else {
+                                                var remLeft = nodeChildren.length - renderedCount;
+                                                moreBtn.textContent = 'Показать ещё ' + Math.min(LEAF_BATCH, remLeft) + ' (осталось ' + remLeft + ')';
+                                            }
+                                            updatePivotStickyCSS();
+                                        });
+                                        btnTd.appendChild(moreBtn);
+                                    })(node.children, path, limit);
 
-                                    var btnTd = document.createElement('td');
-                                    btnTd.colSpan = totalCols - 1;
-                                    btnTd.style.padding = '6px 12px';
-
-                                    var moreBtn = document.createElement('button');
-                                    moreBtn.className = 'action-btn';
-                                    moreBtn.style.cssText = 'font-size: 11px; padding: 3px 10px;';
-                                    var rem = nodeChildren.length - renderedCount;
-                                    moreBtn.textContent = 'Показать ещё ' + Math.min(LEAF_BATCH, rem) + ' (осталось ' + rem + ')';
-
-                                    moreBtn.addEventListener('click', function(e) {
-                                        e.stopPropagation();
-                                        var nextLimit = Math.min(renderedCount + LEAF_BATCH, nodeChildren.length);
-                                        var batchFrag = document.createDocumentFragment();
-                                        for (var i = renderedCount; i < nextLimit; i++) {
-                                            batchFrag.appendChild(createLeafRowElement(nodeChildren[i], nodePath, i));
-                                        }
-                                        moreTr.parentNode.insertBefore(batchFrag, moreTr);
-                                        renderedCount = nextLimit;
-                                        if (renderedCount >= nodeChildren.length) {
-                                            moreTr.remove();
-                                        } else {
-                                            var remLeft = nodeChildren.length - renderedCount;
-                                            moreBtn.textContent = 'Показать ещё ' + Math.min(LEAF_BATCH, remLeft) + ' (осталось ' + remLeft + ')';
-                                        }
-                                        updatePivotStickyCSS();
-                                    });
-
-                                    btnTd.appendChild(moreBtn);
                                     moreTr.appendChild(btnTd);
-                                    if (targetBefore) tbodyEl.insertBefore(moreTr, targetBefore);
-                                    else tbodyEl.appendChild(moreTr);
-                                })(node.children, path, limit, insertTarget);
+                                    masterFrag.appendChild(moreTr);
+                                }
                             }
+                            groupIndex++;
+                            groupsProcessed++;
                         }
-                        groupIndex++;
-                        requestAnimationFrame(renderGroupBatch);
-                    }
+
+                        var firstInsertedTr = groupTrs[groupIndex - groupsProcessed];
+                        var insertBefore = firstInsertedTr ? firstInsertedTr.nextSibling : null;
+                        
+                            if (insertBefore) {
+                            tbodyEl.insertBefore(masterFrag, insertBefore);
+                            } else {
+                            tbodyEl.appendChild(masterFrag);
+                            }
+
+                            if (tableEl) tableEl.style.tableLayout = ''; // <-- ВОЗВРАЩАЕМ авто-режим, чтобы таблица снова могла подстраиваться
+
+                            requestAnimationFrame(renderGroupBatch);
+                        }
                     renderGroupBatch();
                 }, 50);
             }
