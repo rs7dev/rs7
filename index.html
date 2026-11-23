@@ -288,7 +288,12 @@
     .search-field { display: flex; flex-direction: column; gap: 3px; font-size: 11px; }
     #emptyState { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; border: 1px dashed var(--input-border); border-radius: 6px; background: var(--panel-bg); padding: 20px; text-align: center; }
     .empty-icon { font-size: 36px; opacity: 0.7; }
-    .table-wrapper { flex: 0 1 auto; overflow: auto; border: 1px solid var(--border-color); border-radius: 6px; }
+    [data-theme="dark"], [data-theme="contrast"] { color-scheme: dark; }
+    .table-wrapper { flex: 0 1 auto; overflow: auto; border: 1px solid var(--border-color); border-radius: 6px; scrollbar-gutter: stable; scrollbar-width: thin; scrollbar-color: var(--input-border) transparent; }
+    .table-wrapper::-webkit-scrollbar { width: 8px; height: 8px; }
+    .table-wrapper::-webkit-scrollbar-track { background: transparent; }
+    .table-wrapper::-webkit-scrollbar-thumb { background: var(--input-border); border-radius: 4px; }
+    .table-wrapper::-webkit-scrollbar-thumb:hover { background: var(--text-muted, var(--input-focus)); }
     
     table { width: max-content; border-collapse: collapse; font-size: 12px; table-layout: fixed; }
     thead { position: sticky; top: 0; z-index: 5; background: var(--table-header-bg); color: var(--table-header-text); }
@@ -367,7 +372,8 @@
     }
 
     td {
-      padding: 5px 8px;
+      height: 32px;
+      padding: 6px 8px;
       border-bottom: 1px solid var(--table-border);
       border-right: 1px solid var(--table-border);
       white-space: normal;
@@ -376,15 +382,18 @@
       vertical-align: middle;
       position: relative;
     }
+
     td .cell-clamp-2 {
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-height: 2.5em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 2.8em;
+    padding: 2px 0;
     }
+
     /* Липкие заголовки групп в своде всегда остаются однострочными */
     tr[data-group-node="1"] td {
       white-space: nowrap !important;
@@ -443,9 +452,9 @@
     #tableHead th { position: sticky; top: 0; z-index: 40; background-color: var(--table-header-bg, var(--bg-color)); }
     tr[data-group-node="1"][data-expanded="true"] td { position: sticky; z-index: 25; background-color: var(--table-header-bg, var(--bg-color)) !important; border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.14); }
 
-    #dataTable.pivot-mode th:first-child, #dataTable.pivot-mode td:first-child { position: sticky; left: 0; z-index: 35 !important; width: var(--pivot-chk-col-w, 52px) !important; min-width: var(--pivot-chk-col-w, 52px) !important; max-width: var(--pivot-chk-col-w, 52px) !important; padding-left: 6px !important; padding-right: 4px !important; background-color: var(--table-header-bg, var(--bg-color)) !important; border-right: 1px solid var(--border-color); }
-    #dataTable.pivot-mode th:first-child { z-index: 50 !important; }
-    #dataTable.pivot-mode tr:not([data-group-node="1"]) td:first-child { background-color: var(--bg-color) !important; z-index: 15 !important; }
+    #dataTable th.chk-col-cell, #dataTable td.chk-col-cell { position: sticky; left: 0; z-index: 35 !important; width: var(--pivot-chk-col-w, 36px) !important; min-width: var(--pivot-chk-col-w, 36px) !important; max-width: var(--pivot-chk-col-w, 36px) !important; padding-left: 6px !important; padding-right: 4px !important; text-align: center; background-color: var(--table-header-bg, var(--bg-color)) !important; border-right: 1px solid var(--border-color); }
+    #dataTable.pivot-mode tr[data-group-node="1"] td:first-child { position: sticky; left: 0; z-index: 35 !important; width: var(--pivot-chk-col-w, 52px) !important; min-width: var(--pivot-chk-col-w, 52px) !important; max-width: var(--pivot-chk-col-w, 52px) !important; padding-left: 6px !important; padding-right: 4px !important; background-color: var(--table-header-bg, var(--bg-color)) !important; border-right: 1px solid var(--border-color); }
+    #dataTable th.chk-col-cell { z-index: 50 !important; }
     #dataTable.pivot-mode tr[data-group-node="1"] td:nth-child(2) { position: sticky; left: var(--pivot-chk-col-w, 52px); z-index: 25; background-color: var(--table-header-bg, var(--bg-color)) !important; }
 
     .pivot-sticky-label { position: static; display: inline-block; white-space: nowrap; }
@@ -1398,6 +1407,8 @@ function processCSVData(text, fileName) {
     var masterChk = document.createElement('input');
     masterChk.type = 'checkbox';
     masterChk.id = 'masterColumnsSelector';
+    masterChk.className = 'pivot-chk';
+    masterChk.style.margin = '0';
     masterChk.checked = (allHeaders.length <= limit);
 
     masterChk.addEventListener('change', function() {
@@ -1434,6 +1445,8 @@ function processCSVData(text, fileName) {
         label.className = 'column-checkbox-label';
         var chk = document.createElement('input'); 
         chk.type = 'checkbox'; 
+        chk.className = 'pivot-chk';
+        chk.style.margin = '0';
         chk.setAttribute('data-raw-index', idx);
         var cleanName = headerName || ("Колонка " + (idx + 1));
         chk.setAttribute('data-header-name', cleanName);
@@ -1640,6 +1653,9 @@ function closeTab(tabId, e) {
         document.getElementById('globalSearchInput').value = ''; 
         document.getElementById('pageSizeWrapper').style.display = 'none';
         document.querySelector('.table-wrapper').style.display = 'none';
+        var infoBtnEl = document.getElementById('infoBtn');
+        if (infoBtnEl) infoBtnEl.disabled = true;
+        updatePivotZoneUI();
     } else if (activeTabId === tabId) {
         var nextActiveIndex = index > 0 ? index - 1 : 0; 
         activateTab(tabs[nextActiveIndex].id);
@@ -1808,16 +1824,19 @@ function runCombinedSearch() {
         }
 
         if (isMatch && searchGroups.length > 0) {
+            // Для каждой группы из '+' собираем список индексов ячеек, которые ей подходят
+            var groupCandidateCells = [];
+
             for (var g = 0; g < searchGroups.length; g++) {
-                var cellConditions = searchGroups[g]; // Слова в 1 ячейке (через пробел)
-                var groupFound = false;
+                var cellConditions = searchGroups[g];
+                var candidates = [];
 
                 for (var k = 0; k < lowerCells.length; k++) {
                     var cellText = lowerCells[k];
                     var allWordsInCell = true;
 
                     for (var cw = 0; cw < cellConditions.length; cw++) {
-                        var synonyms = cellConditions[cw]; // Синонимы слова (через '=')
+                        var synonyms = cellConditions[cw];
                         var anySynonymMatch = false;
 
                         for (var s = 0; s < synonyms.length; s++) {
@@ -1833,14 +1852,37 @@ function runCombinedSearch() {
                     }
 
                     if (allWordsInCell) {
-                        groupFound = true;
-                        break;
+                        candidates.push(k);
                     }
                 }
-                if (!groupFound) { isMatch = false; break; }
+
+                if (candidates.length === 0) {
+                    isMatch = false;
+                    break;
+                }
+                groupCandidateCells.push(candidates);
+            }
+
+            // Проверяем, можно ли выбрать по одной уникальной (не повторяющейся) ячейке для каждой группы
+            if (isMatch) {
+                var usedCellMap = {};
+                var canAssignDistinctCells = function(groupIdx) {
+                    if (groupIdx === groupCandidateCells.length) return true;
+                    var candidates = groupCandidateCells[groupIdx];
+                    for (var c = 0; c < candidates.length; c++) {
+                        var cellIdx = candidates[c];
+                        if (!usedCellMap[cellIdx]) {
+                            usedCellMap[cellIdx] = true;
+                            if (canAssignDistinctCells(groupIdx + 1)) return true;
+                            usedCellMap[cellIdx] = false;
+                        }
+                    }
+                    return false;
+                };
+
+                isMatch = canAssignDistinctCells(0);
             }
         }
-
 
 
         if (isMatch && requireEmptyCell) {
@@ -2060,11 +2102,12 @@ function recalculateColumnWidths(tab) {
 
     // 3. Приоритетное распределение ширины экрана: короткие столбцы защищены, длинные получают максимум места
     var wrapperEl = document.querySelector('.table-wrapper');
-    var containerW = (wrapperEl && wrapperEl.clientWidth > 100) ? (wrapperEl.clientWidth - 4) : (window.innerWidth - 280);
+    var scrollbarReserve = (wrapperEl && wrapperEl.offsetWidth === wrapperEl.clientWidth) ? 10 : 2;
+    var containerW = (wrapperEl && wrapperEl.clientWidth > 100) ? (wrapperEl.clientWidth - scrollbarReserve) : (window.innerWidth - 280);
 
     var pivotDepth = Array.isArray(tab.pivotColumns) ? tab.pivotColumns.length : 0;
-    var pivotColW = pivotDepth > 0 ? (52 + (pivotDepth - 1) * 18) : 0;
-    var availableW = pivotDepth > 0 ? Math.max(200, containerW - pivotColW) : containerW;
+    var pivotColW = pivotDepth > 0 ? (52 + (pivotDepth - 1) * 18) : 36;
+    var availableW = Math.max(200, containerW - pivotColW);
 
     var fixedSum = 0;
     var richIndices = [];
@@ -2145,18 +2188,14 @@ function applyColumnWidthsToTable(tab) {
     tab._colWidthsAlgoVer = 3;
 
     var pivotDepth = Array.isArray(tab.pivotColumns) ? tab.pivotColumns.length : 0;
-    var expectedCols = widths.length + (pivotDepth > 0 ? 1 : 0);
+    var chkColW = (pivotDepth > 0 ? (52 + (pivotDepth - 1) * 18) : 36) + 'px';
+    var expectedCols = widths.length + 1;
     var existingColgroup = tableEl.querySelector('colgroup');
 
-    // Быстрый путь: обновляем ширину существующих <col> без удаления и создания DOM-узлов
     if (existingColgroup && existingColgroup.children.length === expectedCols) {
-        var offset = 0;
-        if (pivotDepth > 0) {
-            existingColgroup.children[0].style.width = (52 + (pivotDepth - 1) * 18) + 'px';
-            offset = 1;
-        }
+        existingColgroup.children[0].style.width = chkColW;
         for (var i = 0; i < widths.length; i++) {
-            existingColgroup.children[i + offset].style.width = widths[i] + 'px';
+            existingColgroup.children[i + 1].style.width = widths[i] + 'px';
         }
         return;
     }
@@ -2164,11 +2203,9 @@ function applyColumnWidthsToTable(tab) {
     if (existingColgroup) existingColgroup.remove();
 
     var colgroup = document.createElement('colgroup');
-    if (pivotDepth > 0) {
-        var pivotCol = document.createElement('col');
-        pivotCol.style.width = (52 + (pivotDepth - 1) * 18) + 'px';
-        colgroup.appendChild(pivotCol);
-    }
+    var pivotCol = document.createElement('col');
+    pivotCol.style.width = chkColW;
+    colgroup.appendChild(pivotCol);
 
     widths.forEach(function(w) {
         var col = document.createElement('col');
@@ -2306,7 +2343,8 @@ function renderTableStructure() {
         th.appendChild(sortIcon);
 
         th.addEventListener('click', function(e) {
-            if (e.target && e.target.classList.contains('col-close-btn')) return;
+            if (window._suppressNextHeaderClick) return;
+            if (e.target && (e.target.classList.contains('col-close-btn') || e.target.classList.contains('col-resize-handle'))) return;
             var activeTab = getActiveTab();
             if (!activeTab) return;
 
@@ -2472,6 +2510,9 @@ function renderTableStructure() {
             }
 
             function onMouseUp() {
+                window._suppressNextHeaderClick = true;
+                setTimeout(function() { window._suppressNextHeaderClick = false; }, 100);
+
                 document.body.style.cursor = '';
                 document.body.style.userSelect = '';
                 document.removeEventListener('mousemove', onMouseMove);
@@ -2538,25 +2579,34 @@ function renderTableData() {
     var pRows = currentTab.currentFilteredRows.slice((currentTab.currentPage - 1) * currentTab.pageSize, currentTab.currentPage * currentTab.pageSize);
     var activePivots = currentTab.pivotColumns || [];
 
+    if (!(currentTab.selectedRowIndices instanceof Set)) {
+        currentTab.selectedRowIndices = new Set();
+    }
+    var selectedSet = currentTab.selectedRowIndices;
+
     var tableEl = document.getElementById('dataTable');
     if (tableEl) {
         if (activePivots.length > 0) tableEl.classList.add('pivot-mode');
         else tableEl.classList.remove('pivot-mode');
     }
 
+    // Всегда обновляем шапку и добавляем левую колонку чекбоксов (36px в обычном режиме, шире в своде)
+    renderTableStructure();
+    var chkColWidthPx = (activePivots.length > 0 ? (52 + (activePivots.length - 1) * 18) : 36) + 'px';
+    if (tableEl) tableEl.style.setProperty('--pivot-chk-col-w', chkColWidthPx);
+
+    var headRow = document.querySelector('#tableHead tr');
+    if (headRow) {
+        var chkTh = document.createElement('th');
+        chkTh.className = 'chk-col-cell';
+        chkTh.style.width = chkColWidthPx;
+        chkTh.style.padding = '4px 4px';
+        chkTh.style.textAlign = 'center';
+        headRow.insertBefore(chkTh, headRow.firstChild);
+    }
+
     if (activePivots.length > 0) {
-        var pivotColWidthPx = (52 + (activePivots.length - 1) * 18) + 'px';
-        if (tableEl) tableEl.style.setProperty('--pivot-chk-col-w', pivotColWidthPx);
         document.querySelector('.table-wrapper').style.display = 'block';
-        renderTableStructure();
-        var headRow = document.querySelector('#tableHead tr');
-        if (headRow) {
-            var emptyTh = document.createElement('th');
-            emptyTh.style.width = pivotColWidthPx;
-            emptyTh.style.padding = '4px 4px';
-            emptyTh.style.textAlign = 'center';
-            headRow.insertBefore(emptyTh, headRow.firstChild);
-        }
         renderPivotTable(currentTab.currentFilteredRows, currentTab.tableHeaders, activePivots);
 
         var pc = document.getElementById('compactPagination');
@@ -2565,6 +2615,51 @@ function renderTableData() {
         var ramSize = getDataSizeMB(currentTab.globalRows);
         document.getElementById('headerStats').innerHTML = " <strong>" + currentTab.currentFilteredRows.length + "</strong> |  <strong>" + duration + " мс</strong> | <span style='color:var(--accent-color); font-weight:700;'>RAM: " + ramSize + " МБ</span>";
         return;
+    }
+
+    // Карта соответствия строки её глобальному индексу (чтобы выделение сохранялось при переходе в свод)
+    var rowToIndexMap = new Map();
+    for (var gIdx = 0; gIdx < currentTab.globalRows.length; gIdx++) {
+        rowToIndexMap.set(currentTab.globalRows[gIdx], gIdx);
+    }
+
+    // Общий чекбокс «Выделить все отфильтрованные строки» в шапке
+    var masterTh = headRow ? headRow.firstChild : null;
+    var selectAllFlatChk = null;
+    if (masterTh) {
+        selectAllFlatChk = document.createElement('input');
+        selectAllFlatChk.type = 'checkbox';
+        selectAllFlatChk.className = 'pivot-chk';
+        selectAllFlatChk.style.margin = '0';
+        selectAllFlatChk.title = 'Выделить / Снять все отфильтрованные строки';
+        masterTh.appendChild(selectAllFlatChk);
+    }
+
+    function syncFlatSelectAllState() {
+        if (!selectAllFlatChk) return;
+        var filtered = currentTab.currentFilteredRows;
+        var selCount = 0;
+        for (var i = 0; i < filtered.length; i++) {
+            if (selectedSet.has(rowToIndexMap.get(filtered[i]))) selCount++;
+        }
+        selectAllFlatChk.checked = (filtered.length > 0 && selCount === filtered.length);
+        selectAllFlatChk.indeterminate = (selCount > 0 && selCount < filtered.length);
+    }
+
+    if (selectAllFlatChk) {
+        selectAllFlatChk.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var filtered = currentTab.currentFilteredRows;
+            if (selectAllFlatChk.checked) {
+                for (var i = 0; i < filtered.length; i++) selectedSet.add(rowToIndexMap.get(filtered[i]));
+            } else {
+                for (var j = 0; j < filtered.length; j++) selectedSet.delete(rowToIndexMap.get(filtered[j]));
+            }
+            tb.querySelectorAll('.flat-row-chk').forEach(function(c) {
+                c.checked = selectAllFlatChk.checked;
+            });
+            syncFlatSelectAllState();
+        });
     }
 
     var activeColumnQueries = {};
@@ -2582,6 +2677,8 @@ function renderTableData() {
     pRows.forEach(function(cells, localIdx) {
         var tr = document.createElement('tr');
         var rowNum = pageOffset + localIdx + 1;
+        var globalRowIdx = rowToIndexMap.get(cells);
+
         tr.addEventListener('click', function(e) {
             if (e.altKey) {
                 e.preventDefault();
@@ -2590,15 +2687,30 @@ function renderTableData() {
             }
         });
 
+        // Левая ячейка с чекбоксом строки
+        var chkTd = document.createElement('td');
+        chkTd.className = 'chk-col-cell';
+        var rowChk = document.createElement('input');
+        rowChk.type = 'checkbox';
+        rowChk.className = 'pivot-chk flat-row-chk';
+        rowChk.style.margin = '0';
+        rowChk.checked = selectedSet.has(globalRowIdx);
+        rowChk.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (this.checked) selectedSet.add(globalRowIdx);
+            else selectedSet.delete(globalRowIdx);
+            syncFlatSelectAllState();
+        });
+        chkTd.appendChild(rowChk);
+        tr.appendChild(chkTd);
+
         currentTab.tableHeaders.forEach(function(_, idx) {
             var td = document.createElement('td');
             if (colTypes[idx] === 'number' || colTypes[idx] === 'date') {
                 td.classList.add('cell-right-align');
             }
             var txt = String(cells[idx] !== undefined ? cells[idx] : '');
-
-            var txt = String(cells[idx] !== undefined ? cells[idx] : '');
-            var combinedQuery = ((activeColumnQueries[idx] || '') + ' ' + gQ).trim();
+            var combinedQuery = [activeColumnQueries[idx], gQ].filter(Boolean).join(' + ');
             var clampDiv = document.createElement('div');
             clampDiv.className = 'cell-clamp-2';
             clampDiv.innerHTML = combinedQuery ? highlightSearchText(txt, combinedQuery) : escapeHtmlSafe(txt);
@@ -2626,6 +2738,7 @@ function renderTableData() {
         tb.appendChild(tr);
     });
 
+    syncFlatSelectAllState();
     setupPagination();
     var duration = (performance.now() - startTime).toFixed(1);
     var ramSize = getDataSizeMB(currentTab.globalRows);
@@ -2820,14 +2933,45 @@ function highlightSearchText(text, query) {
     var cleanQuery = query.replace(/^%%/, '').trim();
     if (!cleanQuery) return escapeHtmlSafe(str);
 
-      // Было: var tokens = cleanQuery.split(/[+=\s%]+/)...
-      var tokens = cleanQuery.split(/[+=\s%]+/).filter(Boolean).map(function(t) {
-       return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      });
+    var normalized = cleanQuery.replace(/\s*=\s*/g, '=');
+    var groups = normalized.split(/\+/).map(function(g) { return g.trim(); }).filter(Boolean);
+    var lowerStr = str.toLowerCase();
+    var matchedGroupsInCell = [];
 
-    if (tokens.length === 0) return escapeHtmlSafe(str);
+    groups.forEach(function(group) {
+        var wordGroups = group.split(/\s+/).filter(Boolean).map(function(w) {
+            return w.split(/=/).map(function(s) { return s.trim(); }).filter(Boolean);
+        }).filter(function(arr) { return arr.length > 0; });
 
-    var regex = new RegExp('(' + tokens.join('|') + ')', 'gi');
+        var allPresentInCell = wordGroups.every(function(synonyms) {
+            return synonyms.some(function(syn) {
+                return lowerStr.indexOf(syn.toLowerCase()) !== -1;
+            });
+        });
+
+        if (allPresentInCell) {
+            matchedGroupsInCell.push(wordGroups);
+        }
+    });
+
+    if (matchedGroupsInCell.length === 0) return escapeHtmlSafe(str);
+
+    // Если через '+' задано несколько групп, выбираем для этой ячейки самую полную (с наибольшим числом условий)
+    matchedGroupsInCell.sort(function(a, b) { return b.length - a.length; });
+    var primaryWordGroups = matchedGroupsInCell[0];
+    var validTokens = [];
+
+    primaryWordGroups.forEach(function(synonyms) {
+        synonyms.forEach(function(syn) {
+            validTokens.push(syn.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+        });
+    });
+
+    if (validTokens.length === 0) return escapeHtmlSafe(str);
+
+    validTokens.sort(function(a, b) { return b.length - a.length; });
+
+    var regex = new RegExp('(' + validTokens.join('|') + ')', 'gi');
     var parts = str.split(regex);
     var out = '';
     for (var i = 0; i < parts.length; i++) {
@@ -2920,6 +3064,9 @@ function renderPivotTable(rows, headers, activePivots) {
     var totalCols = headers.length + 1;
     var pinnedSet = new Set(activePivots);
     var LEAF_BATCH_SIZE = currentTab.pageSize || 100;
+    var pivotColTypes = headers.map(function(_, idx) {
+        return detectColumnTypeForSort(currentTab.globalRows, idx);
+    });
 
     function getLeafRows(node) {
         if (node._leafCache) return node._leafCache;
@@ -2992,7 +3139,7 @@ function renderPivotTable(rows, headers, activePivots) {
 
 
         var emptyCell = document.createElement('td');
-        emptyCell.className = 'tree-branch-guide'; emptyCell.style.paddingLeft = '8px';
+        emptyCell.className = 'tree-branch-guide chk-col-cell'; emptyCell.style.paddingLeft = '8px';
         var rowIndex = rowToIndexMap.get(dataRow);
         var leafChk = document.createElement('input');
         leafChk.type = 'checkbox'; leafChk.className = 'pivot-chk leaf-chk'; leafChk.autocomplete = 'off';
@@ -3006,6 +3153,9 @@ function renderPivotTable(rows, headers, activePivots) {
         for (var cIdx = 0; cIdx < headers.length; cIdx++) {
             var cellTd = document.createElement('td');
             if (pinnedSet.has(cIdx)) cellTd.className = 'pivot-pinned-td';
+            if (pivotColTypes[cIdx] === 'number' || pivotColTypes[cIdx] === 'date') {
+                cellTd.classList.add('cell-right-align');
+            }
             var val = dataRow[cIdx] !== undefined ? String(dataRow[cIdx]) : '';
             if (activeSearchQuery) cellTd.innerHTML = highlightSearchText(val, activeSearchQuery); else cellTd.textContent = val;
             cellTd.title = val;
@@ -3375,6 +3525,14 @@ function buildCheckboxesForActiveTab() {
         });
         if (chosenIndices.length === 0) { showToast('Выберите хотя бы один столбец'); return; }
 
+        var oldPinnedByName = {};
+        if (currentTab.pinnedColWidths && typeof currentTab.pinnedColWidths === 'object') {
+            for (var pKey in currentTab.pinnedColWidths) {
+                var hTitle = currentTab.tableHeaders[parseInt(pKey, 10)];
+                if (hTitle) oldPinnedByName[hTitle] = currentTab.pinnedColWidths[pKey];
+            }
+        }
+
         var delim = currentTab.delimiter || ';'; var newRows = [];
         currentTab.rawLines.forEach(function(line) {
             var res = parseCSVLine(line, delim);
@@ -3383,6 +3541,11 @@ function buildCheckboxesForActiveTab() {
         });
 
         currentTab.tableHeaders = chosenHeaders; currentTab.globalRows = newRows;
+        var rebuiltPinned = {};
+        chosenHeaders.forEach(function(hName, newIdx) {
+            if (typeof oldPinnedByName[hName] === 'number') rebuiltPinned[newIdx] = oldPinnedByName[hName];
+        });
+        currentTab.pinnedColWidths = rebuiltPinned;
         currentTab.currentFilteredRows = newRows.concat(); currentTab.currentPage = 1;
         currentTab.pivotColumns = [];
         oldPivotNames.forEach(function(pName) {
@@ -3430,7 +3593,7 @@ function buildCheckboxesForActiveTab() {
     var controlsRow = document.createElement('div');
     controlsRow.style.cssText = 'display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;';
     var masterLabel = document.createElement('label'); masterLabel.className = 'column-checkbox-label'; masterLabel.style.cssText = 'display: flex; align-items: center; gap: 5px; font-weight: 700; font-size: 12px; cursor: pointer; margin: 0; white-space: nowrap;';
-    var masterChk = document.createElement('input'); masterChk.type = 'checkbox'; masterChk.id = 'masterColumnsSelector'; masterChk.checked = currentTab.tableHeaders.length === origHeaders.length; 
+    var masterChk = document.createElement('input'); masterChk.type = 'checkbox'; masterChk.id = 'masterColumnsSelector'; masterChk.className = 'pivot-chk'; masterChk.style.margin = '0'; masterChk.checked = currentTab.tableHeaders.length === origHeaders.length;
     masterChk.addEventListener('change', function() {
         var isChecked = this.checked; document.querySelectorAll('#checkboxesGrid input[type="checkbox"]').forEach(function(chk) { chk.checked = isChecked; });
     });
@@ -3450,7 +3613,7 @@ function buildCheckboxesForActiveTab() {
     
     origHeaders.forEach(function(headerName, idx) {
         var label = document.createElement('label'); label.className = 'column-checkbox-label';
-        var chk = document.createElement('input'); chk.type = 'checkbox'; chk.setAttribute('data-raw-index', idx);
+        var chk = document.createElement('input'); chk.type = 'checkbox'; chk.className = 'pivot-chk'; chk.style.margin = '0'; chk.setAttribute('data-raw-index', idx);
         chk.setAttribute('data-header-name', headerName); chk.checked = currentTab.tableHeaders.includes(headerName);
         label.appendChild(chk); label.appendChild(document.createTextNode(headerName)); grid.appendChild(label);
     });
@@ -3462,8 +3625,13 @@ function updatePivotZoneUI() {
     var resetBtn = document.getElementById('pivotResetBtn');
     if (!list) return;
 
-    var hasPivots = currentTab && Array.isArray(currentTab.pivotColumns) && currentTab.pivotColumns.length > 0;
-    if (resetBtn) { resetBtn.disabled = !hasPivots; resetBtn.style.opacity = hasPivots ? '1' : '0.45'; resetBtn.style.cursor = hasPivots ? 'pointer' : 'not-allowed'; }
+    var hasPivots = !!(currentTab && Array.isArray(currentTab.pivotColumns) && currentTab.pivotColumns.length > 0);
+    if (resetBtn) {
+        resetBtn.disabled = !hasPivots;
+        resetBtn.classList.toggle('pivot-active-accent', hasPivots);
+        resetBtn.style.opacity = hasPivots ? '1' : '0.45';
+        resetBtn.style.cursor = hasPivots ? 'pointer' : 'not-allowed';
+    }
 
     if (!hasPivots) { list.innerHTML = '<span id="pivotDropHint" style="opacity: 0.65;">Перетащите заголовок столбца сюда для группировки «гармошкой»</span>'; return; }
 
@@ -3490,7 +3658,6 @@ function updatePivotZoneUI() {
             if (removedColIdx !== targetIdx) moveColumnInTab(currentTab, removedColIdx, targetIdx);
             if (currentTab.pivotColumns.length === 0) {
                 currentTab.expandedPaths = [];
-                if (currentTab.selectedRowIndices instanceof Set) currentTab.selectedRowIndices.clear();
             }
             updatePivotZoneUI(); generateSearchFields(); renderTableStructure(); renderTableData(); saveTabToDB(currentTab);
         });
@@ -3643,7 +3810,6 @@ function getColumnPivotPreviewStats(tab, colIdx) {
             var currentTab = getActiveTab(); if (!currentTab) return;
             var pivotNames = (currentTab.pivotColumns || []).map(function(idx) { return currentTab.tableHeaders[idx]; });
             currentTab.pivotColumns = []; currentTab.expandedPaths = [];
-            if (currentTab.selectedRowIndices instanceof Set) currentTab.selectedRowIndices.clear();
 
             for (var i = pivotNames.length - 1; i >= 0; i--) {
                 var colName = pivotNames[i]; var curIdx = currentTab.tableHeaders.indexOf(colName);
@@ -3673,8 +3839,13 @@ function getColumnPivotPreviewStats(tab, colIdx) {
 function downloadCurrentCSV() {
     var currentTab = getActiveTab(); if (!currentTab || currentTab.currentFilteredRows.length === 0) { showToast("Нет данных для сохранения"); return; }
     var headers = currentTab.tableHeaders;
-    var hasPivotSelection = (currentTab.pivotColumns && currentTab.pivotColumns.length > 0 && currentTab.selectedRowIndices instanceof Set && currentTab.selectedRowIndices.size > 0);
-    var rows = hasPivotSelection ? currentTab.globalRows.filter(function(_, idx) { return currentTab.selectedRowIndices.has(idx); }) : currentTab.currentFilteredRows;
+    var hasSelection = (currentTab.selectedRowIndices instanceof Set && currentTab.selectedRowIndices.size > 0);
+    var rowToIndexMap = new Map();
+    for (var i = 0; i < currentTab.globalRows.length; i++) rowToIndexMap.set(currentTab.globalRows[i], i);
+    var rows = hasSelection
+        ? currentTab.currentFilteredRows.filter(function(r) { return currentTab.selectedRowIndices.has(rowToIndexMap.get(r)); })
+        : currentTab.currentFilteredRows;
+    if (rows.length === 0) { showToast("Нет отмеченных строк в текущей выборке"); return; }
     
     function escapeCSV(str) {
         if (str === undefined || str === null) return '';
@@ -3695,8 +3866,12 @@ function downloadCurrentCSV() {
 
 function copyAllAsTSV() {
     var currentTab = getActiveTab(); if (!currentTab) { showToast('Сначала откройте CSV-файл'); return; }
-    var hasPivotSelection = (currentTab.pivotColumns && currentTab.pivotColumns.length > 0 && currentTab.selectedRowIndices instanceof Set && currentTab.selectedRowIndices.size > 0);
-    var rows = hasPivotSelection ? currentTab.globalRows.filter(function(_, idx) { return currentTab.selectedRowIndices.has(idx); }) : currentTab.currentFilteredRows;
+    var hasSelection = (currentTab.selectedRowIndices instanceof Set && currentTab.selectedRowIndices.size > 0);
+    var rowToIndexMap = new Map();
+    for (var i = 0; i < currentTab.globalRows.length; i++) rowToIndexMap.set(currentTab.globalRows[i], i);
+    var rows = hasSelection
+        ? currentTab.currentFilteredRows.filter(function(r) { return currentTab.selectedRowIndices.has(rowToIndexMap.get(r)); })
+        : currentTab.currentFilteredRows;
     if (!rows || rows.length === 0) { showToast('Нет данных для копирования'); return; }
 
     function escapeTSV(cell) {
