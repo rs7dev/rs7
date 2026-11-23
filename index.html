@@ -1793,11 +1793,6 @@ function runCombinedSearch() {
         : [];
 
 
-    searchGroups.sort(function(a, b) {
-        if (b.length !== a.length) return b.length - a.length;
-        return b.join('').length - a.join('').length;
-    });
-
     var newFilteredRows = [];
     var totalRows = currentTab.globalRows.length;
 
@@ -3836,15 +3831,51 @@ function getColumnPivotPreviewStats(tab, colIdx) {
 // ==========================================================================
 // ЭКСПОРТ CSV И TSV
 // ==========================================================================
+function getOrderedExportRows(currentTab) {
+    var baseRows = currentTab.currentFilteredRows || [];
+    var activePivots = (currentTab.pivotColumns || []).filter(function(idx) {
+        return idx >= 0 && idx < currentTab.tableHeaders.length;
+    });
+
+    if (activePivots.length > 0 && typeof buildPivotTree === 'function') {
+        var rootNodes = buildPivotTree(baseRows, activePivots, 0);
+        var orderedFromPivot = [];
+        var collectLeaves = function(nodes) {
+            if (!Array.isArray(nodes) || nodes.length === 0) return;
+            if (Array.isArray(nodes[0])) {
+                for (var r = 0; r < nodes.length; r++) {
+                    orderedFromPivot.push(nodes[r]);
+                }
+                return;
+            }
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i] && nodes[i].children) {
+                    collectLeaves(nodes[i].children);
+                }
+            }
+        };
+        if (Array.isArray(rootNodes) && rootNodes.length > 0) {
+            collectLeaves(rootNodes);
+            baseRows = orderedFromPivot;
+        }
+    }
+
+    var hasSelection = (currentTab.selectedRowIndices instanceof Set && currentTab.selectedRowIndices.size > 0);
+    if (!hasSelection) return baseRows;
+
+    var rowToIndexMap = new Map();
+    for (var i = 0; i < currentTab.globalRows.length; i++) {
+        rowToIndexMap.set(currentTab.globalRows[i], i);
+    }
+    return baseRows.filter(function(r) {
+        return currentTab.selectedRowIndices.has(rowToIndexMap.get(r));
+    });
+}
+
 function downloadCurrentCSV() {
     var currentTab = getActiveTab(); if (!currentTab || currentTab.currentFilteredRows.length === 0) { showToast("Нет данных для сохранения"); return; }
     var headers = currentTab.tableHeaders;
-    var hasSelection = (currentTab.selectedRowIndices instanceof Set && currentTab.selectedRowIndices.size > 0);
-    var rowToIndexMap = new Map();
-    for (var i = 0; i < currentTab.globalRows.length; i++) rowToIndexMap.set(currentTab.globalRows[i], i);
-    var rows = hasSelection
-        ? currentTab.currentFilteredRows.filter(function(r) { return currentTab.selectedRowIndices.has(rowToIndexMap.get(r)); })
-        : currentTab.currentFilteredRows;
+    var rows = getOrderedExportRows(currentTab);
     if (rows.length === 0) { showToast("Нет отмеченных строк в текущей выборке"); return; }
     
     function escapeCSV(str) {
@@ -3866,12 +3897,8 @@ function downloadCurrentCSV() {
 
 function copyAllAsTSV() {
     var currentTab = getActiveTab(); if (!currentTab) { showToast('Сначала откройте CSV-файл'); return; }
-    var hasSelection = (currentTab.selectedRowIndices instanceof Set && currentTab.selectedRowIndices.size > 0);
-    var rowToIndexMap = new Map();
-    for (var i = 0; i < currentTab.globalRows.length; i++) rowToIndexMap.set(currentTab.globalRows[i], i);
-    var rows = hasSelection
-        ? currentTab.currentFilteredRows.filter(function(r) { return currentTab.selectedRowIndices.has(rowToIndexMap.get(r)); })
-        : currentTab.currentFilteredRows;
+    var rows = getOrderedExportRows(currentTab);
+    if (rows.length === 0) { showToast('Нет данных для копирования'); return; }
     if (!rows || rows.length === 0) { showToast('Нет данных для копирования'); return; }
 
     function escapeTSV(cell) {
