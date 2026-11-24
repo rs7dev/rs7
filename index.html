@@ -1521,7 +1521,58 @@ function parseCSVLine(line, delim) {
 }
 
 // ==========================================================================
-// INDEXED DB (ЛЕНИВАЯ ЗАГРУЗКА)
+// СЖАТИЕ ИСХОДНИКА В GZIP (ЭКОНОМИЯ RAM И ДИСКА)
+// ==========================================================================
+function compressLinesToGzip(lines) {
+    if (!Array.isArray(lines) || lines.length === 0) return Promise.resolve(null);
+    var joined = lines.join('\n');
+    if (typeof CompressionStream === 'function') {
+        var stream = new Blob([joined]).stream().pipeThrough(new CompressionStream('gzip'));
+        return new Response(stream).blob();
+    }
+    return Promise.resolve(new Blob([joined], { type: 'text/plain;charset=utf-8' }));
+}
+
+function decompressGzipToLines(blob) {
+    if (!blob) return Promise.resolve([]);
+    if (typeof DecompressionStream === 'function' && blob.type !== 'text/plain;charset=utf-8') {
+        var stream = blob.stream().pipeThrough(new DecompressionStream('gzip'));
+        return new Response(stream).text().then(function(txt) {
+            return txt ? txt.split('\n') : [];
+        });
+    }
+    return blob.text().then(function(txt) {
+        return txt ? txt.split('\n') : [];
+    });
+}
+
+function getTabRawLinesFromDiskOrMemory(tab) {
+    if (Array.isArray(tab.rawLines) && tab.rawLines.length > 0) {
+        return Promise.resolve(tab.rawLines);
+    }
+    if (tab._pendingGzipBlob) {
+        return decompressGzipToLines(tab._pendingGzipBlob);
+    }
+    if (!db) return Promise.resolve([]);
+    return new Promise(function(resolve) {
+        var tx = db.transaction("saved_tabs", "readonly");
+        var req = tx.objectStore("saved_tabs").get(tab.id);
+        req.onsuccess = function(e) {
+            var rec = e.target.result;
+            if (rec && rec.rawGzipBlob) {
+                decompressGzipToLines(rec.rawGzipBlob).then(resolve).catch(function() { resolve([]); });
+            } else if (rec && Array.isArray(rec.rawLines) && rec.rawLines.length > 0) {
+                resolve(rec.rawLines);
+            } else {
+                resolve([]);
+            }
+        };
+        req.onerror = function() { resolve([]); };
+    });
+}
+
+// ==========================================================================
+// INDEXED DB (ЛЕНИВАЯ ЗАГРУЗКА + GZIP-АРХИВ ИСХОДНИКА)
 // ==========================================================================
 var db = null;
 var request = indexedDB.open("GigaSearchDB", 1);
@@ -1534,7 +1585,7 @@ request.onupgradeneeded = function(e) {
 request.onsuccess = function(e) { db = e.target.result; restoreTabsFromDB(); };
 request.onerror = function(e) { console.error("Ошибка IndexedDB:", e.target.error); };
 
-function saveTabToDB(tab) {
+function saveTabToDB(tab, newGzipBlob) {
     if (!db || !tab) return;
     if (Array.isArray(tab.globalRows) && tab.globalRows.length > 0) {
         tab.rowCount = tab.globalRows.length;
@@ -1542,22 +1593,39 @@ function saveTabToDB(tab) {
         tab.rowCount = tab.rawLines.length;
     }
 
-    if (tab._loaded === false) {
-        var txRead = db.transaction("saved_tabs", "readonly");
-        var reqRead = txRead.objectStore("saved_tabs").get(tab.id);
-        reqRead.onsuccess = function(e) {
-            var existing = e.target.result || {};
-            var merged = Object.assign({}, existing, tab);
-            merged.globalRows = existing.globalRows || [];
-            merged.rawLines = existing.rawLines || [];
-            merged.currentFilteredRows = existing.currentFilteredRows || [];
-            var txWrite = db.transaction("saved_tabs", "readwrite");
-            txWrite.objectStore("saved_tabs").put(merged);
-        };
-        return;
+    var gzipToStore = newGzipBlob || tab._pendingGzipBlob || null;
+    if (gzipToStore) {
+        tab._pendingGzipBlob = gzipToStore;
+        tab.cacheSizeMB = (gzipToStore.size / (1024 * 1024)).toFixed(2);
     }
-    var tx = db.transaction("saved_tabs", "readwrite");
-    tx.objectStore("saved_tabs").put(tab);
+
+    // Не храним rawLines в объекте записи — на диске лежит только сжатый rawGzipBlob
+    var txRead = db.transaction("saved_tabs", "readonly");
+    var reqRead = txRead.objectStore("saved_tabs").get(tab.id);
+    reqRead.onsuccess = function(e) {
+        var existing = e.target.result || {};
+        var recordToSave = Object.assign({}, existing, tab);
+        recordToSave.rawLines = [];
+        delete recordToSave._pendingGzipBlob;
+
+        if (gzipToStore) {
+            recordToSave.rawGzipBlob = gzipToStore;
+            recordToSave.cacheSizeMB = (gzipToStore.size / (1024 * 1024)).toFixed(2);
+        }
+
+        if (tab._loaded === false) {
+            recordToSave.globalRows = existing.globalRows || [];
+            recordToSave.currentFilteredRows = existing.currentFilteredRows || [];
+        }
+
+        var txWrite = db.transaction("saved_tabs", "readwrite");
+        var putReq = txWrite.objectStore("saved_tabs").put(recordToSave);
+        putReq.onsuccess = function() {
+            if (gzipToStore && tab._pendingGzipBlob === gzipToStore) {
+                delete tab._pendingGzipBlob;
+            }
+        };
+    };
 }
 
 function deleteTabFromDB(tabId) {
@@ -1844,12 +1912,16 @@ function createNewTab(fileName, headers, lines, delimiter, chosenIndices) {
         fullHeadersList = headers.concat();
     }
     
+    var linesCopy = lines.slice();
+    // Освобождаем глобальный временный буфер исходных строк из RAM
+    rawCSVLines = [];
+
     var newTab = {
         id: tabId, 
         name: fileName, 
         tableHeaders: headers, 
         originalHeaders: fullHeadersList, 
-        rawLines: lines.concat(), 
+        rawLines: [], 
         delimiter: delimiter, 
         globalRows: cleanRows, 
         currentFilteredRows: cleanRows.concat(),
@@ -1857,7 +1929,8 @@ function createNewTab(fileName, headers, lines, delimiter, chosenIndices) {
         pageSize: 50, 
         globalSearchQuery: "", 
         columnFilters: [], 
-        cacheSizeMB: getDataSizeMB(lines),
+        cacheSizeMB: getDataSizeMB(linesCopy),
+        rowCount: cleanRows.length,
         
         baseHeaderOrder: headers.slice(),
         rawHeaders: headers.slice(),
@@ -1871,8 +1944,18 @@ function createNewTab(fileName, headers, lines, delimiter, chosenIndices) {
     };
     
     tabs.push(newTab);
-    saveTabToDB(newTab);
-    activateTab(tabId); 
+    activateTab(tabId);
+
+    compressLinesToGzip(linesCopy).then(function(gzBlob) {
+        linesCopy.length = 0;
+        if (gzBlob) {
+            newTab.cacheSizeMB = (gzBlob.size / (1024 * 1024)).toFixed(2);
+            renderTabsUI();
+            saveTabToDB(newTab, gzBlob);
+        } else {
+            saveTabToDB(newTab);
+        }
+    });
 }
 
 // ==========================================================================
@@ -2430,9 +2513,20 @@ function duplicateTabById(tabId) {
         _loaded: true
     };
     tabs.push(copyTab);
-    saveTabToDB(copyTab);
     activateTab(newId);
     showToast('Вкладка продублирована');
+
+    if (db) {
+        var tx = db.transaction("saved_tabs", "readonly");
+        var req = tx.objectStore("saved_tabs").get(src.id);
+        req.onsuccess = function(e) {
+            var srcRec = e.target.result;
+            saveTabToDB(copyTab, srcRec && srcRec.rawGzipBlob ? srcRec.rawGzipBlob : null);
+        };
+        req.onerror = function() { saveTabToDB(copyTab); };
+    } else {
+        saveTabToDB(copyTab);
+    }
 }
 
 function triggerTabFileRefresh(tabId) {
@@ -2687,8 +2781,11 @@ function commitRefreshedDataToTab(targetTab, lines, delim, newOrigHeaders, openR
         if (oldFilterByName[h]) nextFilters[idx] = oldFilterByName[h];
     });
 
+    var linesCopy = lines.slice();
+    lines.length = 0;
+
     targetTab.delimiter = delim;
-    targetTab.rawLines = lines.slice();
+    targetTab.rawLines = [];
     targetTab.originalHeaders = newOrigHeaders;
     targetTab.rawHeaders = newOrigHeaders.slice();
     targetTab.fileHeaderOrder = newOrigHeaders.slice();
@@ -2696,7 +2793,8 @@ function commitRefreshedDataToTab(targetTab, lines, delim, newOrigHeaders, openR
     targetTab.tableHeaders = nextHeaders;
     targetTab.globalRows = nextRows;
     targetTab.currentFilteredRows = nextRows.slice();
-    targetTab.cacheSizeMB = getDataSizeMB(lines);
+    targetTab.rowCount = nextRows.length;
+    targetTab.cacheSizeMB = getDataSizeMB(linesCopy);
     targetTab.pinnedColWidths = nextPinned;
     targetTab.columnFilters = nextFilters;
     targetTab.pivotColumns = oldPivotNames.map(function(h) { return nextHeaders.indexOf(h); }).filter(function(idx) { return idx !== -1; });
@@ -2706,9 +2804,6 @@ function commitRefreshedDataToTab(targetTab, lines, delim, newOrigHeaders, openR
     targetTab.currentPage = 1;
     targetTab.colWidths = null;
     targetTab._loaded = true;
-
-    // Освобождаем временный буфер строк из RAM сразу после сборки данных
-    lines.length = 0;
 
     if (activeTabId === targetTab.id) {
         var tHeadEl = document.getElementById('tableHead');
@@ -2733,10 +2828,16 @@ function commitRefreshedDataToTab(targetTab, lines, delim, newOrigHeaders, openR
 
     showToast('Данные обновлены: ' + nextRows.length + ' строк');
 
-    // Сохраняем в IndexedDB асинхронно, чтобы не блокировать отрисовку на больших файлах
-    setTimeout(function() {
-        saveTabToDB(targetTab);
-    }, 0);
+    compressLinesToGzip(linesCopy).then(function(gzBlob) {
+        linesCopy.length = 0;
+        if (gzBlob) {
+            targetTab.cacheSizeMB = (gzBlob.size / (1024 * 1024)).toFixed(2);
+            renderTabsUI();
+            saveTabToDB(targetTab, gzBlob);
+        } else {
+            saveTabToDB(targetTab);
+        }
+    });
 }
 
 // ==========================================================================
@@ -4722,51 +4823,69 @@ function buildCheckboxesForActiveTab() {
         var finalHeaders = orderedPairs.map(function(p) { return p.name; });
         var finalRawIndices = orderedPairs.map(function(p) { return p.rawIdx; });
 
-        var delim = currentTab.delimiter || ';';
-        var newRows = [];
-        currentTab.rawLines.forEach(function(line) {
-            var res = parseCSVLine(line, delim);
-            var cells = finalRawIndices.map(function(idx) { return res[idx] !== undefined ? res[idx] : ''; });
-            if (cells.length > 0 && cells.some(function(c) { return c !== ''; })) newRows.push(cells);
+        function applyParsedRowsToTab(newRows) {
+            currentTab.tableHeaders = finalHeaders;
+            currentTab.globalRows = newRows;
+            currentTab.currentFilteredRows = newRows.concat();
+            currentTab.currentPage = 1;
+            currentTab.sortCol = null;
+            currentTab.sortDir = null;
+            currentTab.colWidths = null;
+
+            // Восстанавливаем уровни свода и сдвигаем их в начало таблицы
+            currentTab.pivotColumns = [];
+            oldPivotNames.forEach(function(pName) {
+                var foundIdx = currentTab.tableHeaders.indexOf(pName);
+                if (foundIdx !== -1) {
+                    var targetPos = currentTab.pivotColumns.length;
+                    if (foundIdx !== targetPos) moveColumnInTab(currentTab, foundIdx, targetPos);
+                    currentTab.pivotColumns.push(targetPos);
+                }
+            });
+
+            // Привязываем ручные ширины и фильтры по итоговому порядку заголовков
+            var rebuiltPinned = {};
+            var rebuiltFilters = [];
+            currentTab.tableHeaders.forEach(function(hName, newIdx) {
+                if (typeof oldPinnedByName[hName] === 'number') rebuiltPinned[newIdx] = oldPinnedByName[hName];
+                rebuiltFilters.push(oldFiltersByName[hName] || '');
+            });
+            currentTab.pinnedColWidths = rebuiltPinned;
+            currentTab.columnFilters = rebuiltFilters;
+
+            if (currentTab.selectedRowIndices instanceof Set) currentTab.selectedRowIndices.clear();
+            updatePivotZoneUI();
+            saveTabToDB(currentTab);
+            finishTabActivation(currentTab);
+
+            document.getElementById('rightPanel').classList.add('collapsed');
+            document.getElementById('columnChooserPanel').style.display = 'none';
+            showToast('Столбцы обновлены (' + chosenHeaders.length + ')');
+        }
+
+        // Быстрый путь в RAM: если все выбранные столбцы уже загружены в памяти — просто срезаем без распаковки GZIP
+        var allPresentInRam = finalHeaders.every(function(h) { return currentTab.tableHeaders.indexOf(h) !== -1; });
+        if (allPresentInRam) {
+            var ramIdxMap = finalHeaders.map(function(h) { return currentTab.tableHeaders.indexOf(h); });
+            var slicedRows = currentTab.globalRows.map(function(row) {
+                return ramIdxMap.map(function(idx) { return row[idx] !== undefined ? row[idx] : ''; });
+            });
+            applyParsedRowsToTab(slicedRows);
+            return;
+        }
+
+        // Если включены новые столбцы, которых не было в RAM — распаковываем из GZIP-кэша на диске
+        getTabRawLinesFromDiskOrMemory(currentTab).then(function(rawLinesFromDisk) {
+            var delim = currentTab.delimiter || ';';
+            var newRows = [];
+            rawLinesFromDisk.forEach(function(line) {
+                var res = parseCSVLine(line, delim);
+                var cells = finalRawIndices.map(function(idx) { return res[idx] !== undefined ? res[idx] : ''; });
+                if (cells.length > 0 && cells.some(function(c) { return c !== ''; })) newRows.push(cells);
+            });
+            rawLinesFromDisk.length = 0;
+            applyParsedRowsToTab(newRows);
         });
-
-        currentTab.tableHeaders = finalHeaders;
-        currentTab.globalRows = newRows;
-        currentTab.currentFilteredRows = newRows.concat();
-        currentTab.currentPage = 1;
-        currentTab.sortCol = null;
-        currentTab.sortDir = null;
-        currentTab.colWidths = null;
-
-        // Восстанавливаем уровни свода и сдвигаем их в начало таблицы
-        currentTab.pivotColumns = [];
-        oldPivotNames.forEach(function(pName) {
-            var foundIdx = currentTab.tableHeaders.indexOf(pName);
-            if (foundIdx !== -1) {
-                var targetPos = currentTab.pivotColumns.length;
-                if (foundIdx !== targetPos) moveColumnInTab(currentTab, foundIdx, targetPos);
-                currentTab.pivotColumns.push(targetPos);
-            }
-        });
-
-        // Привязываем ручные ширины и фильтры по итоговому порядку заголовков
-        var rebuiltPinned = {};
-        var rebuiltFilters = [];
-        currentTab.tableHeaders.forEach(function(hName, newIdx) {
-            if (typeof oldPinnedByName[hName] === 'number') rebuiltPinned[newIdx] = oldPinnedByName[hName];
-            rebuiltFilters.push(oldFiltersByName[hName] || '');
-        });
-        currentTab.pinnedColWidths = rebuiltPinned;
-        currentTab.columnFilters = rebuiltFilters;
-
-        if (currentTab.selectedRowIndices instanceof Set) currentTab.selectedRowIndices.clear();
-        updatePivotZoneUI();
-        saveTabToDB(currentTab);
-        finishTabActivation(currentTab);
-
-
-        document.getElementById('rightPanel').classList.add('collapsed'); document.getElementById('columnChooserPanel').style.display = 'none';
-        showToast('Столбцы обновлены (' + chosenHeaders.length + ')');
     });
     masterWrapper.appendChild(applyBtn);
 
