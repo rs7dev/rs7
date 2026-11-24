@@ -429,6 +429,279 @@
     .context-menu { position: absolute; background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 4px; padding: 3px; z-index: 150; }
     .context-menu-item { padding: 5px 10px; font-size: 12px; cursor: pointer; border-radius: 3px; }
     .context-menu-item:hover { background: var(--btn-hover); }
+
+    .tab-context-menu {
+        position: fixed;
+        z-index: 99999;
+        min-width: 170px;
+        background: var(--panel-bg);
+        color: var(--text-color);
+        border: 1px solid var(--panel-border);
+        border-radius: 6px;
+        box-shadow: var(--shadow, 0 6px 20px rgba(0, 0, 0, 0.25));
+        padding: 4px;
+        font-size: 12px;
+        user-select: none;
+        display: none;
+    }
+    .tab-context-menu-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        color: var(--text-color);
+        white-space: nowrap;
+        transition: background-color 0.12s ease;
+    }
+    .tab-context-menu-item:hover {
+        background: var(--btn-primary-bg);
+        color: var(--btn-primary-text);
+    }
+
+    /* Модальное окно проверки структуры при обновлении файла */
+    .refresh-warn-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.52);
+        z-index: 100000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+    }
+    .refresh-warn-modal {
+        width: 33vw;
+        min-width: 360px;
+        max-width: 680px;
+        max-height: 50vh;
+        display: flex;
+        flex-direction: column;
+        background: var(--panel-bg);
+        color: var(--text-color);
+        border: 1px solid var(--panel-border);
+        border-radius: 10px;
+        box-shadow: var(--shadow, 0 12px 32px rgba(0, 0, 0, 0.35));
+        padding: 18px 20px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    .refresh-warn-title {
+        font-size: 16px;
+        font-weight: 700;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+    .refresh-warn-actions button {
+        font-size: 13px;
+        padding: 7px 14px;
+    }
+    .refresh-warn-close {
+        background: transparent;
+        border: 1px solid transparent;
+        color: var(--text-color);
+        font-size: 16px;
+        line-height: 1;
+        width: 26px;
+        height: 26px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.75;
+        transition: opacity 0.15s ease, background-color 0.15s ease;
+    }
+    .refresh-warn-close:hover {
+        opacity: 1;
+        background: var(--btn-danger-bg, rgba(220, 53, 69, 0.18));
+        color: var(--btn-danger-text, #e05260);
+    }
+    .refresh-cols-box {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        margin: 10px 0;
+        padding: 8px 10px;
+        border-radius: 6px;
+        background: var(--bg-color);
+        border: 1px solid var(--border-color);
+        font-size: 12px;
+    }
+    .refresh-col-badge {
+        display: inline-block;
+        padding: 2px 7px;
+        margin: 2px 4px 2px 0;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .refresh-col-removed {
+        background: rgba(220, 53, 69, 0.16);
+        color: #e05260;
+        border: 1px solid rgba(220, 53, 69, 0.35);
+    }
+    .refresh-col-added {
+        background: rgba(40, 167, 69, 0.16);
+        color: #34b357;
+        border: 1px solid rgba(40, 167, 69, 0.35);
+    }
+    .refresh-warn-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 14px;
+    }
+    .rename-tab-input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 8px 12px;
+        margin-top: 8px;
+        border-radius: 6px;
+        border: 1px solid var(--input-border);
+        background: var(--input-bg);
+        color: var(--input-text, var(--text-color));
+        font-size: 14px;
+        outline: none;
+    }
+    .rename-tab-input:focus {
+        border-color: var(--input-focus);
+    }
+
+    /* Умное модальное окно при перетаскивании файла (Drag & Drop) */
+    .smart-drop-modal {
+        width: 38vw;
+        min-width: 420px;
+        max-width: 740px;
+        max-height: 74vh;
+    }
+    .smart-drop-tab-card {
+        border: 1px solid var(--panel-border);
+        border-bottom: 2px solid var(--panel-border);
+        background: var(--panel-bg);
+        border-radius: 8px;
+        margin-bottom: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .smart-drop-tab-card:last-child {
+        margin-bottom: 0;
+    }
+    .smart-drop-tab-card.is-high-match {
+        border-color: rgba(52, 179, 87, 0.5);
+        border-bottom-color: rgba(52, 179, 87, 0.65);
+    }
+    .smart-drop-tab-card:hover {
+        border-color: var(--input-focus);
+    }
+    .smart-drop-tab-body {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 12px 14px;
+    }
+    .smart-drop-left-col {
+        min-width: 0;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    .smart-drop-right-col {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+    .smart-drop-active-pill {
+        font-size: 11.5px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 4px;
+        background: rgba(128, 128, 128, 0.2);
+        color: var(--text-color);
+        flex-shrink: 0;
+    }
+    .smart-drop-sim-badge {
+        font-size: 13px;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 5px;
+        flex-shrink: 0;
+    }
+    .smart-drop-diff-toggle {
+        background: transparent;
+        border: none;
+        padding: 2px 0;
+        color: var(--text-color);
+        opacity: 0.85;
+        font-size: 13px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        align-self: flex-start;
+    }
+    .smart-drop-diff-toggle:hover {
+        opacity: 1;
+        text-decoration: underline;
+    }
+    .smart-drop-apply-btn {
+        padding: 6px 13px;
+        border-radius: 6px;
+        border: 1px solid var(--input-border);
+        background: var(--btn-bg);
+        color: var(--btn-text);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+        transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    .smart-drop-apply-btn:hover {
+        background: var(--btn-primary-bg);
+        color: var(--btn-primary-text);
+        border-color: var(--btn-primary-bg);
+    }
+    .smart-drop-low-toggle {
+        width: 100%;
+        padding: 8px 12px;
+        margin: 4px 0 8px 0;
+        border-radius: 6px;
+        border: 1px dashed var(--panel-border);
+        background: transparent;
+        color: var(--text-color);
+        opacity: 0.85;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        text-align: left;
+    }
+    .smart-drop-low-toggle:hover {
+        opacity: 1;
+        background: var(--btn-hover);
+    }
+    .smart-drop-details {
+        display: none;
+        padding: 10px 14px;
+        border-top: 1px solid var(--panel-border);
+        background: var(--bg-color);
+        font-size: 13px;
+    }
     .toast-notification { position: fixed; bottom: 14px; right: 14px; background: var(--header-bg); color: var(--text-color); border: 1px solid var(--panel-border); border-left: 3px solid var(--btn-primary-bg); padding: 8px 12px; border-radius: 4px; font-size: 12px; opacity: 0; transition: 0.2s; z-index: 200; }
     .toast-notification.show { opacity: 1; }
     th.drag-over-col { border-left: 3px solid var(--btn-primary-bg, #3498db) !important; background-color: var(--table-row-hover) !important; }
@@ -1042,6 +1315,66 @@
 
 </div>
 
+<!-- КОНТЕКСТНОЕ МЕНЮ ВКЛАДКИ -->
+<div id="tabContextMenu" class="tab-context-menu"></div>
+<input type="file" id="tabRefreshFileInput" accept=".csv,.txt,.tsv" style="display: none;" />
+
+<!-- МОДАЛЬНОЕ ОКНО ПРЕДУПРЕЖДЕНИЯ ПРИ ОБНОВЛЕНИИ ФАЙЛА -->
+<div id="refreshWarnOverlay" class="refresh-warn-overlay">
+    <div class="refresh-warn-modal">
+        <div class="refresh-warn-title">
+            <span>⚠️ Структура столбцов изменилась</span>
+            <button id="refreshWarnCloseBtn" class="refresh-warn-close" title="Закрыть">✕</button>
+        </div>
+        <div id="refreshWarnSummary"></div>
+        <div id="refreshWarnDetails" class="refresh-cols-box"></div>
+        <div style="opacity: 0.8; font-size: 12px;">Несовпадающие фильтры и уровни свода будут сброшены.</div>
+        <label id="refreshWarnForceWrap" style="display: none; align-items: center; gap: 6px; margin-top: 8px; font-size: 12px; cursor: pointer; user-select: none;">
+            <input type="checkbox" id="refreshWarnForceChk" class="pivot-chk" style="margin: 0;" />
+            <span>Подтверждаю замену данных в текущей вкладке</span>
+        </label>
+        <div class="refresh-warn-actions" style="justify-content: space-between; flex-wrap: wrap;">
+            <button id="refreshWarnNewTabBtn" class="compact-page-btn" style="padding: 6px 12px;">+ Как новую вкладку</button>
+            <div style="display: flex; gap: 8px;">
+                <button id="refreshWarnConfirmBtn" class="compact-page-btn" style="padding: 6px 14px;">Обновить данные</button>
+                <button id="refreshWarnCancelBtn" class="compact-page-btn" style="padding: 6px 14px; background: var(--btn-primary-bg); color: var(--btn-primary-text); font-weight: 600;">Отмена</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО ПЕРЕИМЕНОВАНИЯ ВКЛАДКИ -->
+<div id="renameTabOverlay" class="refresh-warn-overlay">
+    <div class="refresh-warn-modal">
+        <div class="refresh-warn-title">
+            <span>✏️ Переименовать вкладку</span>
+            <button id="renameTabCloseBtn" class="refresh-warn-close" title="Закрыть">✕</button>
+        </div>
+        <div style="font-size: 14px; opacity: 0.9;">Введите новое название вкладки:</div>
+        <input type="text" id="renameTabInput" class="rename-tab-input" placeholder="Название вкладки..." />
+        <div class="refresh-warn-actions">
+            <button id="renameTabSaveBtn" class="compact-page-btn" style="padding: 6px 14px; background: var(--btn-primary-bg); color: var(--btn-primary-text); font-weight: 600;">Сохранить</button>
+            <button id="renameTabCancelBtn" class="compact-page-btn" style="padding: 6px 14px;">Отмена</button>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО УМНОГО ИМПОРТА ПРИ ПЕРЕТАСКИВАНИИ ФАЙЛА -->
+<div id="smartDropOverlay" class="refresh-warn-overlay">
+    <div class="refresh-warn-modal smart-drop-modal">
+        <div class="refresh-warn-title">
+            <span id="smartDropTitle">📥 Импорт файла</span>
+            <button id="smartDropCloseBtn" class="refresh-warn-close" title="Закрыть">✕</button>
+        </div>
+        <div id="smartDropSubtitle" style="font-size: 14px; opacity: 0.9;">Выберите вкладку для обновления (с сохранением фильтров и свода) или откройте файл как новую таблицу:</div>
+        <div id="smartDropTabsList" class="refresh-cols-box" style="margin-bottom: 0;"></div>
+        <div class="refresh-warn-actions" style="justify-content: space-between; flex-wrap: wrap;">
+            <button id="smartDropNewTabBtn" class="compact-page-btn" style="background: var(--btn-primary-bg); color: var(--btn-primary-text); font-weight: 600;">➕ Открыть как новую вкладку</button>
+            <button id="smartDropCancelBtn" class="compact-page-btn">Отмена</button>
+        </div>
+    </div>
+</div>
+
 <!-- КОНТЕКСТНОЕ МЕНЮ ТЕМ -->
 <div id="themeContextMenu" class="context-menu" style="display: none;">
     <div class="context-menu-item" data-theme="light">☀️ Светлая</div>
@@ -1202,7 +1535,13 @@ request.onsuccess = function(e) { db = e.target.result; restoreTabsFromDB(); };
 request.onerror = function(e) { console.error("Ошибка IndexedDB:", e.target.error); };
 
 function saveTabToDB(tab) {
-    if (!db) return;
+    if (!db || !tab) return;
+    if (Array.isArray(tab.globalRows) && tab.globalRows.length > 0) {
+        tab.rowCount = tab.globalRows.length;
+    } else if (Array.isArray(tab.rawLines) && tab.rawLines.length > 0) {
+        tab.rowCount = tab.rawLines.length;
+    }
+
     if (tab._loaded === false) {
         var txRead = db.transaction("saved_tabs", "readonly");
         var reqRead = txRead.objectStore("saved_tabs").get(tab.id);
@@ -1251,6 +1590,11 @@ function restoreTabsFromDB() {
                         cacheSizeMB: full.cacheSizeMB || '0.00',
                         baseHeaderOrder: full.baseHeaderOrder || [], rawHeaders: full.rawHeaders || [], fileHeaderOrder: full.fileHeaderOrder || [],
                         pivotColumns: full.pivotColumns || [], expandedPaths: full.expandedPaths || [],
+                        rowCount: typeof full.rowCount === 'number' ? full.rowCount : (Array.isArray(full.globalRows) ? full.globalRows.length : 0),
+                        pinnedColWidths: full.pinnedColWidths || {},
+                        sortCol: full.sortCol !== undefined ? full.sortCol : null,
+                        sortDir: full.sortDir || null,
+
                         isDerived: !!full.isDerived, isRoot: full.isRoot !== false, sourceFileName: full.sourceFileName || full.name, parentTabIds: full.parentTabIds || [], pipeline: full.pipeline || [],
                         globalRows: null, currentFilteredRows: null, rawLines: null, _loaded: false
                     };
@@ -1340,13 +1684,15 @@ function processCSVData(text, fileName) {
     if (lines.length === 0) return;
     document.getElementById('toggleColumnsBtn').disabled = false;
     
-    var firstLine = lines.shift();
+    var firstLine = lines.shift().replace(/^\uFEFF/, '');
     var delimiter = firstLine.includes('\t') ? '\t' : (!firstLine.includes(';') && firstLine.includes(',') ? ',' : ';');
           
     rawCSVLines = lines;
     rawDelimiter = delimiter;
     
-    var allHeaders = parseCSVLine(firstLine, delimiter);
+    var allHeaders = parseCSVLine(firstLine, delimiter).map(function(h) {
+        return String(h || '').replace(/^\uFEFF/, '').trim();
+    });
     var limit = parseInt(localStorage.getItem('saved_column_limit') || '4');
     
     var panel = document.getElementById('columnChooserPanel');
@@ -1672,6 +2018,11 @@ function renderTabsUI() {
         var sizeText = tab.cacheSizeMB ? ' (' + tab.cacheSizeMB + ' МБ)' : '';
         btn.textContent = tab.name + sizeText;
         btn.addEventListener('click', function() { activateTab(tab.id); });
+        btn.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            openTabContextMenu(e.clientX, e.clientY, tab.id);
+        });
         
         var cross = document.createElement('span'); cross.textContent = '×';
         cross.className = 'tab-close-btn';
@@ -1680,6 +2031,712 @@ function renderTabsUI() {
         
         btn.appendChild(cross); container.appendChild(btn);
     });
+}
+
+// ==========================================================================
+// КОНТЕКСТНОЕ МЕНЮ ВКЛАДКИ (ОБНОВИТЬ / ПЕРЕИМЕНОВАТЬ / ДУБЛИРОВАТЬ)
+// ==========================================================================
+var _contextTargetTabId = null;
+
+function closeTabContextMenu() {
+    var menu = document.getElementById('tabContextMenu');
+    if (menu) menu.style.display = 'none';
+}
+
+document.addEventListener('click', closeTabContextMenu);
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' || e.key === 'Esc') closeTabContextMenu();
+});
+
+function openTabContextMenu(clientX, clientY, tabId) {
+    var menu = document.getElementById('tabContextMenu');
+    if (!menu) return;
+    _contextTargetTabId = tabId;
+
+    menu.innerHTML = '';
+    var items = [
+        { icon: '🔄', label: 'Обновить', action: function() { triggerTabFileRefresh(tabId); } },
+        { icon: '✏️', label: 'Переименовать', action: function() { renameTabById(tabId); } },
+        { icon: '📋', label: 'Дублировать', action: function() { duplicateTabById(tabId); } }
+    ];
+
+    items.forEach(function(item) {
+        var row = document.createElement('div');
+        row.className = 'tab-context-menu-item';
+        row.innerHTML = '<span>' + item.icon + '</span><span>' + item.label + '</span>';
+        row.addEventListener('click', function(e) {
+            e.stopPropagation();
+            closeTabContextMenu();
+            item.action();
+        });
+        menu.appendChild(row);
+    });
+
+    menu.style.display = 'block';
+    var menuW = menu.offsetWidth || 170;
+    var menuH = menu.offsetHeight || 110;
+    var left = Math.min(clientX, window.innerWidth - menuW - 8);
+    var top = Math.min(clientY, window.innerHeight - menuH - 8);
+    menu.style.left = Math.max(4, left) + 'px';
+    menu.style.top = Math.max(4, top) + 'px';
+}
+
+function renameTabById(tabId) {
+    var target = tabs.find(function(t) { return t.id === tabId; });
+    if (!target) return;
+
+    var overlay = document.getElementById('renameTabOverlay');
+    var inputEl = document.getElementById('renameTabInput');
+    var closeBtn = document.getElementById('renameTabCloseBtn');
+    var saveBtn = document.getElementById('renameTabSaveBtn');
+    var cancelBtn = document.getElementById('renameTabCancelBtn');
+
+    if (!overlay || !inputEl) return;
+
+    inputEl.value = target.name || '';
+    overlay.style.display = 'flex';
+    setTimeout(function() {
+        inputEl.focus();
+        inputEl.select();
+    }, 10);
+
+    function cleanup() {
+        overlay.style.display = 'none';
+        if (closeBtn) closeBtn.onclick = null;
+        if (saveBtn) saveBtn.onclick = null;
+        if (cancelBtn) cancelBtn.onclick = null;
+        inputEl.onkeydown = null;
+        overlay.onclick = null;
+    }
+
+    function commitRename() {
+        var nextName = inputEl.value.trim();
+        cleanup();
+        if (!nextName || nextName === target.name) return;
+        target.name = nextName;
+        renderTabsUI();
+        saveTabToDB(target);
+        showToast('Вкладка переименована');
+    }
+
+    if (closeBtn) closeBtn.onclick = cleanup;
+    if (cancelBtn) cancelBtn.onclick = cleanup;
+    if (saveBtn) saveBtn.onclick = commitRename;
+    overlay.onclick = function(e) { if (e.target === overlay) cleanup(); };
+    inputEl.onkeydown = function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            commitRename();
+        } else if (e.key === 'Escape' || e.key === 'Esc') {
+            e.preventDefault();
+            cleanup();
+        }
+    };
+}
+
+function handleSmartDroppedFile(file) {
+    readFileAsText(file).then(function(text) {
+        if (!Array.isArray(tabs) || tabs.length === 0) {
+            processCSVData(text, file.name);
+            return;
+        }
+
+        var lines = splitCSVIntoRecords(text);
+        if (lines.length < 2) {
+            showToast('Файл пустой или не содержит строк данных');
+            return;
+        }
+
+        var firstLine = lines[0].replace(/^\uFEFF/, '');
+        var delim = firstLine.includes('\t') ? '\t' : (!firstLine.includes(';') && firstLine.includes(',') ? ',' : ';');
+        var newOrigHeaders = parseCSVLine(firstLine, delim).map(function(h) {
+            return String(h || '').replace(/^\uFEFF/, '').trim();
+        });
+        var newRowCount = lines.length - 1;
+
+        var candidates = tabs.map(function(t) {
+            var oldVis = t.tableHeaders || [];
+            var oldAll = t.originalHeaders || oldVis;
+            var removedVis = oldVis.filter(function(h) { return newOrigHeaders.indexOf(h) === -1; });
+            var removedAll = oldAll.filter(function(h) { return newOrigHeaders.indexOf(h) === -1; });
+            var addedAll = newOrigHeaders.filter(function(h) { return oldAll.indexOf(h) === -1; });
+            var matchedVis = oldVis.length - removedVis.length;
+
+            var visScore = oldVis.length > 0 ? (matchedVis / oldVis.length) * 65 : 0;
+            var unionSet = new Set(oldAll.concat(newOrigHeaders));
+            var commonAll = oldAll.filter(function(h) { return newOrigHeaders.indexOf(h) !== -1; }).length;
+            var structScore = unionSet.size > 0 ? (commonAll / unionSet.size) * 25 : 0;
+            var delimScore = (!t.delimiter || t.delimiter === delim) ? 10 : 0;
+            var similarity = Math.min(100, Math.max(0, Math.round(visScore + structScore + delimScore)));
+
+            var oldRowsCnt = (Array.isArray(t.globalRows) && t.globalRows.length > 0)
+                ? t.globalRows.length
+                : ((Array.isArray(t.rawLines) && t.rawLines.length > 0) ? t.rawLines.length : (t.rowCount || 0));
+            var rowDiffPct = oldRowsCnt > 0 ? Math.round(((newRowCount - oldRowsCnt) / oldRowsCnt) * 100) : 0;
+
+            return {
+                tab: t,
+                similarity: similarity,
+                matchedVis: matchedVis,
+                totalVis: oldVis.length,
+                oldRowsCnt: oldRowsCnt,
+                newRowCount: newRowCount,
+                rowDiffPct: rowDiffPct,
+                removedCols: removedAll,
+                addedCols: addedAll
+            };
+        });
+
+        candidates.sort(function(a, b) { return b.similarity - a.similarity; });
+
+        showSmartDropModal({
+            fileName: file.name,
+            candidates: candidates,
+            onNewTab: function() {
+                handleNewFileSelection(file);
+            },
+            onRefreshTab: function(targetTab) {
+                applyRefreshedFileToTab(targetTab, text, file.name);
+            }
+        });
+    }).catch(function() {
+        showToast('Не удалось прочитать перетащенный файл');
+    });
+}
+
+function showSmartDropModal(opts) {
+    var overlay = document.getElementById('smartDropOverlay');
+    var titleEl = document.getElementById('smartDropTitle');
+    var closeBtn = document.getElementById('smartDropCloseBtn');
+    var cancelBtn = document.getElementById('smartDropCancelBtn');
+    var newTabBtn = document.getElementById('smartDropNewTabBtn');
+    var listEl = document.getElementById('smartDropTabsList');
+
+    if (!overlay || !listEl) {
+        opts.onNewTab();
+        return;
+    }
+
+    if (titleEl) {
+        titleEl.textContent = '📥 Файл «' + opts.fileName + '»';
+    }
+
+    var subtitleEl = document.getElementById('smartDropSubtitle');
+    var highMatchItems = opts.candidates.filter(function(c) { return c.similarity >= 50; });
+    var lowMatchItems = opts.candidates.filter(function(c) { return c.similarity < 50; });
+
+    if (subtitleEl) {
+        subtitleEl.textContent = highMatchItems.length > 0
+            ? 'Найдены похожие вкладки — обновите нужную или откройте файл как новую таблицу:'
+            : 'Похожих вкладок не найдено. Откройте файл как новую таблицу или выберите вкладку вручную:';
+    }
+
+    function buildTabCandidateCard(item) {
+        var card = document.createElement('div');
+        card.className = 'smart-drop-tab-card' + (item.similarity >= 75 ? ' is-high-match' : '');
+
+        var simColor = item.similarity >= 75 ? '#34b357' : (item.similarity >= 50 ? '#e59f24' : '#e05260');
+        var simBg = item.similarity >= 75 ? 'rgba(52, 179, 87, 0.14)' : (item.similarity >= 50 ? 'rgba(229, 159, 36, 0.14)' : 'rgba(224, 82, 96, 0.14)');
+        var sign = item.rowDiffPct > 0 ? '+' : '';
+        var rowsHtml = item.oldRowsCnt > 0
+            ? ('Строк: <strong>' + item.oldRowsCnt.toLocaleString('ru-RU') + ' → ' + item.newRowCount.toLocaleString('ru-RU') + ' (' + sign + item.rowDiffPct + '%)</strong>')
+            : ('Строк в файле: <strong>' + item.newRowCount.toLocaleString('ru-RU') + '</strong>');
+
+        var isCurrentActive = (item.tab.id === activeTabId);
+        var activePillHtml = isCurrentActive ? '<span class="smart-drop-active-pill">Открыта сейчас</span>' : '';
+
+        var bodyDiv = document.createElement('div');
+        bodyDiv.className = 'smart-drop-tab-body';
+
+        // Левая колонка: название, метрики жирным, кнопка раскрытия столбцов
+        var leftCol = document.createElement('div');
+        leftCol.className = 'smart-drop-left-col';
+
+        var titleRow = document.createElement('div');
+        titleRow.style.cssText = 'display: flex; align-items: center; gap: 8px; min-width: 0;';
+        titleRow.innerHTML =
+            '<span style="font-size: 15px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' + escapeHtmlSafe(item.tab.name) + '</span>' +
+            activePillHtml;
+
+        var metaDiv = document.createElement('div');
+        metaDiv.style.cssText = 'font-size: 13.5px; opacity: 0.9;';
+        metaDiv.innerHTML = 'Активных столбцов: <strong>' + item.matchedVis + ' из ' + item.totalVis + '</strong> • ' + rowsHtml;
+
+        var diffParts = [];
+        if (item.addedCols.length > 0) diffParts.push('+' + item.addedCols.length + ' новых');
+        if (item.removedCols.length > 0) diffParts.push('−' + item.removedCols.length + ' пропало');
+        var diffSummary = diffParts.length > 0 ? ('Изменения столбцов (' + diffParts.join(', ') + ')') : 'Структура столбцов совпадает';
+
+        var toggleBtn = document.createElement('button');
+        toggleBtn.type = 'button';
+        toggleBtn.className = 'smart-drop-diff-toggle';
+        toggleBtn.textContent = '▸ ' + diffSummary;
+
+        leftCol.appendChild(titleRow);
+        leftCol.appendChild(metaDiv);
+        leftCol.appendChild(toggleBtn);
+
+        // Правая колонка: бейдж схожести сверху, кнопка обновления снизу по центру карточки
+        var rightCol = document.createElement('div');
+        rightCol.className = 'smart-drop-right-col';
+
+        var simBadge = document.createElement('span');
+        simBadge.className = 'smart-drop-sim-badge';
+        simBadge.style.color = simColor;
+        simBadge.style.background = simBg;
+        simBadge.textContent = 'Схожесть: ' + item.similarity + '%';
+
+        var updateBtn = document.createElement('button');
+        updateBtn.type = 'button';
+        updateBtn.className = 'smart-drop-apply-btn';
+        updateBtn.innerHTML = '<span>🔄</span><span>Обновить</span>';
+
+        rightCol.appendChild(simBadge);
+        rightCol.appendChild(updateBtn);
+
+        var detailsDiv = document.createElement('div');
+        detailsDiv.className = 'smart-drop-details';
+
+        var detHtml = '';
+        if (item.removedCols.length > 0) {
+            detHtml += '<div style="margin-bottom: 6px;"><strong>Пропали (' + item.removedCols.length + '):</strong><br>';
+            item.removedCols.forEach(function(c) {
+                detHtml += '<span class="refresh-col-badge refresh-col-removed">− ' + escapeHtmlSafe(c) + '</span>';
+            });
+            detHtml += '</div>';
+        }
+        if (item.addedCols.length > 0) {
+            detHtml += '<div><strong>Добавились (' + item.addedCols.length + '):</strong><br>';
+            item.addedCols.forEach(function(c) {
+                detHtml += '<span class="refresh-col-badge refresh-col-added">+ ' + escapeHtmlSafe(c) + '</span>';
+            });
+            detHtml += '</div>';
+        }
+        if (!detHtml) {
+            detHtml = '<span style="color: #34b357; font-weight: 600;">✓ Все столбцы полностью совпадают</span>';
+        }
+        detailsDiv.innerHTML = detHtml;
+
+        toggleBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var isOpen = detailsDiv.style.display === 'block';
+            detailsDiv.style.display = isOpen ? 'none' : 'block';
+            toggleBtn.textContent = (isOpen ? '▸ ' : '▾ ') + diffSummary;
+        });
+
+        updateBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            cleanup();
+            opts.onRefreshTab(item.tab);
+        });
+
+        bodyDiv.appendChild(leftCol);
+        bodyDiv.appendChild(rightCol);
+        card.appendChild(bodyDiv);
+        card.appendChild(detailsDiv);
+        return card;
+    }
+
+    listEl.innerHTML = '';
+    highMatchItems.forEach(function(item) {
+        listEl.appendChild(buildTabCandidateCard(item));
+    });
+
+    if (lowMatchItems.length > 0) {
+        var lowContainer = document.createElement('div');
+        lowContainer.style.display = highMatchItems.length === 0 ? 'block' : 'none';
+        lowMatchItems.forEach(function(item) {
+            lowContainer.appendChild(buildTabCandidateCard(item));
+        });
+
+        if (highMatchItems.length > 0) {
+            var lowToggleBtn = document.createElement('button');
+            lowToggleBtn.type = 'button';
+            lowToggleBtn.className = 'smart-drop-low-toggle';
+            lowToggleBtn.textContent = '▸ Показать непохожие вкладки (' + lowMatchItems.length + ')';
+            lowToggleBtn.addEventListener('click', function() {
+                var isShown = lowContainer.style.display === 'block';
+                lowContainer.style.display = isShown ? 'none' : 'block';
+                lowToggleBtn.textContent = (isShown ? '▸ Показать' : '▾ Скрыть') + ' непохожие вкладки (' + lowMatchItems.length + ')';
+            });
+            listEl.appendChild(lowToggleBtn);
+        }
+        listEl.appendChild(lowContainer);
+    }
+
+    overlay.style.display = 'flex';
+
+    function onKeyDown(e) {
+        if (e.key === 'Escape' || e.key === 'Esc') cleanup();
+    }
+
+    function cleanup() {
+        overlay.style.display = 'none';
+        if (closeBtn) closeBtn.onclick = null;
+        if (cancelBtn) cancelBtn.onclick = null;
+        if (newTabBtn) newTabBtn.onclick = null;
+        overlay.onclick = null;
+        document.removeEventListener('keydown', onKeyDown);
+    }
+
+    if (closeBtn) closeBtn.onclick = cleanup;
+    if (cancelBtn) cancelBtn.onclick = cleanup;
+    overlay.onclick = function(e) { if (e.target === overlay) cleanup(); };
+    document.addEventListener('keydown', onKeyDown);
+    if (newTabBtn) {
+        newTabBtn.onclick = function() {
+            cleanup();
+            opts.onNewTab();
+        };
+    }
+}
+
+function duplicateTabById(tabId) {
+    var src = tabs.find(function(t) { return t.id === tabId; });
+    if (!src) return;
+    if (!src._loaded) {
+        showToast('Сначала откройте вкладку для загрузки данных');
+        return;
+    }
+    var newId = 'tab_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+    var copyTab = {
+        id: newId,
+        name: src.name + ' (копия)',
+        tableHeaders: src.tableHeaders.slice(),
+        originalHeaders: (src.originalHeaders || src.tableHeaders).slice(),
+        rawLines: src.rawLines ? src.rawLines.slice() : [],
+        delimiter: src.delimiter || ';',
+        globalRows: src.globalRows.map(function(r) { return r.slice(); }),
+        currentFilteredRows: src.currentFilteredRows.map(function(r) { return r.slice(); }),
+        currentPage: 1,
+        pageSize: src.pageSize || 50,
+        globalSearchQuery: src.globalSearchQuery || '',
+        columnFilters: Array.isArray(src.columnFilters) ? src.columnFilters.slice() : [],
+        cacheSizeMB: src.cacheSizeMB || '0.00',
+        baseHeaderOrder: src.baseHeaderOrder ? src.baseHeaderOrder.slice() : src.tableHeaders.slice(),
+        rawHeaders: src.rawHeaders ? src.rawHeaders.slice() : src.tableHeaders.slice(),
+        fileHeaderOrder: src.fileHeaderOrder ? src.fileHeaderOrder.slice() : src.tableHeaders.slice(),
+        pivotColumns: src.pivotColumns ? src.pivotColumns.slice() : [],
+        expandedPaths: src.expandedPaths ? src.expandedPaths.slice() : [],
+        selectedRowIndices: new Set(src.selectedRowIndices instanceof Set ? Array.from(src.selectedRowIndices) : []),
+        pinnedColWidths: Object.assign({}, src.pinnedColWidths || {}),
+        sortCol: src.sortCol,
+        sortDir: src.sortDir,
+        isDerived: !!src.isDerived,
+        isRoot: src.isRoot !== false,
+        sourceFileName: src.sourceFileName || src.name,
+        parentTabIds: src.parentTabIds ? src.parentTabIds.slice() : [],
+        pipeline: src.pipeline ? src.pipeline.slice() : [],
+        _loaded: true
+    };
+    tabs.push(copyTab);
+    saveTabToDB(copyTab);
+    activateTab(newId);
+    showToast('Вкладка продублирована');
+}
+
+function triggerTabFileRefresh(tabId) {
+    var inp = document.getElementById('tabRefreshFileInput');
+    if (!inp) return;
+    _contextTargetTabId = tabId;
+    inp.value = '';
+    inp.click();
+}
+
+(function initTabRefreshListener() {
+    var inp = document.getElementById('tabRefreshFileInput');
+    if (!inp) return;
+    inp.addEventListener('change', function() {
+        var file = inp.files && inp.files[0];
+        if (!file || !_contextTargetTabId) return;
+        var targetTab = tabs.find(function(t) { return t.id === _contextTargetTabId; });
+        if (!targetTab) return;
+
+        readFileAsText(file).then(function(text) {
+            applyRefreshedFileToTab(targetTab, text, file.name);
+        }).catch(function() {
+            showToast('Не удалось прочитать выбранный файл');
+        });
+    });
+})();
+
+function applyRefreshedFileToTab(targetTab, text, newFileName) {
+    var lines = splitCSVIntoRecords(text);
+    if (lines.length < 2) {
+        showToast('Файл пустой или не содержит строк данных');
+        return;
+    }
+
+    var firstLine = lines.shift().replace(/^\uFEFF/, '');
+    var delim = firstLine.includes('\t') ? '\t' : (!firstLine.includes(';') && firstLine.includes(',') ? ',' : ';');
+    var newOrigHeaders = parseCSVLine(firstLine, delim).map(function(h) {
+        return String(h || '').replace(/^\uFEFF/, '').trim();
+    });
+
+    var oldVisibleHeaders = targetTab.tableHeaders || [];
+    var oldAllHeaders = targetTab.originalHeaders || oldVisibleHeaders;
+
+    var removedVisible = oldVisibleHeaders.filter(function(h) { return newOrigHeaders.indexOf(h) === -1; });
+    var removedAll = oldAllHeaders.filter(function(h) { return newOrigHeaders.indexOf(h) === -1; });
+    var addedAll = newOrigHeaders.filter(function(h) { return oldAllHeaders.indexOf(h) === -1; });
+    var matchedCount = oldVisibleHeaders.length - removedVisible.length;
+
+    // 1. Риск по потере активных столбцов (до 50%)
+    var visibleLossRatio = oldVisibleHeaders.length > 0 ? (removedVisible.length / oldVisibleHeaders.length) : 1;
+    var riskVisible = visibleLossRatio * 50;
+
+    // 2. Риск по общему расхождению всех столбцов файла (до 25%)
+    var unionSet = new Set(oldAllHeaders.concat(newOrigHeaders));
+    var commonAllCount = oldAllHeaders.filter(function(h) { return newOrigHeaders.indexOf(h) !== -1; }).length;
+    var jaccardDiff = unionSet.size > 0 ? (1 - commonAllCount / unionSet.size) : 1;
+    var riskStructure = jaccardDiff * 25;
+
+    // 3. Риск по аномальному изменению количества строк (до 15%)
+    var oldRowCount = Array.isArray(targetTab.globalRows) ? targetTab.globalRows.length : 0;
+    var newRowCount = lines.length;
+    var rowDiffPct = oldRowCount > 0 ? Math.round(((newRowCount - oldRowCount) / oldRowCount) * 100) : 0;
+    var riskRows = 0;
+    if (oldRowCount > 0) {
+        var ratio = newRowCount / oldRowCount;
+        if (ratio < 0.5 || ratio > 2.0) riskRows = 15;
+        else if (ratio < 0.75 || ratio > 1.5) riskRows = 7;
+    }
+
+    // 4. Риск по смене разделителя CSV (10%)
+    var riskDelim = (targetTab.delimiter && targetTab.delimiter !== delim) ? 10 : 0;
+
+    var errorProbability = Math.min(99, Math.max(1, Math.round(riskVisible + riskStructure + riskRows + riskDelim)));
+    var hasAnomaly = (removedAll.length > 0 || addedAll.length > 0 || matchedCount === 0 || riskRows >= 15 || riskDelim > 0);
+
+    var hasAddedCols = addedAll.length > 0;
+
+    if (hasAnomaly) {
+        showRefreshStructureWarning({
+            fileName: newFileName,
+            tabName: targetTab.name,
+            matchedCount: matchedCount,
+            totalVisible: oldVisibleHeaders.length,
+            oldRowCount: oldRowCount,
+            newRowCount: newRowCount,
+            rowDiffPct: rowDiffPct,
+            errorProbability: errorProbability,
+            removedCols: removedAll,
+            addedCols: addedAll,
+            onConfirm: function() {
+                commitRefreshedDataToTab(targetTab, lines, delim, newOrigHeaders, hasAddedCols);
+            },
+            onOpenAsNewTab: function() {
+                processCSVData(text, newFileName);
+            }
+        });
+        return;
+    }
+
+    commitRefreshedDataToTab(targetTab, lines, delim, newOrigHeaders, hasAddedCols);
+}
+
+function showRefreshStructureWarning(opts) {
+    var overlay = document.getElementById('refreshWarnOverlay');
+    var summaryEl = document.getElementById('refreshWarnSummary');
+    var detailsEl = document.getElementById('refreshWarnDetails');
+    var closeBtn = document.getElementById('refreshWarnCloseBtn');
+    var cancelBtn = document.getElementById('refreshWarnCancelBtn');
+    var confirmBtn = document.getElementById('refreshWarnConfirmBtn');
+    var newTabBtn = document.getElementById('refreshWarnNewTabBtn');
+    var forceWrap = document.getElementById('refreshWarnForceWrap');
+    var forceChk = document.getElementById('refreshWarnForceChk');
+
+    if (!overlay) {
+        if (confirm('Структура файла отличается. Обновить данные?')) opts.onConfirm();
+        return;
+    }
+
+    var prob = opts.errorProbability || 0;
+    var riskColor = prob >= 60 ? '#e05260' : (prob >= 25 ? '#e59f24' : '#34b357');
+    var riskLabel = prob >= 60 ? 'Высокий риск — возможно, выбран другой файл' : (prob >= 25 ? 'Средний риск' : 'Низкий риск');
+    var sign = opts.rowDiffPct > 0 ? '+' : '';
+
+    summaryEl.innerHTML =
+        '<div style="padding: 6px 10px; margin-bottom: 8px; border-radius: 5px; border-left: 3px solid ' + riskColor + '; background: var(--bg-color);">' +
+            'Вероятность ошибки: <strong style="color:' + riskColor + ';">~' + prob + '% (' + riskLabel + ')</strong>' +
+        '</div>' +
+        'Файл <strong>' + escapeHtmlSafe(opts.fileName) + '</strong> для вкладки <strong>«' + escapeHtmlSafe(opts.tabName) + '»</strong>:<br>' +
+        '• Активные столбцы: <strong>' + opts.matchedCount + ' из ' + opts.totalVisible + '</strong><br>' +
+        '• Количество строк: <strong>' + opts.oldRowCount + ' → ' + opts.newRowCount + '</strong> (' + sign + opts.rowDiffPct + '%)';
+
+    var html = '';
+    if (opts.removedCols.length > 0) {
+        html += '<div style="margin-bottom: 6px;"><strong>Пропали столбцы (' + opts.removedCols.length + '):</strong><br>';
+        opts.removedCols.forEach(function(col) {
+            html += '<span class="refresh-col-badge refresh-col-removed">− ' + escapeHtmlSafe(col) + '</span>';
+        });
+        html += '</div>';
+    }
+    if (opts.addedCols.length > 0) {
+        html += '<div><strong>Добавились новые столбцы (' + opts.addedCols.length + '):</strong><br>';
+        opts.addedCols.forEach(function(col) {
+            html += '<span class="refresh-col-badge refresh-col-added">+ ' + escapeHtmlSafe(col) + '</span>';
+        });
+        html += '<div style="margin-top: 4px; opacity: 0.75; font-size: 11px;">После обновления вы сможете включить их в правой панели «Столбцы».</div>';
+        html += '</div>';
+    }
+    detailsEl.innerHTML = html;
+    detailsEl.style.display = html ? 'block' : 'none';
+
+    var zeroMatch = (opts.matchedCount === 0);
+    var highRisk = (prob >= 70 && !zeroMatch);
+
+    if (forceWrap && forceChk) {
+        forceChk.checked = false;
+        forceWrap.style.display = highRisk ? 'flex' : 'none';
+    }
+
+    if (confirmBtn) {
+        confirmBtn.style.display = zeroMatch ? 'none' : 'inline-block';
+        confirmBtn.disabled = highRisk;
+        confirmBtn.style.opacity = highRisk ? '0.45' : '1';
+        confirmBtn.style.cursor = highRisk ? 'not-allowed' : 'pointer';
+    }
+
+    if (forceChk && confirmBtn) {
+        forceChk.onchange = function() {
+            confirmBtn.disabled = !forceChk.checked;
+            confirmBtn.style.opacity = forceChk.checked ? '1' : '0.45';
+            confirmBtn.style.cursor = forceChk.checked ? 'pointer' : 'not-allowed';
+        };
+    }
+
+    overlay.style.display = 'flex';
+
+    function onKeyDown(e) {
+        if (e.key === 'Escape' || e.key === 'Esc') cleanup();
+    }
+
+    function cleanup() {
+        overlay.style.display = 'none';
+        if (closeBtn) closeBtn.onclick = null;
+        if (newTabBtn) newTabBtn.onclick = null;
+        if (forceChk) forceChk.onchange = null;
+        cancelBtn.onclick = null;
+        confirmBtn.onclick = null;
+        overlay.onclick = null;
+        document.removeEventListener('keydown', onKeyDown);
+    }
+
+    if (closeBtn) closeBtn.onclick = cleanup;
+    cancelBtn.onclick = cleanup;
+    overlay.onclick = function(e) { if (e.target === overlay) cleanup(); };
+    document.addEventListener('keydown', onKeyDown);
+    if (newTabBtn) {
+        newTabBtn.onclick = function() {
+            cleanup();
+            if (typeof opts.onOpenAsNewTab === 'function') opts.onOpenAsNewTab();
+        };
+    }
+    confirmBtn.onclick = function() {
+        if (confirmBtn.disabled) return;
+        cleanup();
+        opts.onConfirm();
+    };
+}
+
+function commitRefreshedDataToTab(targetTab, lines, delim, newOrigHeaders, openRightPanelOnComplete) {
+    var oldVisibleHeaders = targetTab.tableHeaders || [];
+
+    // Сохраняем старые настройки по именам столбцов
+    var oldPinnedByName = {};
+    if (targetTab.pinnedColWidths) {
+        for (var k in targetTab.pinnedColWidths) {
+            var hName = oldVisibleHeaders[parseInt(k, 10)];
+            if (hName) oldPinnedByName[hName] = targetTab.pinnedColWidths[k];
+        }
+    }
+    var oldFilterByName = {};
+    if (Array.isArray(targetTab.columnFilters)) {
+        oldVisibleHeaders.forEach(function(hName, idx) {
+            if (targetTab.columnFilters[idx]) oldFilterByName[hName] = targetTab.columnFilters[idx];
+        });
+    }
+    var oldPivotNames = (targetTab.pivotColumns || []).map(function(idx) { return oldVisibleHeaders[idx]; }).filter(Boolean);
+    var oldSortName = (typeof targetTab.sortCol === 'number' && targetTab.sortCol >= 0) ? oldVisibleHeaders[targetTab.sortCol] : null;
+
+    var limit = parseInt(localStorage.getItem('saved_column_limit') || '4', 10);
+    var nextHeaders = [];
+    for (var i = 0; i < oldVisibleHeaders.length; i++) {
+        var cleanOldH = String(oldVisibleHeaders[i] || '').replace(/^\uFEFF/, '').trim();
+        if (newOrigHeaders.indexOf(cleanOldH) !== -1 && nextHeaders.indexOf(cleanOldH) === -1) {
+            nextHeaders.push(cleanOldH);
+        }
+    }
+    if (nextHeaders.length === 0) {
+        nextHeaders = newOrigHeaders.slice(0, limit);
+    }
+
+    var rawIdxMap = nextHeaders.map(function(h) { return newOrigHeaders.indexOf(h); });
+    var nextRows = [];
+    lines.forEach(function(line) {
+        var parsed = parseCSVLine(line, delim);
+        var cells = rawIdxMap.map(function(idx) { return parsed[idx] !== undefined ? parsed[idx] : ''; });
+        if (cells.length > 0 && cells.some(function(c) { return c !== ''; })) nextRows.push(cells);
+    });
+
+    var nextPinned = {};
+    var nextFilters = new Array(nextHeaders.length).fill('');
+    nextHeaders.forEach(function(h, idx) {
+        if (typeof oldPinnedByName[h] === 'number') nextPinned[idx] = oldPinnedByName[h];
+        if (oldFilterByName[h]) nextFilters[idx] = oldFilterByName[h];
+    });
+
+    targetTab.delimiter = delim;
+    targetTab.rawLines = lines.slice();
+    targetTab.originalHeaders = newOrigHeaders;
+    targetTab.rawHeaders = newOrigHeaders.slice();
+    targetTab.fileHeaderOrder = newOrigHeaders.slice();
+    targetTab.baseHeaderOrder = nextHeaders.slice();
+    targetTab.tableHeaders = nextHeaders;
+    targetTab.globalRows = nextRows;
+    targetTab.currentFilteredRows = nextRows.slice();
+    targetTab.cacheSizeMB = getDataSizeMB(lines);
+    targetTab.pinnedColWidths = nextPinned;
+    targetTab.columnFilters = nextFilters;
+    targetTab.pivotColumns = oldPivotNames.map(function(h) { return nextHeaders.indexOf(h); }).filter(function(idx) { return idx !== -1; });
+    targetTab.sortCol = oldSortName ? nextHeaders.indexOf(oldSortName) : null;
+    if (targetTab.sortCol === -1) { targetTab.sortCol = null; targetTab.sortDir = null; }
+    targetTab.selectedRowIndices = new Set();
+    targetTab.currentPage = 1;
+    targetTab.colWidths = null;
+    targetTab._loaded = true;
+
+    // Освобождаем временный буфер строк из RAM сразу после сборки данных
+    lines.length = 0;
+
+    if (activeTabId === targetTab.id) {
+        var tHeadEl = document.getElementById('tableHead');
+        var tBodyEl = document.getElementById('tableBody');
+        if (tHeadEl) tHeadEl.innerHTML = '';
+        if (tBodyEl) tBodyEl.innerHTML = '';
+        activateTab(targetTab.id);
+        var rightPanelEl = document.getElementById('rightPanel');
+        var chooserPanelEl = document.getElementById('columnChooserPanel');
+        if (rightPanelEl) {
+            if (openRightPanelOnComplete) {
+                rightPanelEl.classList.remove('collapsed');
+                if (chooserPanelEl) chooserPanelEl.style.display = 'block';
+            }
+            if (!rightPanelEl.classList.contains('collapsed') && typeof buildCheckboxesForActiveTab === 'function') {
+                buildCheckboxesForActiveTab();
+            }
+        }
+    } else {
+        renderTabsUI();
+    }
+
+    showToast('Данные обновлены: ' + nextRows.length + ' строк');
+
+    // Сохраняем в IndexedDB асинхронно, чтобы не блокировать отрисовку на больших файлах
+    setTimeout(function() {
+        saveTabToDB(targetTab);
+    }, 0);
 }
 
 // ==========================================================================
@@ -2252,6 +3309,10 @@ function renderTableStructure(skipWidthRecalc) {
     if (!thead) return;
     thead.innerHTML = '';
     if (!currentTab || !currentTab.tableHeaders) return;
+    var oldColgroup = document.querySelector('#dataTable colgroup');
+    if (oldColgroup && oldColgroup.children.length !== currentTab.tableHeaders.length + 1) {
+        oldColgroup.remove();
+    }
     if (!currentTab.pivotColumns) currentTab.pivotColumns = [];
 
     var tr = document.createElement('tr');
@@ -2882,24 +3943,7 @@ function moveColumnInTab(tab, fromIdx, toIdx) {
         });
     }
 
-    if (Array.isArray(tab.rawLines) && tab.rawLines.length > 0) {
-        var delim = tab.delimiter || ';';
-        tab.rawLines = tab.rawLines.map(function(line) {
-            var cells = parseCSVLine(line, delim);
-            shiftArr(cells, fromIdx, toIdx);
-            return cells.map(function(c) {
-                var s = String(c === undefined || c === null ? '' : c);
-                if (s.includes(delim) || s.includes('"') || s.includes('\n') || s.includes('\r')) {
-                    return '"' + s.replace(/"/g, '""') + '"';
-                }
-                return s;
-            }).join(delim);
-        });
-    }
-
-    if (Array.isArray(tab.originalHeaders)) shiftArr(tab.originalHeaders, fromIdx, toIdx);
     if (Array.isArray(tab.baseHeaderOrder)) shiftArr(tab.baseHeaderOrder, fromIdx, toIdx);
-    if (Array.isArray(tab.rawHeaders)) shiftArr(tab.rawHeaders, fromIdx, toIdx);
 
     if (Array.isArray(tab.pivotColumns)) {
         tab.pivotColumns = tab.pivotColumns.map(function(pIdx) {
@@ -3651,20 +4695,50 @@ function buildCheckboxesForActiveTab() {
             }
         }
 
-        var delim = currentTab.delimiter || ';'; var newRows = [];
+        var oldFiltersByName = {};
+        if (Array.isArray(currentTab.columnFilters)) {
+            currentTab.tableHeaders.forEach(function(hName, idx) {
+                if (currentTab.columnFilters[idx]) oldFiltersByName[hName] = currentTab.columnFilters[idx];
+            });
+        }
+
+        var gSearchEl = document.getElementById('globalSearchInput');
+        if (gSearchEl) currentTab.globalSearchQuery = gSearchEl.value;
+
+        // Сохраняем текущий пользовательский порядок для столбцов, которые уже были открыты
+        var orderedPairs = [];
+        currentTab.tableHeaders.forEach(function(existingName) {
+            var pos = chosenHeaders.indexOf(existingName);
+            if (pos !== -1) {
+                orderedPairs.push({ name: existingName, rawIdx: chosenIndices[pos] });
+            }
+        });
+        chosenHeaders.forEach(function(hName, idx) {
+            if (!orderedPairs.some(function(p) { return p.name === hName; })) {
+                orderedPairs.push({ name: hName, rawIdx: chosenIndices[idx] });
+            }
+        });
+
+        var finalHeaders = orderedPairs.map(function(p) { return p.name; });
+        var finalRawIndices = orderedPairs.map(function(p) { return p.rawIdx; });
+
+        var delim = currentTab.delimiter || ';';
+        var newRows = [];
         currentTab.rawLines.forEach(function(line) {
             var res = parseCSVLine(line, delim);
-            var cells = chosenIndices.map(function(idx) { return res[idx] !== undefined ? res[idx] : ''; });
+            var cells = finalRawIndices.map(function(idx) { return res[idx] !== undefined ? res[idx] : ''; });
             if (cells.length > 0 && cells.some(function(c) { return c !== ''; })) newRows.push(cells);
         });
 
-        currentTab.tableHeaders = chosenHeaders; currentTab.globalRows = newRows;
-        var rebuiltPinned = {};
-        chosenHeaders.forEach(function(hName, newIdx) {
-            if (typeof oldPinnedByName[hName] === 'number') rebuiltPinned[newIdx] = oldPinnedByName[hName];
-        });
-        currentTab.pinnedColWidths = rebuiltPinned;
-        currentTab.currentFilteredRows = newRows.concat(); currentTab.currentPage = 1;
+        currentTab.tableHeaders = finalHeaders;
+        currentTab.globalRows = newRows;
+        currentTab.currentFilteredRows = newRows.concat();
+        currentTab.currentPage = 1;
+        currentTab.sortCol = null;
+        currentTab.sortDir = null;
+        currentTab.colWidths = null;
+
+        // Восстанавливаем уровни свода и сдвигаем их в начало таблицы
         currentTab.pivotColumns = [];
         oldPivotNames.forEach(function(pName) {
             var foundIdx = currentTab.tableHeaders.indexOf(pName);
@@ -3675,33 +4749,21 @@ function buildCheckboxesForActiveTab() {
             }
         });
 
-        if (currentTab.selectedRowIndices instanceof Set) currentTab.selectedRowIndices.clear();
-        updatePivotZoneUI(); saveTabToDB(currentTab); 
-        
-        // Сохраняем актуальный текст из поля глобального поиска и фильтры колонок по именам
-        var gSearchEl = document.getElementById('globalSearchInput');
-        if (gSearchEl) currentTab.globalSearchQuery = gSearchEl.value;
-
-        var oldFiltersByName = {};
-        if (Array.isArray(currentTab.columnFilters)) {
-            currentTab.tableHeaders.forEach(function(hName, idx) {
-                if (currentTab.columnFilters[idx]) oldFiltersByName[hName] = currentTab.columnFilters[idx];
-            });
-        }
-
-        currentTab.tableHeaders = chosenHeaders;
-        currentTab.columnFilters = chosenHeaders.map(function(hName) {
-            return oldFiltersByName[hName] || '';
+        // Привязываем ручные ширины и фильтры по итоговому порядку заголовков
+        var rebuiltPinned = {};
+        var rebuiltFilters = [];
+        currentTab.tableHeaders.forEach(function(hName, newIdx) {
+            if (typeof oldPinnedByName[hName] === 'number') rebuiltPinned[newIdx] = oldPinnedByName[hName];
+            rebuiltFilters.push(oldFiltersByName[hName] || '');
         });
-        currentTab.globalRows = newRows;
-        currentTab.currentFilteredRows = newRows.concat();
-        currentTab.currentPage = 1;
+        currentTab.pinnedColWidths = rebuiltPinned;
+        currentTab.columnFilters = rebuiltFilters;
 
-        currentTab.sortCol = null;
-        currentTab.sortDir = null;
-        currentTab.colWidths = null;
-
+        if (currentTab.selectedRowIndices instanceof Set) currentTab.selectedRowIndices.clear();
+        updatePivotZoneUI();
+        saveTabToDB(currentTab);
         finishTabActivation(currentTab);
+
 
         document.getElementById('rightPanel').classList.add('collapsed'); document.getElementById('columnChooserPanel').style.display = 'none';
         showToast('Столбцы обновлены (' + chosenHeaders.length + ')');
@@ -3729,7 +4791,11 @@ function buildCheckboxesForActiveTab() {
         var inp = document.getElementById('columnLimitInput'); if (inp) inp.addEventListener('input', function() { localStorage.setItem('saved_column_limit', this.value); });
     }, 10);
     
+    var seenCheckboxNames = new Set();
     origHeaders.forEach(function(headerName, idx) {
+        var cleanHeader = String(headerName || '').trim();
+        if (seenCheckboxNames.has(cleanHeader)) return;
+        seenCheckboxNames.add(cleanHeader);
         var label = document.createElement('label'); label.className = 'column-checkbox-label';
         var chk = document.createElement('input'); chk.type = 'checkbox'; chk.className = 'pivot-chk'; chk.style.margin = '0'; chk.setAttribute('data-raw-index', idx);
         chk.setAttribute('data-header-name', headerName); chk.checked = currentTab.tableHeaders.includes(headerName);
@@ -4126,7 +5192,20 @@ var originalCloseTab = closeTab;
 closeTab = function(tabId, e) { originalCloseTab(tabId, e); toggleEmptyState(); };
 window.addEventListener('dragover', function(e) { e.preventDefault(); if (emptyState && tabs.length === 0) emptyState.classList.add('drag-active'); });
 window.addEventListener('dragleave', function(e) { if (e.relatedTarget === null && emptyState) emptyState.classList.remove('drag-active'); });
-window.addEventListener('drop', function(e) { e.preventDefault(); if (emptyState) emptyState.classList.remove('drag-active'); var files = e.dataTransfer.files; if (files && files.length > 0) handleNewFileSelection(files[0]); });
+window.addEventListener('drop', function(e) {
+    e.preventDefault();
+    if (emptyState) emptyState.classList.remove('drag-active');
+    var files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+        if (files.length === 1 && Array.isArray(tabs) && tabs.length > 0 && typeof handleSmartDroppedFile === 'function') {
+            handleSmartDroppedFile(files[0]);
+        } else {
+            handleNewFileSelection(files[0]);
+        }
+    }
+    if (typeof toggleEmptyState === 'function') toggleEmptyState();
+});
+
 toggleEmptyState();
 
 var emptySearchState = document.getElementById('emptySearchState');
