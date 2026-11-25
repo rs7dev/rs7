@@ -1156,7 +1156,172 @@
       border-color: #388bfd !important;
     }
 
-
+    /* === ПЛАВАЮЩЕЕ ОКНО КОНСТРУКТОРА СКЛЕЙКИ ТАБЛИЦ (В ЕДИНОМ СТИЛЕ С ИНСПЕКТОРОМ) === */
+    .merge-floating-host {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9500;
+      display: none;
+    }
+    .merge-floating-host.open {
+      display: block;
+    }
+    .merge-modal-window {
+      position: fixed;
+      top: 56px;
+      left: max(16px, calc(50% - 430px));
+      width: 860px;
+      max-width: calc(100vw - 32px);
+      max-height: calc(100vh - 80px);
+      background: var(--win-bg, var(--panel-bg));
+      color: var(--text-color);
+      border: 1px solid var(--win-bd, var(--panel-border));
+      border-radius: 0;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, .28);
+      font-family: inherit;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      pointer-events: auto;
+      overflow: hidden;
+      resize: both;
+      min-width: 420px;
+      min-height: 220px;
+    }
+    .merge-modal-window.pinned {
+      right: 16px !important;
+      bottom: 16px !important;
+      left: auto !important;
+      top: auto !important;
+    }
+    .merge-modal-window.pinned #mergeModalHeader {
+      cursor: pointer;
+    }
+    .merge-modal-window.minimized {
+      width: 390px !important;
+      height: auto !important;
+      min-height: 0 !important;
+      resize: none !important;
+    }
+    .merge-modal-window.minimized #mergeModalBody,
+    .merge-modal-window.minimized #mergeModalFooter {
+      display: none !important;
+    }
+    #mergeModalHeader {
+      height: 38px;
+      padding: 0 10px 0 12px;
+      background: var(--hdr-bg, var(--th-bg));
+      border-bottom: 1px solid var(--win-bd, var(--panel-border));
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: move;
+      user-select: none;
+      flex-shrink: 0;
+    }
+    #mergeModalTitle {
+      flex: 1;
+      margin: 0;
+      font-size: 14.5px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .merge-modal-window select,
+    .merge-modal-window input[type="text"],
+    .merge-modal-window .action-btn,
+    .merge-modal-window .fi-btn {
+      font-size: 13.5px;
+    }
+    .merge-col-item {
+      font-size: 13.5px;
+    }
+    #mergeModalBody {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    #mergeModalFooter {
+      padding: 8px 12px;
+      background: var(--hdr-bg, var(--th-bg));
+      border-top: 1px solid var(--win-bd, var(--panel-border));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .merge-top-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 10px;
+      background: var(--card-bg, var(--bg-color));
+      border: 1px solid var(--card-bd, var(--panel-border));
+      border-radius: 6px;
+    }
+    .merge-badge-t {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .merge-connector-line {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding-left: 16px;
+      font-size: 12px;
+      font-weight: 600;
+      opacity: 0.75;
+      user-select: none;
+    }
+    .merge-step-card {
+      background: var(--card-bg, var(--bg-color));
+      border: 1px solid var(--card-bd, var(--panel-border));
+      border-radius: 6px;
+      padding: 9px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .merge-step-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .merge-cols-drawer {
+      border-top: 1px dashed var(--card-bd, var(--panel-border));
+      padding-top: 8px;
+      margin-top: 2px;
+    }
+    .merge-cols-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+      gap: 5px 10px;
+      margin-top: 6px;
+    }
+    .merge-col-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      cursor: pointer;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
   </style>
 </head>
@@ -1415,6 +1580,40 @@
     </div>
 </div>
 
+<!-- ПЛАВАЮЩЕЕ ОКНО КОНСТРУКТОРА ОБОГАЩЕНИЯ (СКЛЕЙКИ) ТАБЛИЦ -->
+<div id="mergeTablesModal" class="merge-floating-host">
+    <div id="mergeModalWindow" class="merge-modal-window" role="dialog" aria-labelledby="mergeModalTitle">
+        <div id="mergeModalHeader" class="fi-hd">
+            <h3 id="mergeModalTitle">🔗 Обогащение и склейка таблиц по ключу</h3>
+            <button type="button" id="pinMergeModalBtn" class="fi-ic" title="Закрепить в правом нижнем углу">📌</button>
+            <button type="button" id="minimizeMergeModalBtn" class="fi-ic" title="Свернуть / развернуть">—</button>
+            <button type="button" id="closeMergeModalCross" class="fi-ic" title="Закрыть">✕</button>
+        </div>
+        <div id="mergeModalBody">
+            <div class="merge-top-toolbar">
+                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                    <select id="mergeAddTabSelect" style="max-width: 240px; font-weight: 600; cursor: pointer;"></select>
+                    <button type="button" id="mergeAddFileBtn" class="action-btn">+ Загрузить CSV</button>
+                    <input type="file" id="mergeExtraFileInput" accept=".csv,.txt,.tsv" multiple style="display: none;" />
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="font-size: 12.5px; opacity: 0.78;">Имя итога:</span>
+                    <input type="text" id="mergeResultNameInput" style="width: 200px;" placeholder="Склеенная таблица" />
+                </div>
+            </div>
+
+            <div id="mergeChainContainer" style="display: flex; flex-direction: column; gap: 6px;"></div>
+        </div>
+        <div id="mergeModalFooter" class="fi-ft">
+            <div id="mergeSummaryStatus" style="font-size: 12.5px; opacity: 0.85;"></div>
+            <div style="display: flex; gap: 8px;">
+                <button type="button" id="cancelMergeModalBtn" class="fi-btn">Отмена</button>
+                <button type="button" id="executeMergeBtn" class="fi-btn primary">Создать таблицу</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 var tabs = []; 
 var activeTabId = null;
@@ -1518,6 +1717,28 @@ function parseCSVLine(line, delim) {
     }
     res.push(cur.trim().replace(/^"|"$/g, ''));
     return res;
+}
+
+// Удаляет полные дубликаты строк за один проход O(N), оставляя первое вхождение
+function deduplicateRows(rows) {
+    if (!Array.isArray(rows) || rows.length <= 1) {
+        return { rows: Array.isArray(rows) ? rows : [], removedCount: 0 };
+    }
+    var seen = new Set();
+    var uniqueRows = [];
+    var removedCount = 0;
+
+    for (var i = 0; i < rows.length; i++) {
+        var r = rows[i];
+        var key = r.join('\x1F');
+        if (seen.has(key)) {
+            removedCount++;
+        } else {
+            seen.add(key);
+            uniqueRows.push(r);
+        }
+    }
+    return { rows: uniqueRows, removedCount: removedCount };
 }
 
 // ==========================================================================
@@ -1904,6 +2125,9 @@ function createNewTab(fileName, headers, lines, delimiter, chosenIndices) {
         if (cells.length > 0 && cells.some(function(c) { return c !== ""; })) cleanRows.push(cells);
     });
 
+    var dedup = deduplicateRows(cleanRows);
+    cleanRows = dedup.rows;
+
     var fullHeadersList = [];
     var chks = document.querySelectorAll('#checkboxesGrid input[type="checkbox"]');
     if (chks && chks.length > 0) {
@@ -1945,6 +2169,9 @@ function createNewTab(fileName, headers, lines, delimiter, chosenIndices) {
     
     tabs.push(newTab);
     activateTab(tabId);
+    if (dedup.removedCount > 0) {
+        showToast('Убрано полных дубликатов: ' + dedup.removedCount);
+    }
 
     compressLinesToGzip(linesCopy).then(function(gzBlob) {
         linesCopy.length = 0;
@@ -2140,7 +2367,13 @@ function openTabContextMenu(clientX, clientY, tabId) {
     var items = [
         { icon: '🔄', label: 'Обновить', action: function() { triggerTabFileRefresh(tabId); } },
         { icon: '✏️', label: 'Переименовать', action: function() { renameTabById(tabId); } },
-        { icon: '📋', label: 'Дублировать', action: function() { duplicateTabById(tabId); } }
+        { icon: '📋', label: 'Дублировать', action: function() { duplicateTabById(tabId); } },
+        { icon: '🔗', label: 'Склеить', action: function() {
+            var targetTab = tabs.find(function(t) { return t.id === tabId; });
+            if (targetTab && typeof openMergeModalWithBaseTab === 'function') {
+                openMergeModalWithBaseTab(targetTab);
+            }
+        } }
     ];
 
     items.forEach(function(item) {
@@ -2774,6 +3007,9 @@ function commitRefreshedDataToTab(targetTab, lines, delim, newOrigHeaders, openR
         if (cells.length > 0 && cells.some(function(c) { return c !== ''; })) nextRows.push(cells);
     });
 
+    var dedup = deduplicateRows(nextRows);
+    nextRows = dedup.rows;
+
     var nextPinned = {};
     var nextFilters = new Array(nextHeaders.length).fill('');
     nextHeaders.forEach(function(h, idx) {
@@ -2826,7 +3062,8 @@ function commitRefreshedDataToTab(targetTab, lines, delim, newOrigHeaders, openR
         renderTabsUI();
     }
 
-    showToast('Данные обновлены: ' + nextRows.length + ' строк');
+    var refreshDedupText = dedup.removedCount > 0 ? ' (убрано дублей: ' + dedup.removedCount + ')' : '';
+    showToast('Данные обновлены: ' + nextRows.length + ' строк' + refreshDedupText);
 
     compressLinesToGzip(linesCopy).then(function(gzBlob) {
         linesCopy.length = 0;
@@ -4300,7 +4537,7 @@ function renderPivotTable(rows, headers, activePivots) {
         dTr.setAttribute('data-leaf-row', '1');
 
         dTr.addEventListener('click', function(e) {
-            if (e.altKey || e.ctrlKey || e.metaKey) {
+            if (e.altKey) {
                 e.preventDefault();
                 e.stopPropagation();
                 var realIdx = rowToIndexMap.get(dataRow);
@@ -4870,7 +5107,7 @@ function buildCheckboxesForActiveTab() {
             var slicedRows = currentTab.globalRows.map(function(row) {
                 return ramIdxMap.map(function(idx) { return row[idx] !== undefined ? row[idx] : ''; });
             });
-            applyParsedRowsToTab(slicedRows);
+            applyParsedRowsToTab(deduplicateRows(slicedRows).rows);
             return;
         }
 
@@ -4884,7 +5121,7 @@ function buildCheckboxesForActiveTab() {
                 if (cells.length > 0 && cells.some(function(c) { return c !== ''; })) newRows.push(cells);
             });
             rawLinesFromDisk.length = 0;
-            applyParsedRowsToTab(newRows);
+            applyParsedRowsToTab(deduplicateRows(newRows).rows);
         });
     });
     masterWrapper.appendChild(applyBtn);
@@ -5247,9 +5484,9 @@ document.getElementById('dataTable').addEventListener('mouseout', function(e) { 
 function removeAllCtrlHighlights() { document.querySelectorAll('#dataTable tbody tr').forEach(function(row) { row.classList.remove('ctrl-highlight'); }); }
 
 document.getElementById('dataTable').addEventListener('click', function(e) {
-    if (!isCtrlPressed) return; var tr = e.target.closest('tr'); if (tr && tr.parentElement.tagName === 'TBODY') {
+    if (!isCtrlPressed && !e.ctrlKey && !e.metaKey) return; var tr = e.target.closest('tr'); if (tr && tr.parentElement.tagName === 'TBODY' && tr.getAttribute('data-group-node') !== '1' && !tr.querySelector('.pivot-leaf-paginator-wrap')) {
         e.preventDefault(); e.stopPropagation(); var rowData = [];
-        tr.querySelectorAll('td').forEach(function(td) { var clone = td.cloneNode(true), btn = clone.querySelector('.copy-btn'); if (btn) clone.removeChild(btn); rowData.push(clone.textContent.trim()); });
+        tr.querySelectorAll('td:not(.chk-col-cell)').forEach(function(td) { var clone = td.cloneNode(true), btn = clone.querySelector('.copy-btn'); if (btn) clone.removeChild(btn); rowData.push(clone.textContent.trim()); });
         var rowText = rowData.join('\n');
         function onRowSuccess() { var originalBg = tr.style.backgroundColor; tr.style.transition = 'background-color 0.15s ease'; tr.style.backgroundColor = 'var(--bg-filebox)'; showToast("Строка успешно скопирована"); setTimeout(function() { tr.style.backgroundColor = originalBg; }, 300); }
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -5656,7 +5893,7 @@ if (toggleColumnsBtn) toggleColumnsBtn.addEventListener('click', function() {
         closeBtn.title = 'Закрыть карточку';
         closeBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            win.remove();
+            closeInspector();
         });
 
         btnsWrap.appendChild(pinBtn);
@@ -5769,7 +6006,7 @@ if (toggleColumnsBtn) toggleColumnsBtn.addEventListener('click', function() {
         footerCloseBtn.className = 'fi-btn';
         footerCloseBtn.style.marginLeft = 'auto';
         footerCloseBtn.textContent = 'Закрыть';
-        footerCloseBtn.addEventListener('click', function() { win.remove(); });
+        footerCloseBtn.addEventListener('click', function() { closeInspector(); });
         footer.appendChild(footerCloseBtn);
 
         win.appendChild(footer);
@@ -5795,7 +6032,7 @@ if (toggleColumnsBtn) toggleColumnsBtn.addEventListener('click', function() {
             e.preventDefault();
         });
 
-        document.addEventListener('mousemove', function(e) {
+        function onDocMouseMove(e) {
             if (!isDragging) return;
             if (Math.abs(e.clientX - startX) > 4 || Math.abs(e.clientY - startY) > 4) {
                 wasDragged = true;
@@ -5804,20 +6041,29 @@ if (toggleColumnsBtn) toggleColumnsBtn.addEventListener('click', function() {
             var maxT = window.innerHeight - win.offsetHeight;
             win.style.left = Math.max(0, Math.min(e.clientX - dx, maxL)) + 'px';
             win.style.top = Math.max(0, Math.min(e.clientY - dy, maxT)) + 'px';
-        });
+        }
 
-        document.addEventListener('mouseup', function() {
+        function onDocMouseUp() {
             isDragging = false;
-        });
+        }
+
+        function closeInspector() {
+            document.removeEventListener('mousemove', onDocMouseMove);
+            document.removeEventListener('mouseup', onDocMouseUp);
+            win.remove();
+        }
+
+        document.addEventListener('mousemove', onDocMouseMove);
+        document.addEventListener('mouseup', onDocMouseUp);
 
         document.body.appendChild(win);
     };
 
-        // Перехват Alt + Click и Ctrl + Click по любой строке обычной таблицы (до клика по ячейке)
+        // Перехват Alt + Click по любой строке обычной таблицы (до клика по ячейке)
     var mainTableBody = document.getElementById('tableBody');
     if (mainTableBody) {
         mainTableBody.addEventListener('click', function(e) {
-            if (!e.altKey && !e.ctrlKey && !e.metaKey) return;
+            if (!e.altKey) return;
             var tr = e.target.closest('tr');
             if (!tr || tr.getAttribute('data-group-node') === '1' || tr.getAttribute('data-leaf-row') === '1') return;
 
@@ -5840,10 +6086,865 @@ if (toggleColumnsBtn) toggleColumnsBtn.addEventListener('click', function() {
         }, true);
     }
 
+    // ==========================================================================
+    // МОДУЛЬ КАСКАДНОГО ОБОГАЩЕНИЯ И СКЛЕЙКИ ТАБЛИЦ (T1 -> T2 -> T3 -> ...)
+    // ==========================================================================
+    var mergeBtn = document.getElementById('mergeBtn');
+    var mergeModal = document.getElementById('mergeTablesModal');
+    var mergeModalWindow = document.getElementById('mergeModalWindow');
+    var mergeModalHeader = document.getElementById('mergeModalHeader');
+    var pinMergeBtn = document.getElementById('pinMergeModalBtn');
+    var minimizeMergeBtn = document.getElementById('minimizeMergeModalBtn');
+    var closeMergeCross = document.getElementById('closeMergeModalCross');
+    var cancelMergeBtn = document.getElementById('cancelMergeModalBtn');
+    var executeMergeBtn = document.getElementById('executeMergeBtn');
+    var mergeAddTabSelect = document.getElementById('mergeAddTabSelect');
+    var mergeAddFileBtn = document.getElementById('mergeAddFileBtn');
+    var mergeExtraFileInput = document.getElementById('mergeExtraFileInput');
+    var mergeChainContainer = document.getElementById('mergeChainContainer');
+    var mergeResultNameInput = document.getElementById('mergeResultNameInput');
+    var mergeSummaryStatus = document.getElementById('mergeSummaryStatus');
+
+    var MERGE_BADGE_COLORS = ['#2563eb', '#059669', '#d97706', '#7c3aed', '#db2777', '#0891b2', '#4f46e5'];
+    var mergeState = {
+        sources: [],
+        steps: []
+    };
+
+    function closeMergeModal() {
+        if (mergeModal) mergeModal.classList.remove('open');
+        if (mergeModalWindow) {
+            mergeModalWindow.classList.remove('minimized');
+            mergeModalWindow.classList.remove('pinned');
+        }
+        if (pinMergeBtn) pinMergeBtn.style.background = '';
+        if (minimizeMergeBtn) minimizeMergeBtn.textContent = '—';
+        mergeState.sources = [];
+        mergeState.steps = [];
+    }
+
+    function toggleMergeMinimize() {
+        if (!mergeModalWindow) return;
+        var isMin = mergeModalWindow.classList.toggle('minimized');
+        if (minimizeMergeBtn) {
+            minimizeMergeBtn.textContent = isMin ? '▢' : '—';
+            minimizeMergeBtn.title = isMin ? 'Развернуть окно' : 'Свернуть окно';
+        }
+    }
+
+    if (closeMergeCross) closeMergeCross.addEventListener('click', closeMergeModal);
+    if (cancelMergeBtn) cancelMergeBtn.addEventListener('click', closeMergeModal);
+
+    if (pinMergeBtn && mergeModalWindow) {
+        pinMergeBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var isPinned = mergeModalWindow.classList.toggle('pinned');
+            pinMergeBtn.style.background = isPinned ? 'rgba(56, 139, 253, 0.25)' : '';
+            pinMergeBtn.title = isPinned ? 'Открепить окно' : 'Закрепить в правом нижнем углу';
+        });
+    }
+
+    if (minimizeMergeBtn) {
+        minimizeMergeBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleMergeMinimize();
+        });
+    }
+
+    // Перетаскивание окна склейки за шапку + сворачивание/разворачивание кликом по шапке
+    if (mergeModalHeader && mergeModalWindow) {
+        var isMergeDragging = false;
+        var wasMergeDragged = false;
+        var mDragDx = 0, mDragDy = 0, mStartX = 0, mStartY = 0;
+
+        mergeModalHeader.addEventListener('mousedown', function(e) {
+            wasMergeDragged = false;
+            if (mergeModalWindow.classList.contains('pinned') || e.target.closest('button')) return;
+            isMergeDragging = true;
+            mStartX = e.clientX;
+            mStartY = e.clientY;
+            var rect = mergeModalWindow.getBoundingClientRect();
+            mergeModalWindow.style.left = rect.left + 'px';
+            mergeModalWindow.style.top = rect.top + 'px';
+            mergeModalWindow.style.right = 'auto';
+            mergeModalWindow.style.bottom = 'auto';
+            mDragDx = e.clientX - rect.left;
+            mDragDy = e.clientY - rect.top;
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (!isMergeDragging) return;
+            if (Math.abs(e.clientX - mStartX) > 4 || Math.abs(e.clientY - mStartY) > 4) {
+                wasMergeDragged = true;
+            }
+            var maxL = Math.max(0, window.innerWidth - mergeModalWindow.offsetWidth);
+            var maxT = Math.max(0, window.innerHeight - 40);
+            mergeModalWindow.style.left = Math.max(0, Math.min(e.clientX - mDragDx, maxL)) + 'px';
+            mergeModalWindow.style.top = Math.max(0, Math.min(e.clientY - mDragDy, maxT)) + 'px';
+        });
+
+        document.addEventListener('mouseup', function() {
+            isMergeDragging = false;
+        });
+
+        mergeModalHeader.addEventListener('click', function(e) {
+            if (e.target.closest('button') || wasMergeDragged) return;
+            toggleMergeMinimize();
+        });
+    }
+
+    function loadFullDataFromTab(tab) {
+        var origHeaders = (Array.isArray(tab.originalHeaders) && tab.originalHeaders.length > 0)
+            ? tab.originalHeaders.slice()
+            : tab.tableHeaders.slice();
+
+        return getTabRawLinesFromDiskOrMemory(tab).then(function(rawLines) {
+            if (Array.isArray(rawLines) && rawLines.length > 0) {
+                var delim = tab.delimiter || ';';
+                var fullRows = [];
+                for (var i = 0; i < rawLines.length; i++) {
+                    var parsed = parseCSVLine(rawLines[i], delim);
+                    var cells = new Array(origHeaders.length);
+                    var hasVal = false;
+                    for (var c = 0; c < origHeaders.length; c++) {
+                        var v = parsed[c] !== undefined ? parsed[c] : '';
+                        cells[c] = v;
+                        if (v !== '') hasVal = true;
+                    }
+                    if (hasVal) fullRows.push(cells);
+                }
+                return { headers: origHeaders, rows: fullRows };
+            }
+            return {
+                headers: tab.tableHeaders.slice(),
+                rows: Array.isArray(tab.globalRows) ? tab.globalRows.slice() : []
+            };
+        });
+    }
+
+    function buildSmartDefaultSelection(headers, activeSubset, isFirstSource) {
+        var selected = new Set();
+        var existingNames = new Set();
+        mergeState.sources.forEach(function(s) {
+            s.headers.forEach(function(h) {
+                var norm = String(h || '').trim().toLowerCase();
+                if (norm) existingNames.add(norm);
+            });
+        });
+
+        headers.forEach(function(h, idx) {
+            if (activeSubset && activeSubset.indexOf(h) === -1) return;
+            var norm = String(h || '').trim().toLowerCase();
+            if (isFirstSource || !existingNames.has(norm)) {
+                selected.add(idx);
+            }
+        });
+        return selected;
+    }
+
+    function addTabToMergePool(tab) {
+        if (!tab) return;
+        loadFullDataFromTab(tab).then(function(data) {
+            var uid = 'src_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+            var isFirst = (mergeState.sources.length === 0);
+            var defaultSelected = buildSmartDefaultSelection(data.headers, tab.tableHeaders, isFirst);
+
+            mergeState.sources.push({
+                uid: uid,
+                tag: '',
+                name: tab.name,
+                originType: 'tab',
+                tabId: tab.id,
+                headers: data.headers,
+                rows: data.rows,
+                selectedCols: defaultSelected,
+                drawerOpen: isFirst && data.headers.length <= 10
+            });
+            renderMergeModalUI();
+        });
+    }
+
+    function addFileToMergePool(file) {
+        readFileAsText(file).then(function(text) {
+            var lines = splitCSVIntoRecords(text);
+            if (lines.length < 2) {
+                showToast('Файл «' + file.name + '» пуст');
+                return;
+            }
+            var firstLine = lines.shift().replace(/^\uFEFF/, '');
+            var delim = firstLine.includes('\t') ? '\t' : (!firstLine.includes(';') && firstLine.includes(',') ? ',' : ';');
+            var headers = parseCSVLine(firstLine, delim).map(function(h) {
+                return String(h || '').replace(/^\uFEFF/, '').trim();
+            });
+            var rows = [];
+            for (var i = 0; i < lines.length; i++) {
+                var cells = parseCSVLine(lines[i], delim);
+                if (cells.length > 0 && cells.some(function(c) { return c !== ''; })) rows.push(cells);
+            }
+
+            var uid = 'src_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+            var isFirst = (mergeState.sources.length === 0);
+            var defaultSelected = buildSmartDefaultSelection(headers, null, isFirst);
+
+            mergeState.sources.push({
+                uid: uid,
+                tag: '',
+                name: file.name,
+                originType: 'file',
+                tabId: null,
+                headers: headers,
+                rows: rows,
+                selectedCols: defaultSelected,
+                drawerOpen: isFirst && headers.length <= 10
+            });
+            renderMergeModalUI();
+        }).catch(function() {
+            showToast('Ошибка чтения файла «' + file.name + '»');
+        });
+    }
+
+    function reindexMergeSources() {
+        mergeState.sources.forEach(function(src, idx) {
+            src.tag = 'Т' + (idx + 1);
+            src.color = MERGE_BADGE_COLORS[idx % MERGE_BADGE_COLORS.length];
+            if (src.drawerOpen === undefined) {
+                src.drawerOpen = (idx === 0 && src.headers.length <= 10);
+            }
+        });
+
+        var validUids = new Set(mergeState.sources.map(function(s) { return s.uid; }));
+        var firstUid = mergeState.sources.length > 0 ? mergeState.sources[0].uid : '';
+        mergeState.steps = mergeState.steps.filter(function(st) {
+            return validUids.has(st.targetUid) && st.targetUid !== firstUid;
+        });
+
+        for (var i = 1; i < mergeState.sources.length; i++) {
+            var targetSrc = mergeState.sources[i];
+            var existingStep = mergeState.steps.find(function(st) { return st.targetUid === targetSrc.uid; });
+            if (!existingStep) {
+                var prevSources = mergeState.sources.slice(0, i);
+                var autoLeftSrc = prevSources[0];
+                var autoLeftIdx = 0;
+                var autoRightIdx = 0;
+
+                outerSearch:
+                for (var p = 0; p < prevSources.length; p++) {
+                    var candSrc = prevSources[p];
+                    for (var lc = 0; lc < candSrc.headers.length; lc++) {
+                        var lName = candSrc.headers[lc].trim().toLowerCase();
+                        if (!lName) continue;
+                        for (var rc = 0; rc < targetSrc.headers.length; rc++) {
+                            if (targetSrc.headers[rc].trim().toLowerCase() === lName) {
+                                autoLeftSrc = candSrc;
+                                autoLeftIdx = lc;
+                                autoRightIdx = rc;
+                                break outerSearch;
+                            }
+                        }
+                    }
+                }
+
+                mergeState.steps.push({
+                    targetUid: targetSrc.uid,
+                    leftSrcUid: autoLeftSrc.uid,
+                    leftColIdx: autoLeftIdx,
+                    rightColIdx: autoRightIdx,
+                    matchMode: 'first'
+                });
+            } else {
+                var prevUids = new Set(mergeState.sources.slice(0, i).map(function(s) { return s.uid; }));
+                if (!prevUids.has(existingStep.leftSrcUid)) {
+                    existingStep.leftSrcUid = mergeState.sources[0].uid;
+                    existingStep.leftColIdx = 0;
+                }
+            }
+        }
+    }
+
+    function computeStepMatchStats(step) {
+        var baseSrc = mergeState.sources[0];
+        var leftSrc = mergeState.sources.find(function(s) { return s.uid === step.leftSrcUid; });
+        var rightSrc = mergeState.sources.find(function(s) { return s.uid === step.targetUid; });
+        if (!baseSrc || !leftSrc || !rightSrc) return { matched: 0, total: 0, pct: 0 };
+
+        var rightKeySet = new Set();
+        var rIdx = step.rightColIdx;
+        for (var i = 0; i < rightSrc.rows.length; i++) {
+            var rv = String(rightSrc.rows[i][rIdx] !== undefined ? rightSrc.rows[i][rIdx] : '').trim();
+            if (rv !== '') rightKeySet.add(rv);
+        }
+
+        if (leftSrc.uid === baseSrc.uid) {
+            var matched = 0;
+            var lIdx = step.leftColIdx;
+            for (var j = 0; j < baseSrc.rows.length; j++) {
+                var lv = String(baseSrc.rows[j][lIdx] !== undefined ? baseSrc.rows[j][lIdx] : '').trim();
+                if (lv !== '' && rightKeySet.has(lv)) matched++;
+            }
+            var total = baseSrc.rows.length;
+            var pct = total > 0 ? Math.round((matched / total) * 1000) / 10 : 0;
+            return { matched: matched, total: total, pct: pct };
+        }
+
+        var prevStep = mergeState.steps.find(function(st) { return st.targetUid === leftSrc.uid; });
+        if (prevStep && prevStep.leftSrcUid === baseSrc.uid) {
+            var midMap = new Map();
+            for (var m = 0; m < leftSrc.rows.length; m++) {
+                var mKey = String(leftSrc.rows[m][prevStep.rightColIdx] !== undefined ? leftSrc.rows[m][prevStep.rightColIdx] : '').trim();
+                var nextKey = String(leftSrc.rows[m][step.leftColIdx] !== undefined ? leftSrc.rows[m][step.leftColIdx] : '').trim();
+                if (mKey !== '' && !midMap.has(mKey)) midMap.set(mKey, nextKey);
+            }
+            var matchedTrans = 0;
+            for (var b = 0; b < baseSrc.rows.length; b++) {
+                var bKey = String(baseSrc.rows[b][prevStep.leftColIdx] !== undefined ? baseSrc.rows[b][prevStep.leftColIdx] : '').trim();
+                var bridged = midMap.get(bKey);
+                if (bridged && rightKeySet.has(bridged)) matchedTrans++;
+            }
+            var totalBase = baseSrc.rows.length;
+            var pctTrans = totalBase > 0 ? Math.round((matchedTrans / totalBase) * 1000) / 10 : 0;
+            return { matched: matchedTrans, total: totalBase, pct: pctTrans };
+        }
+
+        var matchedFallback = 0;
+        for (var k = 0; k < leftSrc.rows.length; k++) {
+            var fk = String(leftSrc.rows[k][step.leftColIdx] !== undefined ? leftSrc.rows[k][step.leftColIdx] : '').trim();
+            if (fk !== '' && rightKeySet.has(fk)) matchedFallback++;
+        }
+        var totFb = leftSrc.rows.length;
+        return { matched: matchedFallback, total: totFb, pct: totFb > 0 ? Math.round((matchedFallback / totFb) * 1000) / 10 : 0 };
+    }
+
+    function renderSourceColumnsBlock(src, card) {
+        var colBar = document.createElement('div');
+        colBar.className = 'merge-step-row';
+        colBar.style.justifyContent = 'space-between';
+
+        var lbl = document.createElement('span');
+        lbl.style.cssText = 'font-size:12px; opacity:0.8;';
+        lbl.textContent = 'Выбрано полей: ' + src.selectedCols.size + ' из ' + src.headers.length;
+        colBar.appendChild(lbl);
+
+        var toggleDrawerBtn = document.createElement('button');
+        toggleDrawerBtn.type = 'button';
+        toggleDrawerBtn.className = 'action-btn';
+        toggleDrawerBtn.style.cssText = 'padding:3px 9px; font-size:12px; flex-shrink:0;';
+        toggleDrawerBtn.textContent = src.drawerOpen ? 'Скрыть список ▲' : 'Выбрать поля ▼';
+        toggleDrawerBtn.onclick = function() {
+            src.drawerOpen = !src.drawerOpen;
+            renderMergeModalUI();
+        };
+        colBar.appendChild(toggleDrawerBtn);
+        card.appendChild(colBar);
+
+        if (src.drawerOpen) {
+            var drawer = document.createElement('div');
+            drawer.className = 'merge-cols-drawer';
+
+            var drawerControls = document.createElement('div');
+            drawerControls.style.cssText = 'display:flex; gap:6px; justify-content:flex-end;';
+            var selAllBtn = document.createElement('button');
+            selAllBtn.type = 'button';
+            selAllBtn.className = 'action-btn';
+            selAllBtn.style.cssText = 'padding:2px 7px; font-size:11px;';
+            selAllBtn.textContent = src.selectedCols.size === src.headers.length ? 'Снять все' : 'Выбрать все';
+            selAllBtn.onclick = function() {
+                if (src.selectedCols.size === src.headers.length) src.selectedCols.clear();
+                else src.headers.forEach(function(_, i) { src.selectedCols.add(i); });
+                renderMergeModalUI();
+            };
+            drawerControls.appendChild(selAllBtn);
+            drawer.appendChild(drawerControls);
+
+            var grid = document.createElement('div');
+            grid.className = 'merge-cols-grid';
+            src.headers.forEach(function(hName, cIdx) {
+                var itemLbl = document.createElement('label');
+                itemLbl.className = 'merge-col-item';
+                var chk = document.createElement('input');
+                chk.type = 'checkbox';
+                chk.className = 'pivot-chk';
+                chk.style.margin = '0';
+                chk.checked = src.selectedCols.has(cIdx);
+                chk.onchange = function() {
+                    if (this.checked) src.selectedCols.add(cIdx);
+                    else src.selectedCols.delete(cIdx);
+                    renderMergeModalUI();
+                };
+                itemLbl.appendChild(chk);
+                itemLbl.appendChild(document.createTextNode(hName || ('Колонка ' + (cIdx + 1))));
+                grid.appendChild(itemLbl);
+            });
+            drawer.appendChild(grid);
+            card.appendChild(drawer);
+        }
+    }
+
+        function renderMergeModalUI() {
+        reindexMergeSources();
+
+        if (mergeAddTabSelect) {
+            mergeAddTabSelect.innerHTML = '';
+            var placeholderOpt = document.createElement('option');
+            placeholderOpt.value = '';
+            placeholderOpt.textContent = tabs.length > 0 ? '+ Из вкладки ▾' : 'Нет открытых вкладок';
+            placeholderOpt.selected = true;
+            mergeAddTabSelect.appendChild(placeholderOpt);
+
+            tabs.forEach(function(t) {
+                var opt = document.createElement('option');
+                opt.value = t.id;
+                opt.textContent = t.name + ' (' + (t.rowCount || (t.globalRows ? t.globalRows.length : 0)) + ' стр.)';
+                mergeAddTabSelect.appendChild(opt);
+            });
+            mergeAddTabSelect.disabled = (tabs.length === 0);
+        }
+
+        mergeChainContainer.innerHTML = '';
+        if (mergeState.sources.length === 0) {
+            mergeChainContainer.innerHTML = '<div class="merge-step-card" style="opacity:0.65; font-size:12px;">Добавьте минимум 2 таблицы сверху (из открытых вкладок или загрузите CSV с диска).</div>';
+        }
+
+        var baseSrc = mergeState.sources.at(0);
+        if (baseSrc) {
+            var baseCard = document.createElement('div');
+            baseCard.className = 'merge-step-card';
+            baseCard.style.borderLeft = '4px solid ' + baseSrc.color;
+
+            var baseHead = document.createElement('div');
+            baseHead.className = 'merge-step-row';
+            baseHead.innerHTML =
+                '<span class="merge-badge-t" style="background:' + baseSrc.color + ';">' + baseSrc.tag + '</span>' +
+                '<span>Главная таблица (основа):</span> <strong>' + escapeHtmlSafe(baseSrc.name) + '</strong>' +
+                '<span style="opacity:0.7; font-size:13px;">(' + baseSrc.rows.length.toLocaleString('ru-RU') + ' стр.)</span>';
+
+            var baseDelBtn = document.createElement('button');
+            baseDelBtn.type = 'button';
+            baseDelBtn.className = 'fi-ic';
+            baseDelBtn.style.marginLeft = 'auto';
+            baseDelBtn.textContent = '✕';
+            baseDelBtn.title = 'Убрать таблицу';
+            baseDelBtn.onclick = function() {
+                mergeState.sources.splice(0, 1);
+                renderMergeModalUI();
+            };
+            baseHead.appendChild(baseDelBtn);
+            baseCard.appendChild(baseHead);
+
+            renderSourceColumnsBlock(baseSrc, baseCard);
+            mergeChainContainer.appendChild(baseCard);
+        }
+
+                mergeState.steps.forEach(function(step, sIdx) {
+            var targetSrc = mergeState.sources.find(function(s) { return s.uid === step.targetUid; });
+            if (!targetSrc) return;
+            var targetPos = mergeState.sources.indexOf(targetSrc);
+            var availableLeftSources = mergeState.sources.slice(0, targetPos);
+
+            var connLine = document.createElement('div');
+            connLine.className = 'merge-connector-line';
+            connLine.textContent = '↓ обогатить по ключу (Шаг ' + (sIdx + 1) + ')';
+            mergeChainContainer.appendChild(connLine);
+
+            var card = document.createElement('div');
+            card.className = 'merge-step-card';
+            card.style.borderLeft = '4px solid ' + targetSrc.color;
+
+            var topRow = document.createElement('div');
+            topRow.className = 'merge-step-row';
+            topRow.innerHTML =
+                '<span class="merge-badge-t" style="background:' + targetSrc.color + ';">' + targetSrc.tag + '</span>' +
+                '<strong>' + escapeHtmlSafe(targetSrc.name) + '</strong>' +
+                '<span style="opacity:0.7; font-size:12px;">(' + targetSrc.rows.length.toLocaleString('ru-RU') + ' стр.)</span>';
+
+            var rightControls = document.createElement('div');
+            rightControls.style.cssText = 'margin-left:auto; display:flex; align-items:center; gap:6px;';
+
+            var modeSelect = document.createElement('select');
+            modeSelect.innerHTML =
+                '<option value="first"' + (step.matchMode === 'first' ? ' selected' : '') + '>Первое совпадение (ВПР)</option>' +
+                '<option value="all"' + (step.matchMode === 'all' ? ' selected' : '') + '>Все совпадения (размножить)</option>';
+            modeSelect.onchange = function() { step.matchMode = this.value; };
+            rightControls.appendChild(modeSelect);
+
+            var upBtn = document.createElement('button');
+            upBtn.type = 'button';
+            upBtn.className = 'fi-ic';
+            upBtn.textContent = '↑';
+            upBtn.title = targetPos === 1 ? 'Сделать главной таблицей' : 'Поднять выше в цепочке';
+            upBtn.onclick = function() {
+                var tmp = mergeState.sources[targetPos - 1];
+                mergeState.sources[targetPos - 1] = mergeState.sources[targetPos];
+                mergeState.sources[targetPos] = tmp;
+                renderMergeModalUI();
+            };
+            rightControls.appendChild(upBtn);
+
+            var delBtn = document.createElement('button');
+            delBtn.type = 'button';
+            delBtn.className = 'fi-ic';
+            delBtn.textContent = '✕';
+            delBtn.title = 'Убрать таблицу';
+            delBtn.onclick = function() {
+                mergeState.sources.splice(targetPos, 1);
+                renderMergeModalUI();
+            };
+            rightControls.appendChild(delBtn);
+
+            topRow.appendChild(rightControls);
+            card.appendChild(topRow);
+
+            var linkRow = document.createElement('div');
+            linkRow.className = 'merge-step-row';
+
+            var keyLbl = document.createElement('span');
+            keyLbl.style.cssText = 'font-size:11.5px; opacity:0.75;';
+            keyLbl.textContent = 'Ключ:';
+            linkRow.appendChild(keyLbl);
+
+            var leftSelect = document.createElement('select');
+            leftSelect.style.maxWidth = '250px';
+            availableLeftSources.forEach(function(lSrc) {
+                var grp = document.createElement('optgroup');
+                grp.label = lSrc.tag + ' • ' + lSrc.name;
+                lSrc.headers.forEach(function(hName, cIdx) {
+                    var opt = document.createElement('option');
+                    opt.value = lSrc.uid + '::' + cIdx;
+                    opt.textContent = '[' + lSrc.tag + '] ' + (hName || ('Колонка ' + (cIdx + 1)));
+                    if (step.leftSrcUid === lSrc.uid && step.leftColIdx === cIdx) opt.selected = true;
+                    grp.appendChild(opt);
+                });
+                leftSelect.appendChild(grp);
+            });
+
+            var eqSpan = document.createElement('span');
+            eqSpan.style.cssText = 'font-weight:700; padding:0 2px;';
+            eqSpan.textContent = '═══';
+
+            var rightSelect = document.createElement('select');
+            rightSelect.style.maxWidth = '240px';
+            targetSrc.headers.forEach(function(hName, cIdx) {
+                var opt = document.createElement('option');
+                opt.value = String(cIdx);
+                opt.textContent = '[' + targetSrc.tag + '] ' + (hName || ('Колонка ' + (cIdx + 1)));
+                if (step.rightColIdx === cIdx) opt.selected = true;
+                rightSelect.appendChild(opt);
+            });
+
+            var statBadge = document.createElement('span');
+            statBadge.style.cssText = 'font-size:12.5px; font-weight:600; padding:3px 9px; border-radius:4px; margin-left:auto;';
+
+            function refreshStatBadge() {
+                var st = computeStepMatchStats(step);
+                var lSrcObj = mergeState.sources.find(function(s) { return s.uid === step.leftSrcUid; });
+                var lTag = lSrcObj ? lSrcObj.tag : 'Т1';
+                var rTag = targetSrc.tag;
+                var ok = st.pct >= 50;
+                statBadge.style.background = ok ? 'rgba(52, 179, 87, 0.15)' : 'rgba(229, 159, 36, 0.16)';
+                statBadge.style.color = ok ? '#2f9e44' : '#d97706';
+                statBadge.textContent = 'Совпало: ' + st.matched.toLocaleString('ru-RU') + ' (' + lTag + ') из ' + st.total.toLocaleString('ru-RU') + ' (' + rTag + ') • ' + st.pct + '%';
+            }
+
+            leftSelect.onchange = function() {
+                var parts = this.value.split('::');
+                step.leftSrcUid = parts.at(0);
+                step.leftColIdx = parseInt(parts.at(1), 10) || 0;
+                refreshStatBadge();
+            };
+            rightSelect.onchange = function() {
+                step.rightColIdx = parseInt(this.value, 10) || 0;
+                refreshStatBadge();
+            };
+
+            refreshStatBadge();
+            linkRow.appendChild(leftSelect);
+            linkRow.appendChild(eqSpan);
+            linkRow.appendChild(rightSelect);
+            linkRow.appendChild(statBadge);
+            card.appendChild(linkRow);
+
+            renderSourceColumnsBlock(targetSrc, card);
+            mergeChainContainer.appendChild(card);
+        });
+
+        var totalChosenCols = 0;
+        mergeState.sources.forEach(function(src) { totalChosenCols += src.selectedCols.size; });
+
+        if (mergeSummaryStatus) {
+            mergeSummaryStatus.textContent = 'Таблиц в цепочке: ' + mergeState.sources.length + ' • Итоговых столбцов: ' + totalChosenCols;
+        }
+        if (executeMergeBtn) {
+            executeMergeBtn.disabled = (mergeState.sources.length < 2 || totalChosenCols === 0);
+        }
+    }
+
+
+            function runCascadeMergeAndCreateTab() {
+        if (mergeState.sources.length < 2) return;
+
+        // Для каждого источника оставляем в промежуточной матрице ТОЛЬКО:
+        // 1) выбранные пользователем колонки + 2) колонки, нужные как левый ключ в следующих шагах
+        var virtualPosMap = {}; // uid -> { origColIdx -> virtualColIdx }
+        var neededOrigColsByUid = {};
+        var totalVirtualCols = 0;
+
+        mergeState.sources.forEach(function(src) {
+            var neededSet = new Set(src.selectedCols);
+            mergeState.steps.forEach(function(st) {
+                if (st.leftSrcUid === src.uid) neededSet.add(st.leftColIdx);
+            });
+            var neededArr = Array.from(neededSet).sort(function(a, b) { return a - b; });
+            neededOrigColsByUid[src.uid] = neededArr;
+
+            var posMap = {};
+            neededArr.forEach(function(origIdx) {
+                posMap[origIdx] = totalVirtualCols++;
+            });
+            virtualPosMap[src.uid] = posMap;
+        });
+
+        var baseSrc = mergeState.sources.at(0);
+        var baseNeededCols = neededOrigColsByUid[baseSrc.uid];
+        var currentRows = baseSrc.rows.map(function(r) {
+            var vRow = new Array(totalVirtualCols).fill('');
+            for (var c = 0; c < baseNeededCols.length; c++) {
+                var origIdx = baseNeededCols[c];
+                vRow[c] = r[origIdx] !== undefined ? r[origIdx] : '';
+            }
+            return vRow;
+        });
+
+        for (var s = 0; s < mergeState.steps.length; s++) {
+            var step = mergeState.steps[s];
+            var targetSrc = mergeState.sources.find(function(src) { return src.uid === step.targetUid; });
+            if (!targetSrc) continue;
+
+            var leftVirtualColIdx = virtualPosMap[step.leftSrcUid][step.leftColIdx];
+            var rightColIdx = step.rightColIdx;
+            var targetNeededCols = neededOrigColsByUid[targetSrc.uid];
+            var targetPosMap = virtualPosMap[targetSrc.uid];
+
+            // Проецируем справочник только на нужные столбцы; в режиме 'all' сразу убираем дубли по ним
+            var lookupMap = new Map();
+            var seenPairKeys = step.matchMode === 'all' ? new Set() : null;
+
+            for (var r = 0; r < targetSrc.rows.length; r++) {
+                var rRow = targetSrc.rows[r];
+                var key = String(rRow[rightColIdx] !== undefined ? rRow[rightColIdx] : '').trim();
+                if (key === '') continue;
+
+                if (step.matchMode === 'first') {
+                    if (!lookupMap.has(key)) {
+                        var slimFirst = new Array(targetNeededCols.length);
+                        for (var c = 0; c < targetNeededCols.length; c++) {
+                            var oIdx = targetNeededCols[c];
+                            slimFirst[c] = rRow[oIdx] !== undefined ? rRow[oIdx] : '';
+                        }
+                        lookupMap.set(key, slimFirst);
+                    }
+                } else {
+                    var slimRow = new Array(targetNeededCols.length);
+                    for (var c2 = 0; c2 < targetNeededCols.length; c2++) {
+                        var oIdx2 = targetNeededCols[c2];
+                        slimRow[c2] = rRow[oIdx2] !== undefined ? rRow[oIdx2] : '';
+                    }
+                    var pairSig = key + '\x1F' + slimRow.join('\x1F');
+                    if (seenPairKeys.has(pairSig)) continue;
+                    seenPairKeys.add(pairSig);
+
+                    var bucket = lookupMap.get(key);
+                    if (!bucket) {
+                        bucket = [];
+                        lookupMap.set(key, bucket);
+                    }
+                    bucket.push(slimRow);
+                }
+            }
+
+            var nextRows = [];
+            for (var i = 0; i < currentRows.length; i++) {
+                var baseRow = currentRows[i];
+                var lKey = String(baseRow[leftVirtualColIdx] !== undefined ? baseRow[leftVirtualColIdx] : '').trim();
+                var found = lKey !== '' ? lookupMap.get(lKey) : undefined;
+
+                if (!found) {
+                    nextRows.push(baseRow);
+                } else if (step.matchMode === 'first') {
+                    for (var c3 = 0; c3 < targetNeededCols.length; c3++) {
+                        baseRow[targetPosMap[targetNeededCols[c3]]] = found[c3];
+                    }
+                    nextRows.push(baseRow);
+                } else {
+                    for (var m = 0; m < found.length; m++) {
+                        var cloned = baseRow.slice();
+                        var matchSlim = found[m];
+                        for (var c4 = 0; c4 < targetNeededCols.length; c4++) {
+                            cloned[targetPosMap[targetNeededCols[c4]]] = matchSlim[c4];
+                        }
+                        nextRows.push(cloned);
+                    }
+                }
+            }
+            currentRows = nextRows;
+        }
+
+        var outVirtualIndices = [];
+        var outHeaders = [];
+        var usedHeaderNames = new Set();
+
+        mergeState.sources.forEach(function(src) {
+            var posMap = virtualPosMap[src.uid];
+            src.headers.forEach(function(hName, cIdx) {
+                if (!src.selectedCols.has(cIdx)) return;
+                outVirtualIndices.push(posMap[cIdx]);
+                var baseTitle = hName || ('Колонка ' + (cIdx + 1));
+                var finalTitle = usedHeaderNames.has(baseTitle) ? (baseTitle + ' (' + src.tag + ')') : baseTitle;
+                usedHeaderNames.add(finalTitle);
+                outHeaders.push(finalTitle);
+            });
+        });
+
+
+        var finalRows = [];
+        for (var k = 0; k < currentRows.length; k++) {
+            var vRow = currentRows[k];
+            var cleanRow = new Array(outVirtualIndices.length);
+            var hasVal = false;
+            for (var j = 0; j < outVirtualIndices.length; j++) {
+                var val = vRow[outVirtualIndices[j]] || '';
+                cleanRow[j] = val;
+                if (val !== '') hasVal = true;
+            }
+            if (hasVal) finalRows.push(cleanRow);
+        }
+
+        var dedup = deduplicateRows(finalRows);
+        finalRows = dedup.rows;
+
+        function escapeCsvCell(val) {
+            var s = String(val === undefined || val === null ? '' : val);
+            if (s.indexOf(';') !== -1 || s.indexOf('"') !== -1 || s.indexOf('\n') !== -1 || s.indexOf('\r') !== -1) {
+                return '"' + s.replace(/"/g, '""') + '"';
+            }
+            return s;
+        }
+        var syntheticLines = finalRows.map(function(r) {
+            return r.map(escapeCsvCell).join(';');
+        });
+
+        var resultName = (mergeResultNameInput && mergeResultNameInput.value.trim())
+            ? mergeResultNameInput.value.trim()
+            : ('Склейка: ' + mergeState.sources.map(function(s) { return s.name.replace(/\.csv$/i, ''); }).join(' + '));
+
+        var parentIds = mergeState.sources.map(function(s) { return s.tabId; }).filter(Boolean);
+        var pipelineMeta = mergeState.steps.map(function(st) {
+            return { targetUid: st.targetUid, leftSrcUid: st.leftSrcUid, leftColIdx: st.leftColIdx, rightColIdx: st.rightColIdx, matchMode: st.matchMode };
+        });
+
+        closeMergeModal();
+
+        var newTabId = 'tab_' + Date.now();
+        var newTab = {
+            id: newTabId,
+            name: resultName,
+            tableHeaders: outHeaders,
+            originalHeaders: outHeaders.slice(),
+            rawLines: [],
+            delimiter: ';',
+            globalRows: finalRows,
+            currentFilteredRows: finalRows.slice(),
+            currentPage: 1,
+            pageSize: 50,
+            globalSearchQuery: '',
+            columnFilters: [],
+            cacheSizeMB: getDataSizeMB(syntheticLines),
+            rowCount: finalRows.length,
+            baseHeaderOrder: outHeaders.slice(),
+            rawHeaders: outHeaders.slice(),
+            fileHeaderOrder: outHeaders.slice(),
+            isDerived: true,
+            isRoot: false,
+            sourceFileName: resultName,
+            parentTabIds: parentIds,
+            pipeline: pipelineMeta,
+            _loaded: true
+        };
+
+        tabs.push(newTab);
+        activateTab(newTabId);
+
+        var dedupMsg = dedup.removedCount > 0 ? ' (убрано дублей: ' + dedup.removedCount + ')' : '';
+        showToast('Создана склеенная таблица: ' + finalRows.length + ' стр.' + dedupMsg);
+
+        compressLinesToGzip(syntheticLines).then(function(gzBlob) {
+            syntheticLines.length = 0;
+            if (gzBlob) {
+                newTab.cacheSizeMB = (gzBlob.size / (1024 * 1024)).toFixed(2);
+                renderTabsUI();
+                saveTabToDB(newTab, gzBlob);
+            } else {
+                saveTabToDB(newTab);
+            }
+        });
+    }
+
+    window.openMergeModalWithBaseTab = function(baseTab) {
+        if (!mergeModal) return;
+        mergeState.sources = [];
+        mergeState.steps = [];
+        if (mergeModalWindow) {
+            mergeModalWindow.classList.remove('minimized');
+            mergeModalWindow.classList.remove('pinned');
+        }
+        if (pinMergeBtn) pinMergeBtn.style.background = '';
+        if (minimizeMergeBtn) minimizeMergeBtn.textContent = '—';
+        if (mergeResultNameInput) mergeResultNameInput.value = '';
+        mergeModal.classList.add('open');
+
+        if (baseTab) {
+            addTabToMergePool(baseTab);
+        } else {
+            renderMergeModalUI();
+        }
+    };
+
+    if (mergeBtn) {
+        mergeBtn.addEventListener('click', function() {
+            window.openMergeModalWithBaseTab(getActiveTab());
+        });
+    }
+
+    if (mergeAddTabSelect) {
+        mergeAddTabSelect.addEventListener('change', function() {
+            var chosenId = this.value;
+            if (!chosenId) return;
+            var targetTab = tabs.find(function(t) { return t.id === chosenId; });
+            this.value = '';
+            if (targetTab) addTabToMergePool(targetTab);
+        });
+    }
+
+    if (mergeAddFileBtn && mergeExtraFileInput) {
+        mergeAddFileBtn.addEventListener('click', function() {
+            mergeExtraFileInput.value = '';
+            mergeExtraFileInput.click();
+        });
+        mergeExtraFileInput.addEventListener('change', function() {
+            if (!this.files || this.files.length === 0) return;
+            for (var i = 0; i < this.files.length; i++) {
+                addFileToMergePool(this.files[i]);
+            }
+        });
+    }
+
+    if (executeMergeBtn) {
+        executeMergeBtn.addEventListener('click', runCascadeMergeAndCreateTab);
+    }
 
 })();
 
 </script>
+
 
 </body>
 </html>
